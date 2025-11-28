@@ -1,13 +1,23 @@
-# joy-blog-tools
+# 徐徐乐之博客与工具集合
 
 #### 介绍
-{**以下是 Giteer 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+
 
 #### 软件架构
-软件架构说明
+后台包含：
+spring boot,JDK 1.8,Sa-Token,Redis,knife4j,MyBatis Plus ,MySQL
 
+admin web包含
+请选择要包含的功能：
+│  TypeScript, JSX 支持, Router（单页面应用开发）, Pinia（状态管理）,
+Prettier（代码格式化）
+│
+◇  选择要包含的试验特性：
+│  Oxlint
+◇  框架：
+│  ant-design-vue@4.x
+◇  css：
+│  sass
 
 #### 安装教程
 

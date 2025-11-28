@@ -38,16 +38,32 @@ public class Result<T> {
         this.code = status.getCode();
         this.state = status.getState();
         this.message = status.getMessage();
-        if (data == null) {
-            // 使用类型转换确保类型安全
-            this.data = (T) EnhancedEmptyObject.getInstance();
-        } else {
-            this.data = data;
-        }
+        this.data = data == null ? (T) EnhancedEmptyObject.getInstance() : data;
+    }
+
+//    public static <T> Result<T> of(HttpStatusCode status, T data) {
+//        return new Result<>(status, data);
+//    }
+
+
+    public static <T> Result<T> of(HttpStatusCode status) {
+        return of(status,null);
     }
 
     public static <T> Result<T> of(HttpStatusCode status, T data) {
         return new Result<>(status, data);
+    }
+
+    public static <T> Result<T> of(HttpStatusCode status, String message) {
+        Result<T> result = of(status,null);
+        result.setMessage(message);
+        return result;
+    }
+
+    public static <T> Result<T> of(HttpStatusCode status, T data, String message) {
+        Result<T> result = of(status, data);
+        result.setMessage(message);
+        return result;
     }
 
 
@@ -77,9 +93,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> success(String message) {
-        Result<T> result = of(HttpStatusCode.Success, null);
-        result.setMessage(message);
-        return result;
+        return of(HttpStatusCode.Success, message);
     }
 
     /**
@@ -90,9 +104,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> success(T data, String message) {
-        Result<T> result = of(HttpStatusCode.Success, data);
-        result.setMessage(message);
-        return result;
+        return of(HttpStatusCode.Success, data, message);
     }
 
     /**
@@ -129,9 +141,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> unauthorized(String message) {
-        Result<T> result = of(HttpStatusCode.Unauthorized, null);
-        result.setMessage(message);
-        return result;
+        return of(HttpStatusCode.Unauthorized, message);
     }
 
     /**
@@ -150,9 +160,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> forbidden(String message) {
-        Result<T> result = of(HttpStatusCode.Forbidden, null);
-        result.setMessage(message);
-        return result;
+        return of(HttpStatusCode.Forbidden, message);
     }
 
     /**
@@ -181,9 +189,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> internalServerError(String message) {
-        Result<T> result = of(HttpStatusCode.InternalServerError, null);
-        result.setMessage(message);
-        return result;
+        return of(HttpStatusCode.InternalServerError, message);
     }
 
 }
