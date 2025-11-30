@@ -1,95 +1,203 @@
 <template>
   <div class="login-main">
+    <div class="canvas-body">
+      <canvas
+        ref="flowersRef"
+        class="canvas-flowers"
+        :width="screenWidth"
+        :height="screenHeight"
+      ></canvas>
+    </div>
     <div class="login-body">
-      <div class="sigin-in">
-        <a-form
-          :model="formState"
-          name="normal_login"
-          class="login-form"
-          hideRequiredMark=""
-          @finish="onFinish"
-          @finishFailed="onFinishFailed"
-        >
-          <a-form-item
-            name="Username"
-            :rules="[{ required: true, message: 'Please input your username!' }]"
-          >
-            <a-input v-model:value="formState.username" placeholder="Username">
-              <template #prefix>
-                <UserOutlined class="site-form-item-icon" />
-              </template>
-            </a-input>
-          </a-form-item>
-
-          <a-form-item
-            name="Password"
-            :rules="[{ required: true, message: 'Please input your password!' }]"
-          >
-            <a-input-password v-model:value="formState.password" placeholder="Password">
-              <template #prefix>
-                <LockOutlined class="site-form-item-icon" />
-              </template>
-            </a-input-password>
-          </a-form-item>
-
-          <a-form-item>
-            <span class="forgot-password" href="">Forgot password</span>
-          </a-form-item>
-
-          <a-form-item>
-            <a-form-item name="remember" no-style>
-              <a-checkbox v-model:checked="formState.remember"
-                ><span class="rember-me">Remember me</span></a-checkbox
-              >
-            </a-form-item>
-          </a-form-item>
-
-          <a-form-item>
-            <a-button
-              :disabled="disabled"
-              type="primary"
-              html-type="submit"
-              class="login-form-button"
-            >
-              {{ $t('login.login_in') }}
-            </a-button>
-          </a-form-item>
-        </a-form>
-      </div>
+      <SignIn v-if="page == 'sigin'" :page="page" @update:page="handlePageUpdate" />
+      <VerifyEmail v-else :page="page" @update:page="handlePageUpdate" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-const { locale, t } = useI18n() // 使用组合式API获取i18n实例的方法和属性
-const changeLanguage = () => {
-  locale.value = locale.value === 'zh' ? 'zh' : 'en' // 切换语言逻辑
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+
+import SignIn from './SignIn.vue'
+import VerifyEmail from './VerifyEmail.vue'
+
+// 忘记密码和登录切换email sigin
+const page = ref('sigin')
+const handlePageUpdate = (pageId: string) => {
+  page.value = pageId
 }
-import { reactive, computed } from 'vue'
-import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-interface FormState {
-  username: string
-  password: string
-  remember: boolean
-}
-const formState = reactive<FormState>({
-  username: '',
-  password: '',
-  remember: true,
-})
-const onFinish = (values: unknown) => {
-  console.log('Success:', values)
+// 梅花类型定义
+interface FlowerState {
+  x: number
+  y: number
+  speed: number
+  size: number
+  rotation: number
+  rotationSpeed: number
+  swing: number
+  swingSpeed: number
+  swingRange: number
+  color: string
+  opacity: number
 }
 
-const onFinishFailed = (errorInfo: unknown) => {
-  console.log('Failed:', errorInfo)
+const flowersRef = ref<HTMLCanvasElement | null>(null)
+const flowers = ref<FlowerState[]>([])
+const screenWidth = ref(window.innerWidth)
+const screenHeight = ref(window.innerHeight)
+const speed = ref(3)
+
+// 梅花的颜色
+const flowerColors = [
+  'rgba(255, 192, 203, 0.8)', // 宫粉梅‌，‌桃红梅，‌台阁梅
+  'rgba(255, 0, 0, 0.8)', // ‌朱砂梅‌
+  'rgba(255, 255, 255, 0.8)', // ‌白梅
+  'rgba(0, 128, 0, 0.8)', // ‌绿萼梅‌
+  'rgba(255, 255, 0, 0.8)', // ‌黄香梅‌
+  'rgba(128, 0, 128, 0.8)', // ‌紫玉兰梅‌
+  'rgba(128, 0, 0, 0.8)', // ‌乌羽玉‌
+  'rgba(255, 215, 0, 0.8)', // ‌洒金梅‌
+  'rgba(0, 0, 0, 0.8)', // ‌墨梅‌
+  'rgba(255, 192, 203, 0.8)', // 宫粉梅‌
+  'rgba(255, 192, 203, 0.8)', // 宫粉梅‌
+]
+
+// 初始化花,因为冬天，暂选梅花，喜欢梅花寓意
+const initFlower = () => {
+  flowers.value = []
+  for (let i = 0; i < 100; i++) {
+    //设定梅花为100朵,可改为用参数控制
+    flowers.value.push({
+      x: Math.random() * screenWidth.value,
+      y: Math.random() * screenHeight.value,
+      size: Math.random() * 2 + 4,
+      speed: Math.random() * 1.2 + 1,
+      rotation: Math.random() * Math.PI * 2,
+      rotationSpeed: (Math.random() - 0.5) * 0.05,
+      swing: Math.random() * Math.PI * 2,
+      swingSpeed: Math.random() * 0.02 + 0.01,
+      swingRange: Math.random() * 2 + 1,
+      color: flowerColors[Math.floor(Math.random() * flowerColors.length)] + '',
+      opacity: Math.random() * 0.5 + 0.3,
+    })
+  }
 }
-const disabled = computed(() => {
-  return !(formState.username && formState.password)
+
+// 绘制梅花花瓣
+const drawFlower = (ctx: CanvasRenderingContext2D, flower: FlowerState) => {
+  ctx.save()
+  ctx.translate(flower.x, flower.y)
+  ctx.rotate(flower.rotation)
+
+  // 绘制五瓣梅花
+  ctx.beginPath()
+  for (let i = 0; i < 5; i++) {
+    const angle = (i * Math.PI * 2) / 5
+    const petalLength = flower.size * 1.5
+
+    // 花瓣形状（心形近似）
+    ctx.moveTo(0, 0)
+    ctx.bezierCurveTo(
+      Math.cos(angle) * flower.size,
+      Math.sin(angle) * flower.size,
+      Math.cos(angle + Math.PI / 5) * petalLength,
+      Math.sin(angle + Math.PI / 5) * petalLength,
+      Math.cos(angle + Math.PI / 2.5) * flower.size * 0.8,
+      Math.sin(angle + Math.PI / 2.5) * flower.size * 0.8,
+    )
+  }
+  ctx.closePath()
+
+  // 填充颜色
+  ctx.fillStyle = flower.color
+  ctx.globalAlpha = flower.opacity
+  ctx.fill()
+
+  // 绘制花蕊
+  // ‌粉红色‌：rgba(255, 192, 203, 1)
+  // ‌桃红色‌：rgba(255, 105, 180, 1)
+  // ‌深玫瑰红‌：rgba(220, 20, 60, 1)
+  // ‌淡乳黄色‌：rgba(255, 250, 240, 1)
+  // ‌极淡黄色‌：rgba(255, 255, 240, 1)
+  ctx.beginPath()
+  ctx.arc(0, 0, flower.size * 0.3, 0, Math.PI * 2)
+  ctx.fillStyle = 'rgba(255, 192, 203, 1)' //花蕊颜色可以根据不同花色来调整，现在懒得搞，以后有时间再说
+  ctx.fill()
+
+  ctx.restore()
+}
+
+// 动画循环
+let animatioLoop: number
+
+const animate = () => {
+  if (!flowersRef.value) return
+
+  const ctx = flowersRef.value.getContext('2d')
+  if (!ctx) return
+
+  // 清除画布
+  ctx.clearRect(0, 0, screenWidth.value, screenHeight.value)
+
+  // 绘制背景
+  const gradient = ctx.createLinearGradient(0, 0, screenWidth.value, screenHeight.value)
+
+  // gradient.addColorStop(0, '#ffffff')
+  // gradient.addColorStop(1, '#000000')
+  ctx.fillStyle = gradient
+  ctx.fillRect(0, 0, screenWidth.value, screenHeight.value)
+
+  // 更新和绘制梅花
+  flowers.value.forEach((flower) => {
+    // 更新位置
+    flower.y += flower.speed * (speed.value / 3)
+    flower.x += Math.sin(flower.swing) * flower.swingRange
+    flower.swing += flower.swingSpeed
+    flower.rotation += flower.rotationSpeed
+
+    // 如果梅花飘出屏幕底部，重新从顶部开始
+    if (flower.y > screenHeight.value) {
+      flower.y = -flower.size
+      flower.x = Math.random() * screenWidth.value
+    }
+
+    // 如果梅花飘出屏幕左右边界，调整位置
+    if (flower.x < -flower.size) flower.x = screenWidth.value + flower.size
+    if (flower.x > screenWidth.value + flower.size) flower.x = -flower.size
+
+    drawFlower(ctx, flower)
+  })
+
+  animatioLoop = requestAnimationFrame(animate)
+  console.log(flowers.value.length, 3123123)
+}
+
+// 响应式监听
+watch(speed, () => {
+  flowers.value.forEach((flower) => {
+    flower.speed = Math.random() * 2 + 1
+  })
+})
+
+// 生命周期
+onMounted(() => {
+  initFlower()
+  animate()
+
+  // 窗口大小变化时调整canvas大小
+  const handleResize = () => {
+    screenWidth.value = window.innerWidth
+    screenHeight.value = window.innerHeight
+    initFlower()
+  }
+
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  cancelAnimationFrame(animatioLoop)
 })
 </script>
-
 <style lang="scss" scoped>
 .login-main {
   position: fixed;
@@ -97,9 +205,23 @@ const disabled = computed(() => {
   left: 0;
   bottom: 0;
   right: 0;
+  .canvas-body {
+    z-index: 1;
+    pointer-events: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    .canvas-flowers {
+      width: 100%;
+      height: 100%;
+    }
+  }
   .login-body {
     width: 100%;
     height: 100%;
+    z-index: 9;
     position: relative;
     &::after {
       display: block;
@@ -114,72 +236,6 @@ const disabled = computed(() => {
       top: 0;
       right: 0;
       bottom: 0;
-    }
-    .sigin-in {
-      width: 360px;
-      height: 520px;
-      padding: 30px;
-      box-shadow: 0px -6px 10px #ffffff;
-      border-top: 3px solid #aba29b;
-      border-bottom: 3px solid #2a2d2c;
-      border-radius: 5px;
-      background: linear-gradient(to bottom, #9e8a80, #555756);
-      z-index: 9;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      margin-left: -280px;
-      margin-top: -280px;
-      .ant-input-affix-wrapper {
-        border-color: #514c4a;
-        background-color: #514c4a;
-        padding: 8px 11px;
-      }
-      :deep(input.ant-input) {
-        background-color: #514c4a;
-        color: #ffffff;
-      }
-      :deep(.ant-input)::placeholder {
-        color: #000000;
-      }
-      :deep(.ant-form-item .ant-form-item-explain-error),
-      :deep(.ant-input-prefix),
-      :deep(.ant-input-affix-wrapper .anticon.ant-input-password-icon) {
-        color: #000000;
-      }
-      :deep(.ant-form-item .ant-input-affix-wrapper-status-error .ant-form-item-explain-error),
-      :deep(.ant-input-affix-wrapper-status-error .ant-input-prefix),
-      :deep(.ant-input-affix-wrapper-status-error .anticon.ant-input-password-icon) {
-        color: #ffffff;
-      }
-
-      :deep(.ant-checkbox-wrapper .ant-checkbox-inner) {
-        border-color: #544e4c;
-        padding: 5px;
-        border-radius: 3px;
-      }
-      :deep(.ant-radio-wrapper-checked .ant-checkbox-inner),
-      :deep(.ant-checkbox-wrapper-checked .ant-checkbox-inner) {
-        background-color: #544e4c;
-        color: #ffffff;
-        border-color: #544e4c;
-        border: 1px solid #544e4c;
-      }
-      :deep(.ant-checkbox-wrapper:hover .ant-checkbox-inner),
-      :deep(.ant-checkbox:hover .ant-checkbox-inner) {
-        background-color: transparent !important;
-        border-color: #d9d9d9 !important;
-      }
-      .forgot-password {
-        color: #000000;
-      }
-      .rember-me {
-        color: #000000;
-      }
-
-      .login-form-button {
-        width: 100%;
-      }
     }
   }
 }

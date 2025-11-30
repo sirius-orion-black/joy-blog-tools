@@ -17,9 +17,9 @@ const router = createRouter({
 })
 router.beforeEach(async (to, from) => {
   console.log(32131231, to.name)
-  if (to.name !== 'login') {
-    // 将用户重定向到登录页面
-    return { name: 'login' }
-  }
+  // if (to.name !== 'login') {
+  //   // 将用户重定向到登录页面
+  //   return { name: 'login' }
+  // }
 })
 export default router
