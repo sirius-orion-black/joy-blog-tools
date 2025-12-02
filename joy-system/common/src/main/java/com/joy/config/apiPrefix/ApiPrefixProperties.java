@@ -1,4 +1,4 @@
-package com.joy.configurer.apiPrefix;
+package com.joy.config.apiPrefix;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

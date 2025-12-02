@@ -41,13 +41,16 @@ public class Result<T> {
         this.data = data == null ? (T) EnhancedEmptyObject.getInstance() : data;
     }
 
-//    public static <T> Result<T> of(HttpStatusCode status, T data) {
-//        return new Result<>(status, data);
-//    }
 
+    public void setMessage(String message) {
+        log.info(String.valueOf(message == null));
+        if(message != null && !message.isEmpty())
+            this.message = message;
+        log.info("3123");
+    }
 
     public static <T> Result<T> of(HttpStatusCode status) {
-        return of(status,null);
+        return new Result<>(status, null);
     }
 
     public static <T> Result<T> of(HttpStatusCode status, T data) {
@@ -55,16 +58,17 @@ public class Result<T> {
     }
 
     public static <T> Result<T> of(HttpStatusCode status, String message) {
-        Result<T> result = of(status,null);
+        Result<T> result = new Result<>(status, null);
         result.setMessage(message);
         return result;
     }
 
     public static <T> Result<T> of(HttpStatusCode status, T data, String message) {
-        Result<T> result = of(status, data);
+        Result<T> result = new Result<>(status, data);
         result.setMessage(message);
         return result;
     }
+
 
 
     /**

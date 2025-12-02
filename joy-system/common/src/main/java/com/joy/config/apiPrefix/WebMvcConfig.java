@@ -1,4 +1,4 @@
-package com.joy.configurer.apiPrefix;
+package com.joy.config.apiPrefix;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;

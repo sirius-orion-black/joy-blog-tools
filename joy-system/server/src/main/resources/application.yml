@@ -18,6 +18,25 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: true
+  # 是否从Cookie读取Token（false不读取）
+  is-read-cookie: false
+  # 是否从Header读取Token（true读取）
+  is-read-header: true
+  # 是否打印Token（true打印）
+  is-print: true
+  # 是否将Token写入Header（true写入
+  is-write-header: true
+#  remember-me: 604800  # 记住我模式有效期（秒）
+#    sso: # 单点登录配置
+#      mode: redis        # SSO模式（redis或http）
+#      redis-host: localhost
+#      redis-port: 6379
+#      redis-password:
+#      redis-database: 0
+#      ticket-timeout: 300
+#      ticket-secret: your-secret-key
+
+
 
 #==============================mybatis-plus配置=========================
 mybatis-plus:
