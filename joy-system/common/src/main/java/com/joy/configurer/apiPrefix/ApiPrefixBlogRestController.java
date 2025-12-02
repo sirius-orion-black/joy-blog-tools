@@ -1,4 +1,4 @@
-package com.joy.configurer;
+package com.joy.configurer.apiPrefix;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.web.bind.annotation.RestController;

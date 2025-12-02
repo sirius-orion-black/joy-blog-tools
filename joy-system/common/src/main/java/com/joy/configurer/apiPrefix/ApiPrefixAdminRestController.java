@@ -1,4 +1,4 @@
-package com.joy.configurer;
+package com.joy.configurer.apiPrefix;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @RestController
-public @interface ApiPrefixFileRestController {
+public @interface ApiPrefixAdminRestController {
     @AliasFor(annotation = RestController.class)
     String value() default "";
 }
