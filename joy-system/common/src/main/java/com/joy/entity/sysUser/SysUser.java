@@ -10,25 +10,25 @@ import java.util.Date;
 
 @Data
 @TableName("sys_user")
-public class SysUserEntity {
+public class SysUser {
 
     //主键ID
     @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
 
-    //用户名：16个字母以内
+    //用户名：长度必须在5-16个字符之间，且只能为大小写字母，唯一
     @TableField
     private String username;
 
-    //密码：由16个大小字母、数字和符号(? @ #)组中的三种成
+    //密码：由8-16个大写字母、小写字母、数字和符号(? @ #) 组成
     @TableField
     private String password;
 
-    //用户名：16个字母以内
+    //邮箱
     @TableField
     private String email;
 
-    //邮箱
+    //头像URL
     @TableField
     private String avatar;
 
@@ -36,7 +36,7 @@ public class SysUserEntity {
     @TableField
     private Integer sex;
 
-    //手机号码
+    //手机号
     @TableField
     private String phone;
 
@@ -44,7 +44,7 @@ public class SysUserEntity {
     @TableField
     private String loginInfo;
 
-    //状态：1 正常，2 禁用，3  邮箱未验证
+    //状态：1 正常，2 禁用，3  邮箱或手机号未验证
     @TableField
     private Integer state;
 
