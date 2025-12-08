@@ -3,6 +3,7 @@ package com.joy.config.Interceptor;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
+import com.joy.common.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,11 +23,8 @@ public class GlobalExceptionHandler {
      * @return 错误响应
      */
     @ExceptionHandler(NotLoginException.class)
-    public Map<String, Object> handleNotLoginException(NotLoginException e) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", 401);
-        result.put("message", "未登录或登录已过期");
-        return result;
+    public <T> Result<T> handleNotLoginException(NotLoginException e) {
+        return Result.unauthorized();
     }
 
     /**
@@ -35,11 +33,8 @@ public class GlobalExceptionHandler {
      * @return 错误响应
      */
     @ExceptionHandler(NotPermissionException.class)
-    public Map<String, Object> handleNotPermissionException(NotPermissionException e) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", 403);
-        result.put("message", "无权限访问：" + e.getPermission());
-        return result;
+    public <T> Result<T> handleNotPermissionException(NotPermissionException e) {
+        return Result.unauthorized("unauthorized_access");//无权限访问
     }
 
     /**
@@ -48,11 +43,8 @@ public class GlobalExceptionHandler {
      * @return 错误响应
      */
     @ExceptionHandler(NotRoleException.class)
-    public Map<String, Object> handleNotRoleException(NotRoleException e) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", 403);
-        result.put("message", "无角色权限：" + e.getRole());
-        return result;
+    public <T> Result<T> handleNotRoleException(NotRoleException e) {
+        return Result.unauthorized("no_role_permissions");//无角色权限
     }
 
 }

@@ -14,7 +14,7 @@ public class UserVerify {
      * @param str
      * @return
      */
-    private static boolean usernameFormat(String str) {
+    public static boolean usernameFormat(String str) {
         String usernameRegex = "^[A-Za-z]{5,16}$";
         return Pattern.matches(usernameRegex, str);
     }
@@ -24,7 +24,7 @@ public class UserVerify {
      * @param str
      * @return
      */
-    private static boolean emailFormat(String str) {
+    public static boolean emailFormat(String str) {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         String qqEmailRegex = "^[a-zA-Z0-9_+&*-]+@qq\\.com$";
         return Pattern.matches(emailRegex, str) || Pattern.matches(qqEmailRegex, str);
@@ -34,7 +34,7 @@ public class UserVerify {
      * @param str
      * @return
      */
-    private static boolean passwordFormat(String str) {
+    public static boolean passwordFormat(String str) {
         String passwordRegex = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[?@#]).{8,16}$";
         return Pattern.matches(passwordRegex, str);
     }
@@ -43,7 +43,7 @@ public class UserVerify {
      * @param str
      * @return
      */
-    private static boolean phoneFormat(String str) {
+    public static boolean phoneFormat(String str) {
         String phoneRegex = "^1[3-9]\\d{9}$";
         return Pattern.matches(phoneRegex, str);
     }
@@ -58,7 +58,7 @@ public class UserVerify {
             return "username_cannot_empty";//用户名不能为空
         }
         if (!usernameFormat(sysUser.getUsername())) {
-            return "username_between_5_16";//用户名长度必须在5-16个字符之间
+            return "username_between_5_16";//用户名为5-16个大小写字母
         }
         if (StringUtils.isEmpty(sysUser.getEmail())) {
             return "email_cannot_empty";//邮箱不能为空

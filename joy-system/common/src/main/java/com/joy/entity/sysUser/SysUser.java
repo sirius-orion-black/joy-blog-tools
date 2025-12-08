@@ -24,6 +24,10 @@ public class SysUser {
     @TableField
     private String password;
 
+    //密码盐值
+    @TableField
+    private String salt;
+
     //邮箱
     @TableField
     private String email;
@@ -67,5 +71,9 @@ public class SysUser {
     //邮箱验证时间
     @TableField
     private Date emailVerifiedTime;
+
+    //手机号验证时间
+    @TableField
+    private Date phoneVerifiedTime;
 
 }

@@ -2,29 +2,29 @@ package com.joy.controller;
 
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
-import com.joy.entity.sysUser.SysUser;
-import com.joy.service.SysUserService;
+import com.joy.dao.sysUser.SysLoginDao;
+import com.joy.service.SysLoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @ApiPrefixAdminRestController
-@RequestMapping("/user")
 @Slf4j
-public class SysUserController {
+@RequestMapping("/auth")
+public class SysLoginController {
 
     @Autowired
-    private SysUserService sysUserService;
+    private SysLoginService sysLoginService;
 
     /**
-     * 新增管理人员
-     * @param sysUser
+     * 后台管理人员邮箱验证
+     * @param loginInfo
      * @return
      */
-    @PostMapping("/addUser")
-    public Result<String> addUser(SysUser sysUser){
-        return sysUserService.addUser(sysUser);
+    @PostMapping("/emailVerify")
+    public Result<String> emailVerify(SysLoginDao loginInfo){
+        return sysLoginService.emailVerify(loginInfo);
     }
 
 }

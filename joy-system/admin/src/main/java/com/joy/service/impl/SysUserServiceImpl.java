@@ -1,15 +1,15 @@
 package com.joy.service.impl;
 
+import cn.dev33.satoken.secure.BCrypt;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.joy.common.Result;
 import com.joy.entity.sysUser.SysUser;
-import com.joy.mapper.SysUserMapper;
+import com.joy.mapper.sysUser.SysUserMapper;
 import com.joy.service.SysUserService;
 import com.joy.untils.UserVerify;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -17,24 +17,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    /**
+     * 新增管理人员
+     * @param sysUser
+     * @return
+     */
     @Override
-    public String addUser(SysUser sysUser) {
+    public Result<String> addUser(SysUser sysUser) {
         String strVerify = UserVerify.sysUserVerify(sysUser);
-        if(!strVerify.equals("success")){//用户信息校验
-            return strVerify;
+        if(strVerify.equals("success")){//用户信息校验
+            strVerify = "success";
         }
         if (sysUserMapper.countByUsername(sysUser.getUsername()) > 0) {
-            return "username_already_exists";//用户名已经存在
+            strVerify = "username_already_exists";//用户名已经存在
         }
         if (sysUserMapper.countByEmail(sysUser.getEmail()) > 0) {
-            return "email_already_exists";//邮箱已经存在
+            strVerify = "email_already_exists";//邮箱已经存在
         }
-        if (!sysUser.getPhone().matches("^1[3-9]\\d{9}$")) {
-            return "phone_number_incorrect";//手机号格式不正确
-        }
-        SysUser user = new SysUser();
-        user.setEmail(sysUser.getEmail());
+        sysUser.setSalt(BCrypt.gensalt(20));
+        sysUser.setPassword(BCrypt.hashpw(sysUser.getPassword(),sysUser.getSalt()));
         // 保存用户
-        return save(sysUser) ? "操作成功" : "系统异常";
+        return save(sysUser) ? Result.success("success") : Result.badRequest(strVerify);
     }
 }

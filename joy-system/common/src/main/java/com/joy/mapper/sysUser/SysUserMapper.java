@@ -1,4 +1,4 @@
-package com.joy.mapper;
+package com.joy.mapper.sysUser;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.joy.entity.sysUser.SysUser;

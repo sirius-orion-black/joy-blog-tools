@@ -13,6 +13,11 @@ const router = createRouter({
       name: 'home',
       component: () => import('../views/login/LoginIn.vue'),
     },
+    {
+      path: '/email',
+      name: 'email',
+      component: () => import('../views/email/EmailView.vue'),
+    },
   ],
 })
 router.beforeEach(async (to, from) => {

@@ -43,10 +43,8 @@ public class Result<T> {
 
 
     public void setMessage(String message) {
-        log.info(String.valueOf(message == null));
         if(message != null && !message.isEmpty())
             this.message = message;
-        log.info("3123");
     }
 
     public static <T> Result<T> of(HttpStatusCode status) {
@@ -82,15 +80,6 @@ public class Result<T> {
     }
 
     /**
-     * 请求成功
-     * @return
-     * @param <T>
-     */
-    public static <T> Result<T> success() {
-        return of(HttpStatusCode.Success,null);
-    }
-
-    /**
      * 请求成功 只传消息
      * @param message
      * @return
@@ -117,7 +106,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> created() {
-        return of(HttpStatusCode.Created,null);
+        return of(HttpStatusCode.Created);
     }
 
     /**
@@ -126,7 +115,24 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> badRequest() {
-        return of(HttpStatusCode.BadRequest,null);
+        return of(HttpStatusCode.BadRequest);
+    }
+
+    /**
+     * 服务器无法理解请求格式 只传消息
+     * @return
+     * @param <T>
+     */
+    public static <T> Result<T> badRequest(String message) {
+        return of(HttpStatusCode.BadRequest,message);
+    }
+    /**
+     * 服务器无法理解请求格式 传数据和消息
+     * @return
+     * @param <T>
+     */
+    public static <T> Result<T> badRequest(T data, String message) {
+        return of(HttpStatusCode.BadRequest,data, message);
     }
 
     /**
@@ -135,7 +141,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> unauthorized() {
-        return of(HttpStatusCode.Unauthorized,null);
+        return of(HttpStatusCode.Unauthorized);
     }
 
     /**
@@ -154,7 +160,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> forbidden() {
-        return of(HttpStatusCode.Forbidden,null);
+        return of(HttpStatusCode.Forbidden);
     }
 
     /**
@@ -173,7 +179,7 @@ public class Result<T> {
      * @param <T>
      */
     public static <T> Result<T> notFound() {
-        return of(HttpStatusCode.NotFound,null);
+        return of(HttpStatusCode.NotFound);
     }
 
     /**
@@ -183,7 +189,7 @@ public class Result<T> {
      */
 
     public static <T> Result<T> internalServerError() {
-        return of(HttpStatusCode.InternalServerError,null);
+        return of(HttpStatusCode.InternalServerError);
     }
 
     /**

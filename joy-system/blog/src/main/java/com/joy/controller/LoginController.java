@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
 @ApiPrefixBlogRestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -16,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class LoginController {
 
     @GetMapping("/login")
-    public Result<String> login(){
-        log.info("login");
-        return Result.success("1223");
+    public  Result<String> login(){
+        return Result.success("123");
     }
 
 }
+
+
