@@ -23,43 +23,48 @@ public class VerifyCode {
      */
     public static boolean sendVerificationCode(String account, String toAccount, Long validTime, SysConfigMail mail, RedisTemplate<String, String> redisTemplate) {
 
-        // 生成验证码
-        String verificationCode = RandomStringUtils.randomAlphanumeric(6);
-        // 配置邮箱SMTP服务器
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(mail.getHost());//设置SMTP服务器地址
-        mailSender.setPort(mail.getPort());// 设置SMTP端口
-        mailSender.setUsername(mail.getUsername()); // 设置邮箱账号
-        mailSender.setPassword(mail.getPassword()); // 设置邮箱密码或授权码
+        try {
+            // 生成验证码
+            String verificationCode = RandomStringUtils.randomAlphanumeric(6);
+            // 配置邮箱SMTP服务器
+            JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+            mailSender.setHost(mail.getHost());//设置SMTP服务器地址
+            mailSender.setPort(mail.getPort());// 设置SMTP端口
+            mailSender.setUsername(mail.getUsername()); // 设置邮箱账号
+            mailSender.setPassword(mail.getPassword()); // 设置邮箱密码或授权码
 
-        // 设置邮件属性
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", mail.getProtocol());// 设置协议类型
-        props.put("mail.smtp.auth", mail.getSmtpAuth());// 启用身份验证
-        props.put("mail.smtp.ssl.enable", mail.getSmtpSslEnable());// 启用SSL加密
-        props.put("mail.smtp.starttls.enable", mail.getSmtpStarttlsEnable());// 禁用TLS加密
-        props.put("mail.debug", mail.getDebug()); // 调试模式，生产环境可设为false
-        props.put("mail.smtp.connectiontimeout", mail.getConnectionTimeout());  // 设置连接超时时间（毫秒）
-        props.put("mail.smtp.timeout", mail.getTimeout());  // 设置读取超时时间（毫秒）
-        props.put("mail.smtp.writetimeout", mail.getWriteTimeout());  // 设置写入超时时间（毫秒）
-        // 构建邮件消息
-        MimeMessagePreparator message = mimeMessage -> {
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            helper.setTo(toAccount);
-            helper.setFrom(account); // 发件人邮箱
-            helper.setSubject("邮箱验证码");
-            helper.setText(buildEmailContent(verificationCode,validTime), true);
-        };
-        // 发送邮件
-        mailSender.send(message);
+            // 设置邮件属性
+            Properties props = mailSender.getJavaMailProperties();
+            props.put("mail.transport.protocol", mail.getProtocol());// 设置协议类型
+            props.put("mail.smtp.auth", mail.getSmtpAuth());// 启用身份验证
+            props.put("mail.smtp.ssl.enable", mail.getSmtpSslEnable());// 启用SSL加密
+            props.put("mail.smtp.starttls.enable", mail.getSmtpStarttlsEnable());// 禁用TLS加密
+            props.put("mail.debug", mail.getDebug()); // 调试模式，生产环境可设为false
+            props.put("mail.smtp.connectiontimeout", mail.getConnectionTimeout());  // 设置连接超时时间（毫秒）
+            props.put("mail.smtp.timeout", mail.getTimeout());  // 设置读取超时时间（毫秒）
+            props.put("mail.smtp.writetimeout", mail.getWriteTimeout());  // 设置写入超时时间（毫秒）
+            // 构建邮件消息
+            MimeMessagePreparator message = mimeMessage -> {
+                MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+                helper.setTo(toAccount);
+                helper.setFrom(account); // 发件人邮箱
+                helper.setSubject("邮箱验证码");
+                helper.setText(buildEmailContent(verificationCode,validTime), true);
+            };
+            // 发送邮件
+            mailSender.send(message);
 
-        // 将验证码存储到Redis，设置5分钟过期时间
-        String redisKey = "verification_code:" + toAccount;
-        redisTemplate.execute((RedisCallback<Void>) connection -> {
-            connection.setEx(redisKey.getBytes(), validTime, verificationCode.getBytes());
-            return null;
-        });
-        return true;
+            // 将验证码存储到Redis，设置5分钟过期时间
+            String redisKey = "verification_code:" + toAccount;
+            redisTemplate.execute((RedisCallback<Void>) connection -> {
+                connection.setEx(redisKey.getBytes(), validTime, verificationCode.getBytes());
+                return null;
+            });
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+//            throw new RuntimeException(e);
+        }
     }
 
     /**

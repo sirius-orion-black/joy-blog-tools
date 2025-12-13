@@ -81,8 +81,8 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
             return Result.internalServerError();
         }
         Long validTime = NumberUtils.parseNumber(validConfig.getConfigValue(), Long.class);
-        Boolean bl = VerifyCode.sendVerificationCode(mail.getUsername(),loginInfo.getEmail(),validTime,mail,redisTemplate);
-
-        return Result.success("");
+        boolean bl = VerifyCode.sendVerificationCode(mail.getUsername(),loginInfo.getEmail(),validTime,mail,redisTemplate);
+        String message = bl ? "verification_code_sent" : "verification_code_sent_again";
+        return Result.success(message);
     }
 }

@@ -29,4 +29,6 @@ export default {
   password_number_incorrect: '密码格式不正确',
   phone_cannot_empty: '手机号不能为空',
   phone_number_incorrect: '手机号格式不正确',
+  verification_code_sent: '验证码已发送',
+  verification_code_sent_again: '验证码发送失败，请重试',
 }
