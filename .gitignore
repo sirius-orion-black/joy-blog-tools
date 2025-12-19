@@ -3,7 +3,6 @@
 .list
 target/
 *.log
-yarn.lock
 
 
 # Logs
