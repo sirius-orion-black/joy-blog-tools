@@ -28,9 +28,10 @@ public class HeadInterceptor implements HandlerInterceptor {
         long now = System.currentTimeMillis() / 1000;
 
         // 验证时间戳有效性（允许5分钟误差）
-        if (Math.abs(now - timestamp) > 300) {
-            throw new RuntimeException("时间戳无效");
-        }
+//        if (Math.abs(now - timestamp) > 300) {
+//            throw new RuntimeException("时间戳无效");
+//        }
+
         return true; // 放行请求
     }
 

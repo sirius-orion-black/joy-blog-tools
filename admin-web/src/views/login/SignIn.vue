@@ -8,25 +8,16 @@
       @finish="onFinish"
       @finishFailed="onFinishFailed"
     >
-      <a-form-item
-        name="Username"
-        :rules="[{ required: true, message: $t('login.input_username') }]"
-      >
-        <a-input v-model:value="formState.username" :placeholder="$t('login.user_name')">
+      <a-form-item name="username" :rules="[{ required: true, message: $t('input_username') }]">
+        <a-input v-model:value="formState.username" :placeholder="$t('user_name')">
           <template #prefix>
             <UserOutlined class="site-form-item-icon" />
           </template>
         </a-input>
       </a-form-item>
 
-      <a-form-item
-        name="Password"
-        :rules="[{ required: true, message: $t('login.input_password') }]"
-      >
-        <a-input-password
-          v-model:value="formState.password"
-          :placeholder="$t('login.user_password')"
-        >
+      <a-form-item name="password" :rules="[{ required: true, message: $t('input_password') }]">
+        <a-input-password v-model:value="formState.password" :placeholder="$t('user_password')">
           <template #prefix>
             <LockOutlined class="site-form-item-icon" />
           </template>
@@ -35,9 +26,7 @@
 
       <a-form-item>
         <div class="forgot-language">
-          <span class="forgot-password" @click="forgotPassword()">{{
-            $t('login.forgot_password')
-          }}</span>
+          <span class="forgot-password" @click="forgotPassword()">{{ $t('forgot_password') }}</span>
           <span class="login-language" @click="changeLanguage()">
             <LanguageIcon width="16px" height="16px" />
           </span>
@@ -47,14 +36,14 @@
       <a-form-item>
         <a-form-item name="remember" no-style>
           <a-checkbox v-model:checked="formState.remember"
-            ><span class="rember-me">{{ $t('login.remember_me') }}</span></a-checkbox
+            ><span class="rember-me">{{ $t('remember_me') }}</span></a-checkbox
           >
         </a-form-item>
       </a-form-item>
 
       <a-form-item>
         <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
-          {{ $t('login.login_in') }}
+          {{ $t('login_in') }}
         </a-button>
       </a-form-item>
     </a-form>
@@ -92,7 +81,7 @@ const formState = reactive<FormState>({
   remember: true,
 })
 const onFinish = (values: unknown) => {
-  console.log('Success:', values)
+  console.log('Success:', values, formState)
 }
 const onFinishFailed = (errorInfo: unknown) => {
   console.log('Failed:', errorInfo)

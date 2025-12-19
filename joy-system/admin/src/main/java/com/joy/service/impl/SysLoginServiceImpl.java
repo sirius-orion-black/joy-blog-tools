@@ -74,15 +74,38 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
         log.info("mail=>>>>" + JSON.toJSONString(mail));
         //获取验证码有效期
         QueryWrapper<SysConfig> config = new QueryWrapper<>();
-        config.eq("config_key","email_auth_valid_time");
+        config.eq("config_key", "email_auth_valid_time");
         SysConfig validConfig = sysConfigMapper.selectOne(config);
         if (validConfig == null) {
             log.info("邮箱有效期未配置");
             return Result.internalServerError();
         }
         Long validTime = NumberUtils.parseNumber(validConfig.getConfigValue(), Long.class);
-        boolean bl = VerifyCode.sendVerificationCode(mail.getUsername(),loginInfo.getEmail(),validTime,mail,redisTemplate);
+        boolean bl = VerifyCode.sendVerificationCode(mail.getUsername(), loginInfo.getEmail(), validTime, mail, redisTemplate);
         String message = bl ? "verification_code_sent" : "verification_code_sent_again";
         return Result.success(message);
+    }
+
+    /**
+     * 后台管理人员登录
+     *
+     * 。0.0.。
+     * ++
+     * 
+     * @param loginInfo
+     * @return
+     */
+    @Override
+    public Result<SysLoginDao> login(SysLoginDao loginInfo) {
+        QueryWrapper<SysUser> query = new QueryWrapper<>();
+        query.eq("username",loginInfo.getUsername());
+        if (loginInfo.getLoginType() == 1) {
+            SysUser user = getOne(query);
+            if(user == null){
+                return Result.success();
+            }
+        }
+        log.info("登录来了=======>>>>>>>>>>" + loginInfo.toString());
+        return Result.success("0");
     }
 }

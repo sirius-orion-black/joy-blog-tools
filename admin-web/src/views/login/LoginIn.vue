@@ -169,7 +169,6 @@ const animate = () => {
   })
 
   animatioLoop = requestAnimationFrame(animate)
-  console.log(flowers.value.length, 3123123)
 }
 
 // 响应式监听
@@ -228,7 +227,7 @@ onUnmounted(() => {
       content: ' ';
       background-image: url('@/assets/img/login/login_bg.jpg');
       z-index: 1;
-      background-size: 100%;
+      background-size: 100% 100%;
       background-repeat: no-repeat;
       opacity: 0.2;
       position: absolute;

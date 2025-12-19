@@ -19,12 +19,24 @@ public class SysLoginController {
 
     /**
      * 后台管理人员邮箱验证
+     *
      * @param loginInfo
      * @return
      */
     @PostMapping("/emailVerify")
-    public Result<String> emailVerify(SysLoginDao loginInfo){
+    public Result<String> emailVerify(SysLoginDao loginInfo) {
         return sysLoginService.emailVerify(loginInfo);
+    }
+
+    /**
+     * 后台管理人员登录
+     *
+     * @param loginInfo
+     * @return
+     */
+    @PostMapping("login")
+    public Result<SysLoginDao> login(SysLoginDao loginInfo) {
+        return sysLoginService.login(loginInfo);
     }
 
 }

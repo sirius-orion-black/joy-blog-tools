@@ -8,19 +8,16 @@
       @finish="onFinish"
       @finishFailed="onFinishFailed"
     >
-      <a-form-item
-        name="Username"
-        :rules="[{ required: true, message: $t('login.input_username') }]"
-      >
-        <a-input v-model:value="formState.username" :placeholder="$t('login.user_name')">
+      <a-form-item name="Username" :rules="[{ required: true, message: $t('input_username') }]">
+        <a-input v-model:value="formState.username" :placeholder="$t('user_name')">
           <template #prefix>
             <UserOutlined class="site-form-item-icon" />
           </template>
         </a-input>
       </a-form-item>
 
-      <a-form-item name="Email" :rules="[{ required: true, message: $t('login.input_email') }]">
-        <a-input v-model:value="formState.email" :placeholder="$t('login.user_email')">
+      <a-form-item name="Email" :rules="[{ required: true, message: $t('input_email') }]">
+        <a-input v-model:value="formState.email" :placeholder="$t('user_email')">
           <template #prefix>
             <EmailIcon class="site-form-item-icon" width="14px" height="14px" />
           </template>
@@ -29,7 +26,7 @@
 
       <a-form-item>
         <div class="sigin-language">
-          <span class="sign-in" @click="signIn()">{{ $t('login.login_in') }}</span>
+          <span class="sign-in" @click="signIn()">{{ $t('login_in') }}</span>
           <span class="login-language" @click="changeLanguage()">
             <LanguageIcon width="16px" height="16px" />
           </span>
@@ -37,7 +34,7 @@
       </a-form-item>
       <a-form-item>
         <a-button :disabled="disabled" type="primary" html-type="submit" class="verify-form-button">
-          {{ $t('login.verify_email') }}
+          {{ $t('verify_email') }}
         </a-button>
       </a-form-item>
     </a-form>

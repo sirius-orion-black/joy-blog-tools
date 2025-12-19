@@ -19,13 +19,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /**
      * 新增管理人员
+     *
      * @param sysUser
      * @return
      */
     @Override
     public Result<String> addUser(SysUser sysUser) {
         String strVerify = UserVerify.sysUserVerify(sysUser);
-        if(strVerify.equals("success")){//用户信息校验
+        if (strVerify.equals("success")) {//用户信息校验
             strVerify = "success";
         }
         if (sysUserMapper.countByUsername(sysUser.getUsername()) > 0) {
@@ -35,7 +36,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             strVerify = "email_already_exists";//邮箱已经存在
         }
         sysUser.setSalt(BCrypt.gensalt(20));
-        sysUser.setPassword(BCrypt.hashpw(sysUser.getPassword(),sysUser.getSalt()));
+        sysUser.setPassword(BCrypt.hashpw(sysUser.getPassword(), sysUser.getSalt()));
         // 保存用户
         return save(sysUser) ? Result.success("success") : Result.badRequest(strVerify);
     }

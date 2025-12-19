@@ -1,9 +1,11 @@
 package com.joy.dao.sysUser;
 
 
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Map;
 
 @Data
 public class SysLoginDao {
@@ -25,11 +27,20 @@ public class SysLoginDao {
     //状态：1 正常，2 禁用，3  邮箱未验证
     private Integer state;
 
+    //类型：1 密码登录，2 邮箱登录
+    private Integer loginType;
+
     //签名
     private String signature;
 
     //生日
     private Date birthday;
+
+    //权限
+    private Map<String,String> permission;
+
+    //菜单
+    private Map<String,String> menu;
 
     //创建时间
     private Date createTime;

@@ -5,4 +5,6 @@ import com.joy.dao.sysUser.SysLoginDao;
 
 public interface SysLoginService {
     Result<String> emailVerify(SysLoginDao loginInfo);
+
+    Result<SysLoginDao> login(SysLoginDao loginInfo);
 }
