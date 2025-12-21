@@ -1,17 +1,7 @@
 <template>
   <div class="sigin-in">
-    <a-form
-      :model="formState"
-      name="normal_login"
-      class="login-form"
-      hideRequiredMark=""
-      @finish="onFinish"
-      @finishFailed="onFinishFailed"
-    >
-      <a-form-item
-        name="username"
-        :rules="[{ required: true, message: $t('input_username'), pattern: '^[A-Za-z]{5,16}$' }]"
-      >
+    <a-form :model="formState" name="normal_login" class="login-form" hideRequiredMark="" @finish="onFinish" @finishFailed="onFinishFailed">
+      <a-form-item name="username" :rules="[{ required: true, message: $t('input_username'), pattern: '^[A-Za-z]{5,16}$' }]">
         <a-input v-model:value="formState.username" :placeholder="$t('user_name')">
           <template #prefix>
             <UserOutlined class="site-form-item-icon" />
@@ -87,7 +77,7 @@ interface FormState {
 
 const formState = reactive<FormState>({
   username: 'admin',
-  password: '1123?',
+  password: 'Aa123123?',
   remember: true,
   move: 0,
   loginType: 1,

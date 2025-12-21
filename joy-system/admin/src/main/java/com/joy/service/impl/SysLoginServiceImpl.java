@@ -21,6 +21,7 @@ import com.joy.utils.UserVerifyUtil;
 import com.joy.utils.VerifyCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -102,6 +103,12 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
         return Result.success(captcha);
     }
 
+    /**
+     * 登录校验
+     * @param loginInfo
+     * @param user
+     * @return
+     */
     private String loginVerify(SysLoginDto loginInfo, SysUser user){
         if (user == null)
             return "username_password_incorrect";
@@ -113,11 +120,27 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     }
 
     /**
+     * 封装登录数据
+     * @param user
+     * @return
+     */
+    @NotNull
+    private static SysUserInfoDto getUserInfoDto(SysUser user) {
+        SysUserInfoDto sysUser = new SysUserInfoDto();
+        sysUser.setEmail(user.getEmail());
+        sysUser.setBirthday(user.getBirthday());
+        sysUser.setPhone(user.getPhone());
+        sysUser.setSignature(user.getSignature());
+        sysUser.setState(user.getState());
+        sysUser.setAvatar(user.getAvatar());
+        sysUser.setNickname(user.getNickname());
+        sysUser.setUsername(user.getUsername());
+        sysUser.setToken(StpUtil.getTokenValue());
+        return sysUser;
+    }
+
+    /**
      * 后台管理人员登录
-     * <p>
-     * 。0.0.。
-     * ++
-     *
      * @param loginInfo
      * @return
      */
@@ -139,17 +162,19 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
 
         StpUtil.login(user.getId(),loginInfo.getRemember());
 
-        SysUserInfoDto sysUser = new SysUserInfoDto();
-        sysUser.setEmail(user.getEmail());
-        sysUser.setBirthday(user.getBirthday());
-        sysUser.setPhone(user.getPhone());
-        sysUser.setSignature(user.getSignature());
-        sysUser.setState(user.getState());
-        sysUser.setAvatar(user.getAvatar());
-        sysUser.setNickname(user.getNickname());
-        sysUser.setToken(StpUtil.getTokenValue());
+        SysUserInfoDto sysUser = getUserInfoDto(user);
 
         log.info("=======登录来了=======>>>>>>>>>>" + user.toString());
         return Result.success(sysUser);
+    }
+
+    /**
+     * 后台管理人员登出
+     * @return
+     */
+    @Override
+    public Result<String> logout() {
+        StpUtil.logout();
+        return Result.success();
     }
 }

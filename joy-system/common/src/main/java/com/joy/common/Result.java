@@ -68,6 +68,14 @@ public class Result<T> {
     }
 
 
+    /**
+     * 请求成功 啥也没
+     * @return
+     * @param <T>
+     */
+    public static <T> Result<T> success() {
+        return of(HttpStatusCode.Success);
+    }
 
     /**
      * 请求成功

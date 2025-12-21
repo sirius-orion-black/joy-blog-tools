@@ -20,7 +20,6 @@ public class SysLoginController {
 
     /**
      * 后台管理人员邮箱验证
-     *
      * @param loginInfo
      * @return
      */
@@ -40,13 +39,22 @@ public class SysLoginController {
 
     /**
      * 后台管理人员登录
-     *
      * @param loginInfo
      * @return
      */
     @PostMapping("/login")
     public Result<SysUserInfoDto> login(SysLoginDto loginInfo) {
         return sysLoginService.login(loginInfo);
+    }
+
+    /**
+     * 后台管理人员登出
+     * @param id
+     * @return
+     */
+    @PostMapping("/logout")
+    public Result<String> logout() {
+        return sysLoginService.logout();
     }
 
 }

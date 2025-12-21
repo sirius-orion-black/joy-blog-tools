@@ -118,6 +118,14 @@
             <version>4.4.0</version>
         </dependency>
 
+
+        <!-- 添加SpringDoc依赖 -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.12</version> <!-- 使用最新稳定版 -->
+        </dependency>
+
         <!--jackson-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

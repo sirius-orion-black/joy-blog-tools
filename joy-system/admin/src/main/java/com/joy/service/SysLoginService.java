@@ -12,4 +12,5 @@ public interface SysLoginService {
 
     Result<SysUserInfoDto> login(SysLoginDto loginInfo);
 
+    Result<String> logout();
 }
