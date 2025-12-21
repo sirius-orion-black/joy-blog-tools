@@ -1,4 +1,4 @@
-package com.joy.untils;
+package com.joy.utils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;

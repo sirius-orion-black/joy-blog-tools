@@ -1,9 +1,9 @@
-package com.joy.dao.auth;
+package com.joy.dto.auth;
 
 import lombok.Data;
 
 @Data
-public class CaptchaDao {
+public class CaptchaDto {
 
     //随机字符串
     private String nonceStr;

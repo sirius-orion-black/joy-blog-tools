@@ -1,4 +1,4 @@
-package com.joy.untils;
+package com.joy.utils;
 
 
 import lombok.RequiredArgsConstructor;

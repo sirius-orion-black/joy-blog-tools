@@ -1,12 +1,11 @@
-package com.joy.dao.sysUser;
+package com.joy.dto.sysUser;
 
 import lombok.Data;
 
 import java.util.Date;
-import java.util.Map;
 
 @Data
-public class SysUserInfoDao {
+public class SysUserInfoDto {
 
     //用户名：长度必须在5-16个字符之间，且只能为大小写字母，唯一
     private String username;

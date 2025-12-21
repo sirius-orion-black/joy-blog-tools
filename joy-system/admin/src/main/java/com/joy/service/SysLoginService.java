@@ -1,15 +1,15 @@
 package com.joy.service;
 
 import com.joy.common.Result;
-import com.joy.dao.auth.CaptchaDao;
-import com.joy.dao.sysUser.SysLoginDao;
-import com.joy.dao.sysUser.SysUserInfoDao;
+import com.joy.dto.auth.CaptchaDto;
+import com.joy.dto.sysUser.SysLoginDto;
+import com.joy.dto.sysUser.SysUserInfoDto;
 
 public interface SysLoginService {
-    Result<String> emailVerify(SysLoginDao loginInfo);
+    Result<String> emailVerify(SysLoginDto loginInfo);
 
-    Result<CaptchaDao> getCaptcha();
+    Result<CaptchaDto> getCaptcha();
 
-    Result<SysUserInfoDao> login(SysLoginDao loginInfo);
+    Result<SysUserInfoDto> login(SysLoginDto loginInfo);
 
 }

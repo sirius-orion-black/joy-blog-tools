@@ -6,9 +6,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
-import com.joy.dao.auth.CaptchaDao;
-import com.joy.dao.sysUser.SysLoginDao;
-import com.joy.dao.sysUser.SysUserInfoDao;
+import com.joy.dto.auth.CaptchaDto;
+import com.joy.dto.sysUser.SysLoginDto;
+import com.joy.dto.sysUser.SysUserInfoDto;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysConfigMail;
 import com.joy.entity.sysUser.SysUser;
@@ -16,9 +16,9 @@ import com.joy.mapper.sysConfig.SysConfigMailMapper;
 import com.joy.mapper.sysConfig.SysConfigMapper;
 import com.joy.mapper.sysUser.SysUserMapper;
 import com.joy.service.SysLoginService;
-import com.joy.untils.CaptchaCodeUtil;
-import com.joy.untils.UserVerifyUtil;
-import com.joy.untils.VerifyCodeUtil;
+import com.joy.utils.CaptchaCodeUtil;
+import com.joy.utils.UserVerifyUtil;
+import com.joy.utils.VerifyCodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
      * @return
      */
     @Override
-    public Result<String> emailVerify(SysLoginDao loginInfo) {
+    public Result<String> emailVerify(SysLoginDto loginInfo) {
         if (StringUtils.isEmpty(loginInfo.getUsername())) {//判断用户名
             return Result.badRequest("username_cannot_empty");
         }
@@ -96,13 +96,13 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
      * @return
      */
     @Override
-    public Result<CaptchaDao> getCaptcha() {
-        CaptchaDao captcha = new CaptchaDao();
+    public Result<CaptchaDto> getCaptcha() {
+        CaptchaDto captcha = new CaptchaDto();
         CaptchaCodeUtil.getCaptcha(captcha);
         return Result.success(captcha);
     }
 
-    private String loginVerify(SysLoginDao loginInfo,SysUser user){
+    private String loginVerify(SysLoginDto loginInfo, SysUser user){
         if (user == null)
             return "username_password_incorrect";
         if(user.getState().equals(2))
@@ -122,7 +122,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
      * @return
      */
     @Override
-    public Result<SysUserInfoDao> login(SysLoginDao loginInfo) {
+    public Result<SysUserInfoDto> login(SysLoginDto loginInfo) {
 
         String message = CaptchaCodeUtil.checkImageCode(loginInfo.getNonceStr(), loginInfo.getMove());
         if (!StringUtils.isEmpty(message))
@@ -139,7 +139,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
 
         StpUtil.login(user.getId(),loginInfo.getRemember());
 
-        SysUserInfoDao sysUser = new SysUserInfoDao();
+        SysUserInfoDto sysUser = new SysUserInfoDto();
         sysUser.setEmail(user.getEmail());
         sysUser.setBirthday(user.getBirthday());
         sysUser.setPhone(user.getPhone());

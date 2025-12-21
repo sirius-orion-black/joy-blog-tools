@@ -1,7 +1,7 @@
 package com.joy.common;
 
 import com.joy.enums.common.HttpStatusCode;
-import com.joy.untils.EnhancedEmptyObjectUtil;
+import com.joy.utils.EnhancedEmptyObjectUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

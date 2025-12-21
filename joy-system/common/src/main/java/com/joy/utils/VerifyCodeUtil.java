@@ -1,4 +1,4 @@
-package com.joy.untils;
+package com.joy.utils;
 
 import com.joy.entity.sysConfig.SysConfigMail;
 import org.apache.commons.lang3.RandomStringUtils;

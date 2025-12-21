@@ -1,6 +1,6 @@
-package com.joy.untils;
+package com.joy.utils;
 
-import com.joy.dao.auth.CaptchaDao;
+import com.joy.dto.auth.CaptchaDto;
 import com.joy.enums.common.RedisConstant;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -15,7 +15,6 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class CaptchaCodeUtil {
 
@@ -31,7 +30,7 @@ public class CaptchaCodeUtil {
     /**
      * 入参校验设置默认值
      **/
-    public static void checkCaptcha(CaptchaDao captcha) {
+    public static void checkCaptcha(CaptchaDto captcha) {
         //设置画布宽度默认值
         if (captcha.getCanvasWidth() == null) {
             captcha.setCanvasWidth(320);
@@ -260,7 +259,7 @@ public class CaptchaCodeUtil {
     /**
      * 获取验证码拼图（生成的抠图和带抠图阴影的大图及抠图坐标）
      **/
-    public static void getCaptcha(CaptchaDao captcha) {
+    public static void getCaptcha(CaptchaDto captcha) {
         //参数校验
         checkCaptcha(captcha);
         //获取画布的宽高

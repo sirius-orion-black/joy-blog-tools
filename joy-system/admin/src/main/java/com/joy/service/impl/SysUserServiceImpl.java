@@ -6,7 +6,7 @@ import com.joy.common.Result;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.mapper.sysUser.SysUserMapper;
 import com.joy.service.SysUserService;
-import com.joy.untils.UserVerifyUtil;
+import com.joy.utils.UserVerifyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

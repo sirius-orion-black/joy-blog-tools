@@ -2,9 +2,9 @@ package com.joy.controller;
 
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
-import com.joy.dao.auth.CaptchaDao;
-import com.joy.dao.sysUser.SysLoginDao;
-import com.joy.dao.sysUser.SysUserInfoDao;
+import com.joy.dto.auth.CaptchaDto;
+import com.joy.dto.sysUser.SysLoginDto;
+import com.joy.dto.sysUser.SysUserInfoDto;
 import com.joy.service.SysLoginService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class SysLoginController {
      * @return
      */
     @PostMapping("/emailVerify")
-    public Result<String> emailVerify(SysLoginDao loginInfo) {
+    public Result<String> emailVerify(SysLoginDto loginInfo) {
         return sysLoginService.emailVerify(loginInfo);
     }
 
@@ -34,7 +34,7 @@ public class SysLoginController {
      * @return
      */
     @GetMapping("/getCaptcha")
-    public Result<CaptchaDao> getCaptcha(){
+    public Result<CaptchaDto> getCaptcha(){
         return sysLoginService.getCaptcha();
     }
 
@@ -45,7 +45,7 @@ public class SysLoginController {
      * @return
      */
     @PostMapping("/login")
-    public Result<SysUserInfoDao> login(SysLoginDao loginInfo) {
+    public Result<SysUserInfoDto> login(SysLoginDto loginInfo) {
         return sysLoginService.login(loginInfo);
     }
 
