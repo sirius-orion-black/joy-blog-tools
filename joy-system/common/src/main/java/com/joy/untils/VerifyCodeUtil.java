@@ -12,7 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 
-public class VerifyCode {
+public class VerifyCodeUtil {
 
     /**
      * 发送验证码邮件

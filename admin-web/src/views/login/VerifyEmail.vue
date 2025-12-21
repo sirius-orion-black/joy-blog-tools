@@ -47,16 +47,16 @@ import { UserOutlined } from '@ant-design/icons-vue'
 import LanguageIcon from '@/components/icons/LanguageIcon.vue'
 import EmailIcon from '@/components/icons/EmailIcon.vue'
 
-interface Props {
-  page: string
-}
+// interface Props {
+//   page: string
+// }
 //跳转到忘记密码页面
 const emit = defineEmits<{
   'update:page': [value: string]
 }>()
 const signIn = () => emit('update:page', 'sigin')
 //多语系处理
-const { locale, t } = useI18n()
+const { locale } = useI18n()
 const changeLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh' // 切换语言逻辑
 }

@@ -24,13 +24,12 @@ public class SysUser {
     @TableField
     private String password;
 
-    //密码盐值
-    @TableField
-    private String salt;
-
     //邮箱
     @TableField
     private String email;
+
+    //昵称
+    private String nickname;
 
     //头像URL
     @TableField
@@ -44,11 +43,7 @@ public class SysUser {
     @TableField
     private String phone;
 
-    //登录信息（IP 设备 区域等）
-    @TableField
-    private String loginInfo;
-
-    //状态：1 正常，2 禁用，3  邮箱或手机号未验证
+    //状态：1 正常，2 禁用，3 邮箱或手机号未验证
     @TableField
     private Integer state;
 

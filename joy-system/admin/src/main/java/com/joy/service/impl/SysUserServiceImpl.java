@@ -6,7 +6,7 @@ import com.joy.common.Result;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.mapper.sysUser.SysUserMapper;
 import com.joy.service.SysUserService;
-import com.joy.untils.UserVerify;
+import com.joy.untils.UserVerifyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public Result<String> addUser(SysUser sysUser) {
-        String strVerify = UserVerify.sysUserVerify(sysUser);
+        String strVerify = UserVerifyUtil.sysUserVerify(sysUser);
         if (strVerify.equals("success")) {//用户信息校验
             strVerify = "success";
         }
@@ -35,8 +35,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (sysUserMapper.countByEmail(sysUser.getEmail()) > 0) {
             strVerify = "email_already_exists";//邮箱已经存在
         }
-        sysUser.setSalt(BCrypt.gensalt(20));
-        sysUser.setPassword(BCrypt.hashpw(sysUser.getPassword(), sysUser.getSalt()));
+        sysUser.setState(3);
+        sysUser.setPassword(BCrypt.hashpw(sysUser.getPassword(), BCrypt.gensalt()));
         // 保存用户
         return save(sysUser) ? Result.success("success") : Result.badRequest(strVerify);
     }

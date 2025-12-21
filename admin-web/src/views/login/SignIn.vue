@@ -8,7 +8,10 @@
       @finish="onFinish"
       @finishFailed="onFinishFailed"
     >
-      <a-form-item name="username" :rules="[{ required: true, message: $t('input_username') }]">
+      <a-form-item
+        name="username"
+        :rules="[{ required: true, message: $t('input_username'), pattern: '^[A-Za-z]{5,16}$' }]"
+      >
         <a-input v-model:value="formState.username" :placeholder="$t('user_name')">
           <template #prefix>
             <UserOutlined class="site-form-item-icon" />
@@ -47,48 +50,73 @@
         </a-button>
       </a-form-item>
     </a-form>
+    <ShowCaptcha :move="formState.move" @update:move="handleMoveUpdate" />
   </div>
 </template>
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { reactive, computed } from 'vue'
+import { userLoginStore } from '@/stores/login'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import LanguageIcon from '@/components/icons/LanguageIcon.vue'
+import ShowCaptcha from './ShowCaptcha.vue'
 
-interface Props {
-  page: string
-}
+// interface Props {
+//   page: string
+// }
 //跳转到忘记密码页面
 const emit = defineEmits<{
   'update:page': [value: string]
 }>()
 const forgotPassword = () => emit('update:page', 'email')
 //多语系处理
-const { locale, t } = useI18n()
+const { locale } = useI18n()
 const changeLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh' // 切换语言逻辑
 }
+const loginStore = userLoginStore()
 
 interface FormState {
   username: string
   password: string
   remember: boolean
+  move: number
+  loginType: number
+  nonceStr: string
 }
 
 const formState = reactive<FormState>({
-  username: '',
-  password: '',
+  username: 'admin',
+  password: '1123?',
   remember: true,
+  move: 0,
+  loginType: 1,
+  nonceStr: '',
 })
-const onFinish = (values: unknown) => {
+const onFinish = (values: object) => {
+  loginStore.getCaptcha()
   console.log('Success:', values, formState)
 }
-const onFinishFailed = (errorInfo: unknown) => {
+const onFinishFailed = (errorInfo: object) => {
   console.log('Failed:', errorInfo)
 }
 const disabled = computed(() => {
   return !(formState.username && formState.password)
 })
+const handleMoveUpdate = (value: number) => {
+  // const data: object = {
+  //   move: value,
+  //   nonceStr: loginStore.captcha!.nonceStr,
+  //   username: formState.username,
+  //   password: formState.password,
+  //   loginType: formState.loginType,
+  //   remember: formState.remember,
+  // }
+  formState.move = value
+  formState.nonceStr = loginStore.captcha!.nonceStr + ''
+  loginStore.signin(formState)
+  console.log(value, 1323132312312, formState)
+}
 </script>
 <style lang="scss" scoped>
 .sigin-in {

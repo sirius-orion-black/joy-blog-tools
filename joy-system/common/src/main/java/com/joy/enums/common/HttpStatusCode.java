@@ -1,4 +1,4 @@
-package com.joy.enums.result;
+package com.joy.enums.common;
 
 import lombok.Getter;
 

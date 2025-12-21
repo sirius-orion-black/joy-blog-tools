@@ -31,4 +31,10 @@ export default {
   phone_number_incorrect: 'The format of the mobile phone number is incorrect',
   verification_code_sent: 'The verification code has been sent',
   verification_code_sent_again: 'The verification code failed to be sent. Please try again',
+  drag_slider_complete_puzzle: 'Please drag the slider to complete the puzzle',
+  slide_to_right: 'Slide to the right',
+  verification_code_expired: 'The verification code has expired',
+  verification_failed__puzzle_gap: 'Verification failed. Please control the puzzle to align the gap',
+  username_password_incorrect: 'The username or password is incorrect',
+  account_banned: 'The account is banned.',
 }

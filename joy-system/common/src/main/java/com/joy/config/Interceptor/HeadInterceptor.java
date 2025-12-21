@@ -1,6 +1,5 @@
 package com.joy.config.Interceptor;
 
-import com.joy.enums.result.HttpStatusCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -16,8 +15,8 @@ public class HeadInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 获取请求头时间戳
-        String timestampStr = request.getHeader("Timestamp");
-        log.info("======Timestamp>>>>"+timestampStr);
+        String timestampStr = request.getHeader("X-Timestamp");
+        log.info("======X-Timestamp>>>>"+timestampStr);
 
         if (StringUtils.isEmpty(timestampStr)) {
             throw new RuntimeException("缺少时间戳");

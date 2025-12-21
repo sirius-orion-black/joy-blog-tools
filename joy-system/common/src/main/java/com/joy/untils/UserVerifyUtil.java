@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.regex.Pattern;
 
 @Slf4j
-public class UserVerify {
+public class UserVerifyUtil {
 
     /**
      * 用户名校验，5-16个字符之间，且只能为大小写字母

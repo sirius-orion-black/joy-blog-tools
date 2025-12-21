@@ -31,4 +31,10 @@ export default {
   phone_number_incorrect: '手机号格式不正确',
   verification_code_sent: '验证码已发送',
   verification_code_sent_again: '验证码发送失败，请重试',
+  drag_slider_complete_puzzle: '请拖动滑块完成拼图',
+  slide_to_right: '向右滑动',
+  verification_code_expired: '验证码已失效',
+  verification_failed__puzzle_gap: '验证失败，请控制拼图对齐缺口',
+  username_password_incorrect: '用户名或密码错误',
+  account_banned: '账户被禁',
 }

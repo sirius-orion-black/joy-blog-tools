@@ -1,7 +1,7 @@
 package com.joy.common;
 
-import com.joy.enums.result.HttpStatusCode;
-import com.joy.untils.EnhancedEmptyObject;
+import com.joy.enums.common.HttpStatusCode;
+import com.joy.untils.EnhancedEmptyObjectUtil;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class Result<T> {
         this.code = status.getCode();
         this.state = status.getState();
         this.message = status.getMessage();
-        this.data = data == null ? (T) EnhancedEmptyObject.getInstance() : data;
+        this.data = data == null ? (T) EnhancedEmptyObjectUtil.getInstance() : data;
     }
 
 

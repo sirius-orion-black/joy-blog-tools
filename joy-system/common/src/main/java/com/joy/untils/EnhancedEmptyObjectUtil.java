@@ -8,23 +8,23 @@ import java.util.Collections;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class EnhancedEmptyObject {
+public class EnhancedEmptyObjectUtil {
 
     /**
      * 单例实例，确保全局只有一个空对象
      */
-    private static final EnhancedEmptyObject INSTANCE = new EnhancedEmptyObject();
+    private static final EnhancedEmptyObjectUtil INSTANCE = new EnhancedEmptyObjectUtil();
 
     /**
      * 私有构造函数 确保只能通过getInstance()获取实例
      */
-    private EnhancedEmptyObject() {}
+    private EnhancedEmptyObjectUtil() {}
 
     /**
      * 获取空对象单例实例 使用此方法进行反序列化
      */
     @JsonCreator
-    public static EnhancedEmptyObject getInstance() {
+    public static EnhancedEmptyObjectUtil getInstance() {
         return INSTANCE;
     }
 
@@ -41,7 +41,7 @@ public class EnhancedEmptyObject {
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof EnhancedEmptyObject;
+        return obj instanceof EnhancedEmptyObjectUtil;
     }
 
     /**
@@ -49,7 +49,7 @@ public class EnhancedEmptyObject {
      * action 要执行的操作
      * 返回当前空对象实例，支持链式调用
      */
-    public EnhancedEmptyObject ifEmpty(Runnable action) {
+    public EnhancedEmptyObjectUtil ifEmpty(Runnable action) {
         action.run();
         return this;
     }
@@ -60,7 +60,7 @@ public class EnhancedEmptyObject {
      * 如果对象为null或EnhancedEmptyObject实例则返回true
      */
     public static boolean isEmpty(Object obj) {
-        return obj == null || obj instanceof EnhancedEmptyObject;
+        return obj == null || obj instanceof EnhancedEmptyObjectUtil;
     }
 
     /**
