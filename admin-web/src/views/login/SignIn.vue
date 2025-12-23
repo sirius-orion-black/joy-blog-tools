@@ -46,6 +46,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { userLoginStore } from '@/stores/login'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import LanguageIcon from '@/components/icons/LanguageIcon.vue'
@@ -64,7 +65,10 @@ const { locale } = useI18n()
 const changeLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh' // 切换语言逻辑
 }
+
 const loginStore = userLoginStore()
+
+const router = useRouter()
 
 interface FormState {
   username: string
@@ -93,10 +97,12 @@ const onFinishFailed = (errorInfo: object) => {
 const disabled = computed(() => {
   return !(formState.username && formState.password)
 })
-const handleMoveUpdate = (value: number) => {
+const handleMoveUpdate = async (value: number) => {
   formState.move = value
   formState.nonceStr = loginStore.captcha!.nonceStr + ''
-  loginStore.signin(formState)
+  const res = await loginStore.signin(formState) // 使用 await 等待 Promise 完成
+  loginStore.setUser(formState.remember, res)
+  router.push('/')
   console.log(value, 1323132312312, formState)
 }
 </script>

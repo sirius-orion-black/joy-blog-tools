@@ -2,13 +2,16 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 import loginApi from '@/apis/login'
+import { localCache, sessionCache } from '@/untils/storage'
 
 export const userLoginStore = defineStore('userLogin', () => {
-  const user = ref<Record<string, unknown>>()
+  const user = ref<Record<string, string>>()
   const captcha = ref<Record<string, string>>()
   const showCaptcha = ref<boolean>(false)
   const isShowCaptcha = computed(() => showCaptcha.value)
   const isCaptchaState = ref<boolean>(false)
+  const token = ref<string>()
+
   function getCaptcha() {
     showCaptcha.value = true
     loginApi
@@ -27,17 +30,22 @@ export const userLoginStore = defineStore('userLogin', () => {
     isCaptchaState.value = value
   }
 
-  function signin(formState: object) {
+  async function signin(formState: object): Promise<Record<string, string>> {
     showCaptcha.value = false
-    loginApi
-      .login(formState)
-      .then((rs) => {
-        console.log(22222222222, rs)
-      })
-      .catch((rs) => {
-        console.log(333333333333, rs)
-      })
-    console.log(11111111111, formState)
+    const res = await loginApi.login(formState)
+    return res.data
+  }
+
+  function setUser(remember: boolean, useInfo: Record<string, string>) {
+    user.value = useInfo
+    token.value = user.value!.token
+    if (remember) localCache.setCache('user', useInfo)
+    else sessionCache.setCache('user', useInfo)
+  }
+
+  function getUser() {
+    user.value = localCache.getCache<Record<string, string>>('user') ?? sessionCache.getCache<Record<string, string>>('user')
+    token.value = user.value?.token ?? undefined
   }
 
   return {
@@ -46,8 +54,11 @@ export const userLoginStore = defineStore('userLogin', () => {
     isShowCaptcha,
     showCaptcha,
     isCaptchaState,
+    token,
     getCaptcha,
     setIsCaptchaState,
     signin,
+    setUser,
+    getUser,
   }
 })

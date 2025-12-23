@@ -45,6 +45,9 @@
               <a-menu-item>
                 <a href="javascript:;">个人资料</a>
               </a-menu-item>
+              <a-menu-item>
+                <a href="javascript:;">登出</a>
+              </a-menu-item>
             </a-menu>
           </template>
         </a-dropdown>
