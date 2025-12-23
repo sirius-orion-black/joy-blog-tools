@@ -1,13 +1,6 @@
 <template>
   <div class="sigin-in">
-    <a-form
-      :model="formState"
-      name="normal_login"
-      class="login-form"
-      hideRequiredMark=""
-      @finish="onFinish"
-      @finishFailed="onFinishFailed"
-    >
+    <a-form :model="formState" name="normal_login" class="login-form" hideRequiredMark="" @finish="onFinish" @finishFailed="onFinishFailed">
       <a-form-item name="Username" :rules="[{ required: true, message: $t('input_username') }]">
         <a-input v-model:value="formState.username" :placeholder="$t('user_name')">
           <template #prefix>
@@ -118,6 +111,9 @@ const disabled = computed(() => {
   :deep(.ant-form-item .ant-input-affix-wrapper-status-error .ant-form-item-explain-error),
   :deep(.ant-input-affix-wrapper-status-error .ant-input-prefix) {
     color: #ffffff !important;
+  }
+  :deep(.ant-checkbox-checked:after) {
+    border: 1px solid #d9d9d9 !important;
   }
 
   .sigin-language {

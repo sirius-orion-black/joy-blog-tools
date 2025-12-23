@@ -94,14 +94,6 @@ const disabled = computed(() => {
   return !(formState.username && formState.password)
 })
 const handleMoveUpdate = (value: number) => {
-  // const data: object = {
-  //   move: value,
-  //   nonceStr: loginStore.captcha!.nonceStr,
-  //   username: formState.username,
-  //   password: formState.password,
-  //   loginType: formState.loginType,
-  //   remember: formState.remember,
-  // }
   formState.move = value
   formState.nonceStr = loginStore.captcha!.nonceStr + ''
   loginStore.signin(formState)
@@ -166,6 +158,9 @@ const handleMoveUpdate = (value: number) => {
   :deep(.ant-checkbox:hover .ant-checkbox-inner) {
     background-color: transparent !important;
     border-color: #d9d9d9 !important;
+  }
+  :deep(.ant-checkbox-checked:after) {
+    border: 1px solid #d9d9d9 !important;
   }
   .forgot-language {
     display: flex;

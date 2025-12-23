@@ -58,8 +58,14 @@
   font-weight: normal;
 }
 
+@font-face {
+  font-family: Cang-Er-ink;
+  src: url('../font/Cang-Er-ink.ttf');
+}
+
 body {
-  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
   color: var(--color-text);
   background: var(--color-background);
   transition:
@@ -67,6 +73,7 @@ body {
     background-color 0.5s;
   line-height: 1.6;
   font-family:
+    Cang-Er-ink,
     Inter,
     -apple-system,
     BlinkMacSystemFont,
@@ -78,9 +85,25 @@ body {
     'Fira Sans',
     'Droid Sans',
     'Helvetica Neue',
-    sans-serif;
+    sans-serif !important;
   font-size: 15px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+* {
+  font-family:
+    Cang-Er-ink,
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif !important;
 }
