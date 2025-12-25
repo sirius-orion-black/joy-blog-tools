@@ -9,12 +9,20 @@ const loginStore = userLoginStore()
 </script>
 
 <template>
-  <div class="app-main">
-    <div v-if="!!loginStore.token">
-      <HeaderView />
-      <MenuView />
-    </div>
-    <RouterView />
+  <div class="app-main base-day">
+    <a-config-provider
+      :theme="{
+        token: {
+          colorPrimary: '#a66cff',
+        },
+      }"
+    >
+      <div v-if="!!loginStore.token">
+        <HeaderView />
+        <MenuView />
+      </div>
+      <RouterView />
+    </a-config-provider>
   </div>
 </template>
 

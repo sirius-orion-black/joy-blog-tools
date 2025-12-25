@@ -9,12 +9,12 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("sys_config")
+@TableName
 public class SysConfig {
 
     //主键id
     @TableId(value = "id",type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     //配置名称
     @TableField

@@ -21,7 +21,7 @@
         <div class="forgot-language">
           <span class="forgot-password" @click="forgotPassword()">{{ $t('forgot_password') }}</span>
           <span class="login-language" @click="changeLanguage()">
-            <LanguageIcon width="16px" height="16px" />
+            <IconFont type="icon-language" class="font-size-16" />
           </span>
         </div>
       </a-form-item>
@@ -49,7 +49,6 @@ import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { userLoginStore } from '@/stores/login'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
-import LanguageIcon from '@/components/icons/LanguageIcon.vue'
 import ShowCaptcha from './ShowCaptcha.vue'
 
 // interface Props {

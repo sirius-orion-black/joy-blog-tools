@@ -15,6 +15,16 @@ const router = createRouter({
       component: () => import('../views/home/HomeView.vue'),
     },
     {
+      path: '/systemManage/sysUser',
+      name: 'sysUser',
+      component: () => import('../views/system/user/SysUser.vue'),
+    },
+    {
+      path: '/systemManage/sysMenu',
+      name: 'SysMenu',
+      component: () => import('../views/system/menu/SysMenu.vue'),
+    },
+    {
       path: '/email',
       name: 'email',
       component: () => import('../views/email/EmailView.vue'),

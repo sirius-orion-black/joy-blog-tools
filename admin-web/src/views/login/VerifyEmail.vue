@@ -12,7 +12,7 @@
       <a-form-item name="Email" :rules="[{ required: true, message: $t('input_email') }]">
         <a-input v-model:value="formState.email" :placeholder="$t('user_email')">
           <template #prefix>
-            <EmailIcon class="site-form-item-icon" width="14px" height="14px" />
+            <IconFont type="icon-email" class="font-size-16" />
           </template>
         </a-input>
       </a-form-item>
@@ -21,7 +21,7 @@
         <div class="sigin-language">
           <span class="sign-in" @click="signIn()">{{ $t('login_in') }}</span>
           <span class="login-language" @click="changeLanguage()">
-            <LanguageIcon width="16px" height="16px" />
+            <IconFont type="icon-language" class="font-size-16" />
           </span>
         </div>
       </a-form-item>
@@ -37,8 +37,6 @@
 import { useI18n } from 'vue-i18n'
 import { reactive, computed } from 'vue'
 import { UserOutlined } from '@ant-design/icons-vue'
-import LanguageIcon from '@/components/icons/LanguageIcon.vue'
-import EmailIcon from '@/components/icons/EmailIcon.vue'
 
 // interface Props {
 //   page: string

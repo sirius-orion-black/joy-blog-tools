@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
 import loginApi from '@/apis/login'
-import { localCache, sessionCache } from '@/untils/storage'
+import { localCache, sessionCache } from '@/utils/storage'
 
 export const userLoginStore = defineStore('userLogin', () => {
   const user = ref<Record<string, string>>()

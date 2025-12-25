@@ -9,12 +9,12 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("sys_config_mail")
+@TableName
 public class SysConfigMail {
 
     //主键id
     @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     //SMTP服务器地址
     @TableField

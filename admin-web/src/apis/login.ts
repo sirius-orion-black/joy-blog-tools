@@ -1,4 +1,4 @@
-import service from '../untils/request'
+import service from '../utils/request'
 
 export default {
   login: (data: object) => service.post('/admin/auth/login', data),

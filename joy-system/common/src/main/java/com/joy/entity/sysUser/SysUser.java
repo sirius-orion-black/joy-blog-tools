@@ -9,12 +9,16 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("sys_user")
+@TableName
 public class SysUser {
 
-    //主键ID
+    //主键id
     @TableId(value = "id",type = IdType.AUTO)
     private Long id;
+
+    //昵称：长度30以内
+    @TableField
+    private String nickname;
 
     //用户名：长度必须在5-16个字符之间，且只能为大小写字母，唯一
     @TableField
@@ -27,9 +31,6 @@ public class SysUser {
     //邮箱
     @TableField
     private String email;
-
-    //昵称
-    private String nickname;
 
     //头像URL
     @TableField

@@ -21,24 +21,20 @@
               <span>{{ item.count }} results</span>
             </div>
           </template>
-          <a-input-search size="large" placeholder="input here" enter-button></a-input-search>
+          <a-input-search size="large" placeholder="input here"></a-input-search>
         </a-auto-complete>
       </div>
       <div class="header-personal header-margin-right">
         <div class="header-margin-right">醉酒当歌</div>
         <a-badge :count="99" class="cursor-pointer header-margin-right">
-          <MessageIcon width="24px" height="24px" />
+          <IconFont type="icon-message" class="cursor-pointer header-margin-right font-size-24" />
         </a-badge>
-        <LanguageIcon width="24px" height="24px" class="cursor-pointer header-margin-right" />
-        <MoonIcon width="24px" height="24px" class="cursor-pointer header-margin-right" />
+        <IconFont type="icon-language" class="cursor-pointer header-margin-right font-size-24" />
+        <IconFont type="icon-moon" class="cursor-pointer header-margin-right font-size-24" />
         <a-dropdown class="header-personal">
           <img class="header-avatar" src="https://joyimg.lexujia.com/joy/assets/logo.jpg" @click.prevent />
-          <DownOutlined />
           <template #overlay>
             <a-menu>
-              <a-menu-item>
-                <a href="javascript:;">个人设置</a>
-              </a-menu-item>
               <a-menu-item>
                 <a href="javascript:;">修改密码</a>
               </a-menu-item>
@@ -58,10 +54,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { DownOutlined } from '@ant-design/icons-vue'
-import MoonIcon from '../icons/MoonIcon.vue'
-import LanguageIcon from '../icons/LanguageIcon.vue'
-import MessageIcon from '../icons/MessageIcon..vue'
 
 interface Option {
   query: string
@@ -100,7 +92,6 @@ const handleSearch = (val: string) => {
   position: fixed;
   right: 0;
   left: 272px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   .header-body {
     display: flex;
     align-items: center;
@@ -109,34 +100,9 @@ const handleSearch = (val: string) => {
     justify-content: space-between;
     flex-wrap: nowrap;
     .header-search {
+      height: 52px;
+      padding-top: 5px;
       margin-left: 15px;
-      // :deep(.ant-select-dropdown-menu-item-group-title) {
-      //   color: #666;
-      //   font-weight: bold;
-      // }
-      // :deep(.ant-select-dropdown-menu-item-group) {
-      //   border-bottom: 1px solid #f6f6f6;
-      // }
-
-      // :deep(.ant-select-dropdown-menu-item) {
-      //   padding-left: 16px;
-      // }
-      :deep(.ant-input-search .ant-input:focus),
-      :deep(.ant-input-search .ant-input:hover) {
-        box-shadow: none;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-      }
-      :deep(.ant-btn-primary:focus),
-      :deep(.ant-btn-primary:hover) {
-        box-shadow: none;
-      }
-      :deep(.ant-btn-primary) {
-        background-color: #ffffff;
-        border: 1px solid rgba(0, 0, 0, 0.2);
-        box-shadow: none;
-        color: #000000;
-        height: 39px;
-      }
     }
     .header-margin-right {
       margin-right: 15px;
