@@ -1,4 +1,4 @@
-package com.joy.entity.sysUser;
+package com.joy.entity.sysConfig;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

@@ -1,16 +1,16 @@
 <template>
   <div class="sigin-in">
     <a-form :model="formState" name="normal_login" class="login-form" hideRequiredMark="" @finish="onFinish" @finishFailed="onFinishFailed">
-      <a-form-item name="username" :rules="[{ required: true, message: $t('input_username'), pattern: '^[A-Za-z]{5,16}$' }]">
-        <a-input v-model:value="formState.username" :placeholder="$t('user_name')">
+      <a-form-item name="username" :rules="[{ required: true, message: $t('base.input_username'), pattern: '^[A-Za-z]{5,16}$' }]">
+        <a-input v-model:value="formState.username" :placeholder="$t('base.user_name')">
           <template #prefix>
             <UserOutlined class="site-form-item-icon" />
           </template>
         </a-input>
       </a-form-item>
 
-      <a-form-item name="password" :rules="[{ required: true, message: $t('input_password') }]">
-        <a-input-password v-model:value="formState.password" :placeholder="$t('user_password')">
+      <a-form-item name="password" :rules="[{ required: true, message: $t('base.input_password') }]">
+        <a-input-password v-model:value="formState.password" :placeholder="$t('base.user_password')">
           <template #prefix>
             <LockOutlined class="site-form-item-icon" />
           </template>
@@ -19,7 +19,7 @@
 
       <a-form-item>
         <div class="forgot-language">
-          <span class="forgot-password" @click="forgotPassword()">{{ $t('forgot_password') }}</span>
+          <span class="forgot-password" @click="forgotPassword()">{{ $t('base.forgot_password') }}</span>
           <span class="login-language" @click="changeLanguage()">
             <IconFont type="icon-language" class="font-size-16" />
           </span>
@@ -29,18 +29,18 @@
       <a-form-item>
         <a-form-item name="remember" no-style>
           <a-checkbox v-model:checked="formState.remember"
-            ><span class="rember-me">{{ $t('remember_me') }}</span></a-checkbox
+            ><span class="rember-me">{{ $t('base.remember_me') }}</span></a-checkbox
           >
         </a-form-item>
       </a-form-item>
 
       <a-form-item>
         <a-button :disabled="disabled" type="primary" html-type="submit" class="login-form-button">
-          {{ $t('login_in') }}
+          {{ $t('base.login_in') }}
         </a-button>
       </a-form-item>
     </a-form>
-    <ShowCaptcha :move="formState.move" @update:move="handleMoveUpdate" />
+    <ShowCaptcha @update:move="handleMoveUpdate" />
   </div>
 </template>
 <script setup lang="ts">
@@ -49,11 +49,11 @@ import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { userLoginStore } from '@/stores/login'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+
+import type { LoginState } from '@/types/LoginType'
+
 import ShowCaptcha from './ShowCaptcha.vue'
 
-// interface Props {
-//   page: string
-// }
 //跳转到忘记密码页面
 const emit = defineEmits<{
   'update:page': [value: string]
@@ -69,16 +69,7 @@ const loginStore = userLoginStore()
 
 const router = useRouter()
 
-interface FormState {
-  username: string
-  password: string
-  remember: boolean
-  move: number
-  loginType: number
-  nonceStr: string
-}
-
-const formState = reactive<FormState>({
+const formState = reactive<LoginState>({
   username: 'admin',
   password: 'Aa123123?',
   remember: true,
@@ -102,7 +93,6 @@ const handleMoveUpdate = async (value: number) => {
   const res = await loginStore.signin(formState) // 使用 await 等待 Promise 完成
   loginStore.setUser(formState.remember, res)
   router.push('/')
-  console.log(value, 1323132312312, formState)
 }
 </script>
 <style lang="scss" scoped>

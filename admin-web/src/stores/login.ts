@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 
 import loginApi from '@/apis/login'
 import { localCache, sessionCache } from '@/utils/storage'
+import type { LoginState } from '@/types/LoginType'
 
 export const userLoginStore = defineStore('userLogin', () => {
   const user = ref<Record<string, string>>()
@@ -19,7 +20,6 @@ export const userLoginStore = defineStore('userLogin', () => {
       .then((rs) => {
         captcha.value = rs.data
         isCaptchaState.value = true
-        console.log(32131211111, rs, rs.data, captcha.value)
       })
       .catch(() => {
         showCaptcha.value = false
@@ -30,7 +30,7 @@ export const userLoginStore = defineStore('userLogin', () => {
     isCaptchaState.value = value
   }
 
-  async function signin(formState: object): Promise<Record<string, string>> {
+  async function signin(formState: LoginState): Promise<Record<string, string>> {
     showCaptcha.value = false
     const res = await loginApi.login(formState)
     return res.data

@@ -7,7 +7,7 @@
       </div>
       <div class="base-search-label">
         <span class="base-search-title">状态:</span>
-        <a-select v-model:value="value1" :size="size" style="width: 200px; height: 32px" :options="options"></a-select>
+        <a-select v-model:value="value1" style="width: 200px; height: 32px" :options="options"></a-select>
       </div>
       <div class="base-search-label">
         <a-button type="primary">查询</a-button>
@@ -17,7 +17,15 @@
       </div>
     </div>
     <div class="base-container">
-      <a-table :columns="columns" :data-source="data">
+      <div class="base-operate">
+        <div class="base-operate-label">
+          <a-button><IconFont type="icon-add" />新增</a-button>
+        </div>
+        <div class="base-operate-label">
+          <a-button><IconFont type="icon-delete" />批量删除</a-button>
+        </div>
+      </div>
+      <a-table :columns="columns" :data-source="data" :row-selection="rowSelection">
         <template #bodyCell="{ column, text }">
           <template v-if="column.dataIndex === 'name'">
             <a>{{ text }}</a>
@@ -29,9 +37,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { SelectProps } from 'ant-design-vue'
-const size = ref<SelectProps['size']>('middle')
+import { ref, computed, unref } from 'vue'
+
+//
+//
+//
 const value = ref<string>('')
 const value1 = ref('a1')
 const options = [...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))
@@ -96,5 +106,24 @@ const data = [
     tags: ['cool', 'teacher'],
   },
 ]
+
+interface DataType {
+  key: string | number
+  name: string
+  age: number
+  address: string
+}
+const onSelectChange = (changableRowKeys: string[]) => {
+  console.log('selectedRowKeys changed: ', changableRowKeys)
+  selectedRowKeys.value = changableRowKeys
+}
+const selectedRowKeys = ref<DataType['key'][]>([])
+const rowSelection = computed(() => {
+  return {
+    selectedRowKeys: unref(selectedRowKeys),
+    onChange: onSelectChange,
+    hideDefaultSelections: true,
+  }
+})
 </script>
 <style lang="scss" scoped></style>

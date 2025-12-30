@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('../views/home/HomeView.vue'),
+      component: () => import('../views/home/DashBoard.vue'),
     },
     {
       path: '/systemManage/sysUser',
@@ -21,8 +21,13 @@ const router = createRouter({
     },
     {
       path: '/systemManage/sysMenu',
-      name: 'SysMenu',
+      name: 'sysMenu',
       component: () => import('../views/system/menu/SysMenu.vue'),
+    },
+    {
+      path: '/systemManage/sysLog',
+      name: 'sysLog',
+      component: () => import('../views/system/log/SysLog.vue'),
     },
     {
       path: '/email',

@@ -1,4 +1,4 @@
-package com.joy.entity.sysUser;
+package com.joy.entity.sysConfig;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @TableName
@@ -52,9 +53,13 @@ public class SysMenu {
     @TableField
     private String path;
 
-    //类型 1 menu 2 button
+    //类型 1 directory 2 menu 3 permission
     @TableField
     private Integer type;
+
+    //状态 1 正常 2 禁用
+    @TableField
+    private Integer state;
 
     //描述
     @TableField
@@ -67,5 +72,8 @@ public class SysMenu {
     //更新时间
     @TableField
     private Date updateTime;
+
+    @TableField(exist = false)
+    private List<SysMenu> children;
 
 }

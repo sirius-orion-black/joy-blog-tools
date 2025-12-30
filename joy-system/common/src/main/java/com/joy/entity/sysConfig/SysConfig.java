@@ -36,6 +36,10 @@ public class SysConfig {
     @TableField
     private Integer configSort;
 
+    //状态 1 正常  2禁用
+    @TableField
+    private Integer configState;
+
     //创建时间
     @TableField
     private Date createTime;

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { localCache, sessionCache } from './storage'
 
 const service = axios.create({
   baseURL: window.location.origin + '/api/',
@@ -9,9 +10,14 @@ const service = axios.create({
 service.interceptors.request.use(
   function (config) {
     config.headers['X-Timestamp'] = Date.now()
-    if (config.method === 'post') config.headers['Content-Type'] = 'multipart/form-data'
-    console.log(7777777777777, config)
-    // axios.defaults.headers.common['X-Auth-Token'] = AUTH_TOKEN;
+    // if (config.method === 'post') config.headers['Content-Type'] = 'multipart/form-data'
+    // if (config.method === 'post') config.headers['Content-Type'] = 'application/json'
+    console.log(7777777777777, config, config.url)
+    if (!config.url?.includes('/admin/auth/')) {
+      const user = localCache.getCache<Record<string, string>>('user') ?? sessionCache.getCache<Record<string, string>>('user')
+      const token = user?.token ?? undefined
+      config.headers['X-Auth-Token'] = token
+    }
     // 在发送请求之前做些什么
     return config
   },
@@ -24,7 +30,7 @@ service.interceptors.request.use(
 // 添加响应拦截器
 service.interceptors.response.use(
   function (response) {
-    console.log(3123123123, response)
+    // console.log(3123123123, response)
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
     return response.data

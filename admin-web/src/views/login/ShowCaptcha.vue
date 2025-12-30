@@ -4,7 +4,7 @@
       width="368px"
       :centered="true"
       v-model:open="loginStore.showCaptcha"
-      :title="$t('drag_slider_complete_puzzle')"
+      :title="$t('base.drag_slider_complete_puzzle')"
       :footer="null"
       @cancel="resetSlider"
     >
@@ -31,18 +31,10 @@
         </div>
         <div class="captcha-slider">
           <div :style="{ width: captchaState.posationX + 'px' }" class="slider-box"></div>
-          <div
-            :style="{ left: captchaState.posationX + 'px' }"
-            @mousedown="startDrag"
-            @touchstart="startDrag"
-            class="slider-button"
-          >
-            <RightOutlined
-              class="site-form-item-icon"
-              :style="{ fontSize: '18px', color: '#aba29b' }"
-            />
+          <div :style="{ left: captchaState.posationX + 'px' }" @mousedown="startDrag" @touchstart="startDrag" class="slider-button">
+            <RightOutlined class="site-form-item-icon" :style="{ fontSize: '18px', color: '#aba29b' }" />
           </div>
-          <div class="slider-write">{{ $t('slide_to_right') }}</div>
+          <div class="slider-write">{{ $t('base.slide_to_right') }}</div>
         </div>
       </div>
       <div class="captcha-spin" v-else>
@@ -57,17 +49,11 @@ import { reactive } from 'vue'
 import { userLoginStore } from '@/stores/login'
 import { RightOutlined } from '@ant-design/icons-vue'
 
+import type { CaptchaState } from '@/types/LoginType'
+
 //login store
 const loginStore = userLoginStore()
 
-//设置captcha参数类型
-interface CaptchaState {
-  moveX: number
-  startX: number
-  isMove: boolean
-  posationX: number
-  maxPositionX: number
-}
 //设置captcha参数defualt值
 const captchaState = reactive<CaptchaState>({
   moveX: 0,
@@ -102,11 +88,9 @@ const startDrag = (e: MouseEvent | TouchEvent) => {
 
   captchaState.isMove = true
 
-  const clientX =
-    'touches' in e && e.touches.length > 0 ? e.touches[0]!.clientX : (e as MouseEvent).clientX
+  const clientX = 'touches' in e && e.touches.length > 0 ? e.touches[0]!.clientX : (e as MouseEvent).clientX
   captchaState.startX = clientX
-  captchaState.maxPositionX =
-    parseInt(loginStore.captcha!.canvasWidth + '') - parseInt(loginStore.captcha!.blockWidth + '')
+  captchaState.maxPositionX = parseInt(loginStore.captcha!.canvasWidth + '') - parseInt(loginStore.captcha!.blockWidth + '')
 
   document.addEventListener('mousemove', onDrag)
   document.addEventListener('touchmove', onDrag, { passive: false })
@@ -118,16 +102,13 @@ const onDrag = (e: MouseEvent | TouchEvent) => {
   if (!captchaState.isMove) return
 
   e.preventDefault()
-  const clientX =
-    'touches' in e && e.touches.length > 0 ? e.touches[0]!.clientX : (e as MouseEvent).clientX
+  const clientX = 'touches' in e && e.touches.length > 0 ? e.touches[0]!.clientX : (e as MouseEvent).clientX
   const diffX = clientX - captchaState.startX
   console.log(3123123123, diffX)
 
   if (diffX >= 0 && diffX <= captchaState.maxPositionX) {
     captchaState.moveX = diffX
-    const multiple =
-      (captchaState.maxPositionX + parseInt(loginStore.captcha!.blockWidth + '') - 40) /
-      captchaState.maxPositionX
+    const multiple = (captchaState.maxPositionX + parseInt(loginStore.captcha!.blockWidth + '') - 40) / captchaState.maxPositionX
     captchaState.posationX = diffX * multiple
   }
 }

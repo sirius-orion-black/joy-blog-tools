@@ -1,16 +1,16 @@
 <template>
   <div class="sigin-in">
     <a-form :model="formState" name="normal_login" class="login-form" hideRequiredMark="" @finish="onFinish" @finishFailed="onFinishFailed">
-      <a-form-item name="Username" :rules="[{ required: true, message: $t('input_username') }]">
-        <a-input v-model:value="formState.username" :placeholder="$t('user_name')">
+      <a-form-item name="Username" :rules="[{ required: true, message: $t('base.input_username') }]">
+        <a-input v-model:value="formState.username" :placeholder="$t('base.user_name')">
           <template #prefix>
             <UserOutlined class="site-form-item-icon" />
           </template>
         </a-input>
       </a-form-item>
 
-      <a-form-item name="Email" :rules="[{ required: true, message: $t('input_email') }]">
-        <a-input v-model:value="formState.email" :placeholder="$t('user_email')">
+      <a-form-item name="Email" :rules="[{ required: true, message: $t('base.input_email') }]">
+        <a-input v-model:value="formState.email" :placeholder="$t('base.user_email')">
           <template #prefix>
             <IconFont type="icon-email" class="font-size-16" />
           </template>
@@ -19,7 +19,7 @@
 
       <a-form-item>
         <div class="sigin-language">
-          <span class="sign-in" @click="signIn()">{{ $t('login_in') }}</span>
+          <span class="sign-in" @click="signIn()">{{ $t('base.login_in') }}</span>
           <span class="login-language" @click="changeLanguage()">
             <IconFont type="icon-language" class="font-size-16" />
           </span>
@@ -27,7 +27,7 @@
       </a-form-item>
       <a-form-item>
         <a-button :disabled="disabled" type="primary" html-type="submit" class="verify-form-button">
-          {{ $t('verify_email') }}
+          {{ $t('base.verify_email') }}
         </a-button>
       </a-form-item>
     </a-form>
@@ -38,9 +38,8 @@ import { useI18n } from 'vue-i18n'
 import { reactive, computed } from 'vue'
 import { UserOutlined } from '@ant-design/icons-vue'
 
-// interface Props {
-//   page: string
-// }
+import type { EmailState } from '@/types/LoginType'
+
 //跳转到忘记密码页面
 const emit = defineEmits<{
   'update:page': [value: string]
@@ -52,12 +51,7 @@ const changeLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh' // 切换语言逻辑
 }
 
-interface FormState {
-  username: string
-  email: string
-}
-
-const formState = reactive<FormState>({
+const formState = reactive<EmailState>({
   username: '',
   email: '',
 })

@@ -49,6 +49,28 @@
         </a-dropdown>
       </div>
     </div>
+    <div class="header-pannel">
+      <a-anchor
+        direction="horizontal"
+        :items="[
+          {
+            key: 'horizontally-part-1',
+            href: '#horizontally-part-1',
+            title: '首页',
+          },
+          {
+            key: 'horizontally-part-2',
+            href: '#horizontally-part-2',
+            title: '系统菜单',
+          },
+          {
+            key: 'horizontally-part-3',
+            href: '#horizontally-part-3',
+            title: $t('base.login_in'),
+          },
+        ]"
+      />
+    </div>
   </div>
 </template>
 
@@ -88,14 +110,13 @@ const handleSearch = (val: string) => {
 <style lang="scss" scoped>
 .header-main {
   z-index: 9;
-  height: 62px;
+  height: 110px;
   position: fixed;
   right: 0;
   left: 272px;
   .header-body {
     display: flex;
     align-items: center;
-    color: #000000;
     height: 62px;
     justify-content: space-between;
     flex-wrap: nowrap;
@@ -120,6 +141,10 @@ const handleSearch = (val: string) => {
         border-radius: 50%;
       }
     }
+  }
+  .header-pannel {
+    padding: 12px 15px 0 15px;
+    height: 48px;
   }
 }
 </style>

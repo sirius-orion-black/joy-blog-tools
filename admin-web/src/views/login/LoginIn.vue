@@ -1,12 +1,7 @@
 <template>
   <div class="login-main">
     <div class="canvas-body">
-      <canvas
-        ref="flowersRef"
-        class="canvas-flowers"
-        :width="screenWidth"
-        :height="screenHeight"
-      ></canvas>
+      <canvas ref="flowersRef" class="canvas-flowers" :width="screenWidth" :height="screenHeight"></canvas>
     </div>
     <div class="login-body">
       <SignIn v-if="page == 'sigin'" :page="page" @update:page="handlePageUpdate" />
@@ -18,6 +13,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 
+import type { FlowerState } from '@/types/LoginType'
+
 import SignIn from './SignIn.vue'
 import VerifyEmail from './VerifyEmail.vue'
 
@@ -27,19 +24,6 @@ const handlePageUpdate = (pageId: string) => {
   page.value = pageId
 }
 // 梅花类型定义
-interface FlowerState {
-  x: number
-  y: number
-  speed: number
-  size: number
-  rotation: number
-  rotationSpeed: number
-  swing: number
-  swingSpeed: number
-  swingRange: number
-  color: string
-  opacity: number
-}
 
 const flowersRef = ref<HTMLCanvasElement | null>(null)
 const flowers = ref<FlowerState[]>([])

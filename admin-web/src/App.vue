@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import { userLoginStore } from './stores/login'
+import zhCN from 'ant-design-vue/es/locale/zh_CN'
 
 import HeaderView from './components/header/HeaderView.vue'
 import MenuView from './components/menu/MenuView.vue'
@@ -16,6 +17,7 @@ const loginStore = userLoginStore()
           colorPrimary: '#a66cff',
         },
       }"
+      :locale="zhCN"
     >
       <div v-if="!!loginStore.token">
         <HeaderView />

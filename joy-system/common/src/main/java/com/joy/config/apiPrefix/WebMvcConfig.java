@@ -1,8 +1,16 @@
 package com.joy.config.apiPrefix;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.text.SimpleDateFormat;
+
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -18,5 +26,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 为后台模块Controller添加 /admin 前缀
         configurer.addPathPrefix("/admin",
                 c -> c.isAnnotationPresent(ApiPrefixAdminRestController.class));
+    }
+
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new FormatToDateConverter());
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter getMappingJackson2HttpMessageConverter() {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss"));
+        objectMapper.setTimeZone(java.util.TimeZone.getTimeZone("GMT+8")); // 设置时区
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        converter.setObjectMapper(objectMapper);
+        return converter;
     }
 }
