@@ -39,7 +39,6 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     @Autowired
     private SysConfigMapper sysConfigMapper;
 
-
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
@@ -61,7 +60,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
         //校验邮箱或者账户是否存在
         QueryWrapper<SysUser> query = new QueryWrapper<>();
         query.eq("email", loginInfo.getEmail()).eq("username", loginInfo.getUsername());
-        List<SysUser> userList = list(query);
+        List<SysUser> userList = this.list(query);
         if (userList.isEmpty()) {
             return Result.badRequest("account_email_incorrect");
         }
@@ -155,7 +154,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
         if (loginInfo.getLoginType() == 1) {
             query.eq("username", loginInfo.getUsername());
         }
-        SysUser user = getOne(query);
+        SysUser user = this.getOne(query);
         String mes = loginVerify(loginInfo,user);
         if (!StringUtils.isEmpty(mes))
             return Result.badRequest(mes);

@@ -2,6 +2,9 @@ package com.joy.dto.auth;
 
 import lombok.Data;
 
+/**
+ * 滑块dto
+ */
 @Data
 public class CaptchaDto {
 

@@ -46,6 +46,11 @@
   .icon-font {
     fill: currentColor; /* 继承文字颜色 */
   }
+  .base-btn-a {
+    a {
+      padding: 3px 5px;
+    }
+  }
   .menu-main {
     &::after {
       display: block;

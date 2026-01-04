@@ -4,7 +4,11 @@ import com.joy.entity.sysUser.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class UserVerifyUtil {
@@ -66,12 +70,6 @@ public class UserVerifyUtil {
         if (!emailFormat(sysUser.getEmail())) {
             return "email_format_incorrect";//邮箱格式不正确
         }
-        if (StringUtils.isEmpty(sysUser.getPassword())) {
-            return "password_cannot_empty";//密码不能为空
-        }
-        if (!passwordFormat(sysUser.getPassword())) {
-            return "password_number_incorrect";//密码格式不正确
-        }
         if (StringUtils.isEmpty(sysUser.getPhone())) {
             return "phone_cannot_empty";//手机号不能为空
         }
@@ -79,6 +77,39 @@ public class UserVerifyUtil {
             return "phone_number_incorrect";//手机号格式不正确
         }
         return str;
+    }
+
+    public static String generatePassword(){
+        String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lower = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String symbols = "?@#";
+        String allChars = upper + lower + digits + symbols;
+        SecureRandom RANDOM = new SecureRandom();
+        // 生成长度：8-16位
+        int length = RANDOM.nextInt(9) + 8;
+        // 确保每类字符至少出现一次
+        String upperChar = String.valueOf(upper.charAt(RANDOM.nextInt(upper.length())));
+        String lowerChar = String.valueOf(lower.charAt(RANDOM.nextInt(lower.length())));
+        String digitChar = String.valueOf(digits.charAt(RANDOM.nextInt(digits.length())));
+        String symbolChar = String.valueOf(symbols.charAt(RANDOM.nextInt(symbols.length())));
+
+        // 生成剩余随机字符
+        StringBuilder randomStr = new StringBuilder();
+        for (int i = 0; i < length - 4; i++) {
+            randomStr.append(allChars.charAt(RANDOM.nextInt(allChars.length())));
+        }
+
+        // 合并并打乱顺序
+        String combined = upperChar + lowerChar + digitChar + symbolChar + randomStr;
+        List<Character> chars = combined.chars()
+                .mapToObj(c -> (char) c)
+                .collect(Collectors.toList());
+        Collections.shuffle(chars);
+
+        return chars.stream()
+                .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                .toString();
     }
 
 }

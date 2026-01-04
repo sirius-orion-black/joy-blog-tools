@@ -1,119 +1,108 @@
 <template>
-  <div class="base-main">
-    <div class="base-container">
-      <a-space align="center" style="margin-bottom: 16px">
-        CheckStrictly:
-        <a-switch v-model:checked="rowSelection.checkStrictly"></a-switch>
-      </a-space>
-      <a-table :columns="columns" :data-source="data" :row-selection="rowSelection" />
-    </div>
-  </div>
+  <a-table sticky :columns="columns" :data-source="data" :scroll="{ x: 1500 }">
+    <template #bodyCell="{ column }">
+      <template v-if="column.key === 'operation'"><a>action</a></template>
+    </template>
+    <template #summary>
+      <a-table-summary :fixed="fixedTop ? 'top' : 'bottom'">
+        <a-table-summary-row>
+          <a-table-summary-cell :index="0" :col-span="2">
+            <a-switch v-model:checked="fixedTop" checked-children="Fixed Top" un-checked-children="Fixed Top"></a-switch>
+          </a-table-summary-cell>
+          <a-table-summary-cell :index="2" :col-span="8">Scroll Context</a-table-summary-cell>
+          <a-table-summary-cell :index="10">Fix Right</a-table-summary-cell>
+        </a-table-summary-row>
+      </a-table-summary>
+    </template>
+  </a-table>
 </template>
 <script lang="ts" setup>
+import type { TableColumnsType } from 'ant-design-vue'
 import { ref } from 'vue'
-const columns = [
+const columns = ref<TableColumnsType>([
   {
-    title: 'Name',
+    title: 'Full Name',
+    width: 100,
     dataIndex: 'name',
     key: 'name',
+    fixed: 'left',
   },
   {
     title: 'Age',
+    width: 100,
     dataIndex: 'age',
     key: 'age',
-    width: '12%',
+    fixed: 'left',
   },
   {
-    title: 'Address',
+    title: 'Column 1',
     dataIndex: 'address',
-    width: '30%',
-    key: 'address',
-  },
-]
-
-interface DataItem {
-  key: number
-  name: string
-  age: number
-  address: string
-  children?: DataItem[]
-}
-
-const data: DataItem[] = [
-  {
-    key: 1,
-    name: 'John Brown sr.',
-    age: 60,
-    address: 'New York No. 1 Lake Park',
-    children: [
-      {
-        key: 11,
-        name: 'John Brown',
-        age: 42,
-        address: 'New York No. 2 Lake Park',
-      },
-      {
-        key: 12,
-        name: 'John Brown jr.',
-        age: 30,
-        address: 'New York No. 3 Lake Park',
-        children: [
-          {
-            key: 121,
-            name: 'Jimmy Brown',
-            age: 16,
-            address: 'New York No. 3 Lake Park',
-          },
-        ],
-      },
-      {
-        key: 13,
-        name: 'Jim Green sr.',
-        age: 72,
-        address: 'London No. 1 Lake Park',
-        children: [
-          {
-            key: 131,
-            name: 'Jim Green',
-            age: 42,
-            address: 'London No. 2 Lake Park',
-            children: [
-              {
-                key: 1311,
-                name: 'Jim Green jr.',
-                age: 25,
-                address: 'London No. 3 Lake Park',
-              },
-              {
-                key: 1312,
-                name: 'Jimmy Green sr.',
-                age: 18,
-                address: 'London No. 4 Lake Park',
-              },
-            ],
-          },
-        ],
-      },
-    ],
+    key: '1',
+    width: 150,
   },
   {
-    key: 2,
-    name: 'Joe Black',
+    title: 'Column 2',
+    dataIndex: 'address',
+    key: '2',
+    width: 150,
+  },
+  {
+    title: 'Column 3',
+    dataIndex: 'address',
+    key: '3',
+    width: 150,
+  },
+  {
+    title: 'Column 4',
+    dataIndex: 'address',
+    key: '4',
+    width: 150,
+  },
+  {
+    title: 'Column 5',
+    dataIndex: 'address',
+    key: '5',
+    width: 150,
+  },
+  {
+    title: 'Column 6',
+    dataIndex: 'address',
+    key: '6',
+    width: 150,
+  },
+  {
+    title: 'Column 7',
+    dataIndex: 'address',
+    key: '7',
+    width: 150,
+  },
+  { title: 'Column 8', dataIndex: 'address', key: '8' },
+  {
+    title: 'Action',
+    key: 'operation',
+    fixed: 'right',
+    width: 100,
+  },
+])
+
+const data = []
+for (let i = 0; i < 100; i++) {
+  data.push({
+    key: i,
+    name: `Edrward ${i}`,
     age: 32,
-    address: 'Sidney No. 1 Lake Park',
-  },
-]
-
-const rowSelection = ref({
-  checkStrictly: false,
-  onChange: (selectedRowKeys: (string | number)[], selectedRows: DataItem[]) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
-  },
-  onSelect: (record: DataItem, selected: boolean, selectedRows: DataItem[]) => {
-    console.log(record, selected, selectedRows)
-  },
-  onSelectAll: (selected: boolean, selectedRows: DataItem[], changeRows: DataItem[]) => {
-    console.log(selected, selectedRows, changeRows)
-  },
-})
+    address: `London Park no. ${i}`,
+  })
+}
+const fixedTop = ref(false)
 </script>
+<style scoped>
+#components-table-demo-summary tfoot th,
+#components-table-demo-summary tfoot td {
+  background: #fafafa;
+}
+[data-theme='dark'] #components-table-demo-summary tfoot th,
+[data-theme='dark'] #components-table-demo-summary tfoot td {
+  background: #1d1d1d;
+}
+</style>

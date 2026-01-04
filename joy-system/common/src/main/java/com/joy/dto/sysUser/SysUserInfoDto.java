@@ -4,6 +4,10 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ *
+ * 用户dto
+ */
 @Data
 public class SysUserInfoDto {
 

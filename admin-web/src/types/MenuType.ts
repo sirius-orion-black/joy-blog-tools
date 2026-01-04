@@ -1,4 +1,4 @@
-export interface MenuType {
+export interface MenuTypeState {
   //菜单类型
   id?: number
   name?: string //菜单名称
@@ -13,15 +13,17 @@ export interface MenuType {
   type?: number //类型 1 directory 2 menu 3 permission
   state?: number //状态 1 正常 2 禁用
   description?: string //描述
+  children?: MenuTypeState[]
 }
-export interface MenuParent {
+export interface MenuParentState {
   // 定义节点类型
   name: string
   id: number
-  children?: MenuParent[] // 可选，因为可能没有children
+  children?: MenuParentState[] // 可选，因为可能没有children
 }
 
-export interface MenuIcon {
+export interface MenuIconState {
+  //menu icon
   id?: number
   configName?: string
   configValue?: string

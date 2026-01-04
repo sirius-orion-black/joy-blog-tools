@@ -26,12 +26,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     /**
      * 获取菜单
+     *
      * @return
      */
     @Override
     public Result<List<SysMenu>> getMenu() {
         // 1. 获取并排序菜单列表
-        List<SysMenu> sortedMenus = list(new LambdaQueryWrapper<SysMenu>()
+        List<SysMenu> sortedMenus = this.list(new LambdaQueryWrapper<SysMenu>()
                 .orderByAsc(SysMenu::getSort).orderByAsc(SysMenu::getId));
 
         // 2. 构建子菜单映射
@@ -50,16 +51,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     /**
      * 新增menu
+     *
      * @param menu
      * @return
      */
     @Override
     public Result<String> addMenu(SysMenu menu) {
-        log.info("======add menu======>"+menu.toString());
         if (menu.getId() == null || menu.getId().equals(0L)) {
             menu.setId(null);
-            save(menu);
-            return Result.success();
+            return this.save(menu) ? Result.success() : Result.internalServerError();
         } else
             return Result.badRequest();
 
@@ -67,25 +67,31 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     /**
      * 修改menu
+     *
      * @param menu
      * @return
      */
     @Override
     public Result<String> edit(SysMenu menu) {
         if (menu.getId() != null && !menu.getId().equals(0L)) {
-            updateById(menu);
-            return Result.success();
-        }else
+            menu.setUpdateTime(new Date());
+            this.updateById(menu);
+            return this.updateById(menu) ? Result.success():Result.internalServerError();
+        } else
             return Result.badRequest();
     }
 
     /**
      * 删除菜单
+     *
+     * @param menuIds
      * @return
      */
     @Override
     public Result<String> delMenu(List<Long> menuIds) {
-        List<SysMenu> menus = list();
+        if (menuIds.isEmpty())
+            Result.success();
+        List<SysMenu> menus = this.list();
         //构建快速索引
         Map<Long, SysMenu> menuMap = menus.stream()
                 .collect(Collectors.toMap(SysMenu::getId, m -> m));
@@ -99,7 +105,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         //获取所有要删除的menu
         Set<Long> allIds = new HashSet<>();
         Queue<Long> queue = new LinkedList<>(menuIds);
-        while(!queue.isEmpty()) {
+        while (!queue.isEmpty()) {
             Long id = queue.poll();
             allIds.add(id);
             // 添加所有子节点到队列
@@ -107,12 +113,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 queue.addAll(parentChildMap.get(id));
             }
         }
-        log.info(JSON.toJSONString(menuIds)+"menu=============>"+JSON.toJSONString(allIds));
-        return removeBatchByIds(new ArrayList<>(allIds)) ? Result.success() : Result.internalServerError();
+        log.info(JSON.toJSONString(menuIds) + "menu=============>" + JSON.toJSONString(allIds));
+        return this.removeBatchByIds(new ArrayList<>(allIds)) ? Result.success() : Result.internalServerError();
     }
 
     /**
      * 获取icons
+     *
      * @return
      */
     @Override

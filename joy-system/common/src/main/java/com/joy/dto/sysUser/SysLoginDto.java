@@ -3,7 +3,9 @@ package com.joy.dto.sysUser;
 
 import lombok.Data;
 
-
+/**
+ * 用户登录表单
+ */
 @Data
 public class SysLoginDto {
     //用户名：长度必须在5-16个字符之间，且只能为大小写字母，唯一

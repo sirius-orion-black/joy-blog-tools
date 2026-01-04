@@ -12,6 +12,11 @@ import 'ant-design-vue/dist/reset.css'
 
 const app = createApp(App)
 
+// 全站禁用右键菜单
+document.addEventListener('contextmenu', (event) => {
+  event.preventDefault()
+})
+
 app.use(createPinia())
 app.use(i18n)
 app.use(router)

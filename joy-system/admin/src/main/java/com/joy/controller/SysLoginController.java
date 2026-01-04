@@ -49,7 +49,6 @@ public class SysLoginController {
 
     /**
      * 后台管理人员登出
-     * @param id
      * @return
      */
     @PostMapping("/logout")

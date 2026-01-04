@@ -1,6 +1,6 @@
 <template>
-  <div class="sigin-in">
-    <a-form :model="formState" name="normal_login" class="login-form" hideRequiredMark="" @finish="onFinish" @finishFailed="onFinishFailed">
+  <div class="sign-in">
+    <a-form :model="formState" name="normal_login" class="login-form" hideRequiredMark="" @finish="onFinish">
       <a-form-item name="username" :rules="[{ required: true, message: $t('base.input_username'), pattern: '^[A-Za-z]{5,16}$' }]">
         <a-input v-model:value="formState.username" :placeholder="$t('base.user_name')">
           <template #prefix>
@@ -47,19 +47,20 @@
 import { useI18n } from 'vue-i18n'
 import { reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { userLoginStore } from '@/stores/login'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+
+import { userLoginStore } from '@/stores/login'
 
 import type { LoginState } from '@/types/LoginType'
 
 import ShowCaptcha from './ShowCaptcha.vue'
 
-//跳转到忘记密码页面
+// 跳转到忘记密码页面
 const emit = defineEmits<{
   'update:page': [value: string]
 }>()
 const forgotPassword = () => emit('update:page', 'email')
-//多语系处理
+// 多语系处理
 const { locale } = useI18n()
 const changeLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh' // 切换语言逻辑
@@ -77,12 +78,8 @@ const formState = reactive<LoginState>({
   loginType: 1,
   nonceStr: '',
 })
-const onFinish = (values: object) => {
+const onFinish = () => {
   loginStore.getCaptcha()
-  console.log('Success:', values, formState)
-}
-const onFinishFailed = (errorInfo: object) => {
-  console.log('Failed:', errorInfo)
 }
 const disabled = computed(() => {
   return !(formState.username && formState.password)
@@ -96,7 +93,7 @@ const handleMoveUpdate = async (value: number) => {
 }
 </script>
 <style lang="scss" scoped>
-.sigin-in {
+.sign-in {
   width: 360px;
   height: 360px;
   padding: 30px;

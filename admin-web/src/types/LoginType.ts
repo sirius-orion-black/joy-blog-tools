@@ -33,6 +33,7 @@ export interface CaptchaState {
 }
 
 export interface EmailState {
+  //邮箱
   username: string
   email: string
 }

@@ -40,12 +40,12 @@ import { UserOutlined } from '@ant-design/icons-vue'
 
 import type { EmailState } from '@/types/LoginType'
 
-//跳转到忘记密码页面
+// 跳转到忘记密码页面
 const emit = defineEmits<{
   'update:page': [value: string]
 }>()
 const signIn = () => emit('update:page', 'sigin')
-//多语系处理
+// 多语系处理
 const { locale } = useI18n()
 const changeLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh' // 切换语言逻辑

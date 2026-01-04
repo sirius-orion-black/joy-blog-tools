@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import menuApi from '@/apis/menu'
-import type { MenuType } from '@/types/MenuType'
+import type { MenuTypeState } from '@/types/MenuType'
 
 export const menuStore = defineStore('menu', () => {
   const menuList = ref<[]>()
@@ -27,29 +27,25 @@ export const menuStore = defineStore('menu', () => {
     menuDraw.value = vl
   }
 
-  function addMenu(menu: MenuType) {
+  function addMenu(menu: MenuTypeState) {
     //新增菜单
-    menuApi.addMenu(menu).then((rs) => {
+    menuApi.addMenu(menu).then(() => {
       getMenu()
-      console.log('add menu', rs)
     })
   }
 
-  function editMenu(menu: MenuType) {
+  function editMenu(menu: MenuTypeState) {
     //编辑菜单
-    menuApi.editMenu(menu).then((rs) => {
+    menuApi.editMenu(menu).then(() => {
       getMenu()
-      console.log('edit menu', rs)
     })
   }
 
   function delMenu(menu: number[]) {
     //批量删除菜单
     if (menu.length > 0) {
-      console.log(menu, '==========删除了==========')
-      menuApi.delMenu(menu).then((rs) => {
+      menuApi.delMenu(menu).then(() => {
         getMenu()
-        console.log('edit menu', rs)
       })
     }
   }

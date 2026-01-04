@@ -46,15 +46,16 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { userLoginStore } from '@/stores/login'
 import { RightOutlined } from '@ant-design/icons-vue'
+
+import { userLoginStore } from '@/stores/login'
 
 import type { CaptchaState } from '@/types/LoginType'
 
-//login store
+// login store
 const loginStore = userLoginStore()
 
-//设置captcha参数defualt值
+// 设置captcha参数defualt值
 const captchaState = reactive<CaptchaState>({
   moveX: 0,
   startX: 0,

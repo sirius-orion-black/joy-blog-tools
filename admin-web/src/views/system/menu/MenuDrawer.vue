@@ -115,12 +115,12 @@
       </a-col>
     </a-row>
 
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
+    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px" v-show="menuData.type === 2">
       <a-col :span="5" style="text-align: right">{{ $t('drawer.is_external') }}</a-col>
       <a-col :span="19">
         <a-radio-group v-model:value="menuData.isExternal">
-          <a-radio-button value="1">{{ $t('columns.yes') }}</a-radio-button>
-          <a-radio-button value="2">{{ $t('columns.no') }}</a-radio-button>
+          <a-radio-button :value="1">{{ $t('columns.yes') }}</a-radio-button>
+          <a-radio-button :value="2">{{ $t('columns.no') }}</a-radio-button>
         </a-radio-group>
       </a-col>
     </a-row>
@@ -142,35 +142,36 @@
 <script lang="ts" setup>
 import { reactive, computed, ref } from 'vue'
 import { DownOutlined } from '@ant-design/icons-vue'
+
 import { menuStore } from '@/stores/menu'
 
-import type { MenuType, MenuParent, MenuIcon } from '@/types/MenuType'
+import type { MenuTypeState, MenuParentState, MenuIconState } from '@/types/MenuType'
 
 const menu = menuStore()
 
 const props = defineProps<{
   title: string
-  list: MenuType
+  list: MenuTypeState
 }>()
 
 const menuIcoons = computed(() => {
   return menu.menuIcons?.map(
-    (icon: { configValue: string }): MenuIcon => ({
+    (icon: { configValue: string }): MenuIconState => ({
       configValue: icon.configValue, // 保留 configValue
     }),
   )
 })
 
 const menuData = computed(() => {
-  return reactive<MenuType>({
+  return reactive<MenuTypeState>({
     ...props.list,
   })
 })
 
 const treeData = computed(() => {
   // 递归处理函数
-  const menuNode = (menu: { name: string; id: number; children?: MenuParent[] }): MenuParent => {
-    const result: MenuParent = {
+  const menuNode = (menu: { name: string; id: number; children?: MenuParentState[] }): MenuParentState => {
+    const result: MenuParentState = {
       name: menu.name,
       id: menu.id,
     }
