@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
 import com.joy.dto.sysUser.SysUserDto;
 import com.joy.dto.sysUser.UserMenuDto;
+import com.joy.entity.sysConfig.SysMenu;
 import com.joy.entity.sysUser.SysUser;
 
 import java.util.List;
@@ -24,4 +25,6 @@ public interface SysUserService {
     Result<UserMenuDto> getUserMenu(UserMenuDto users);
 
     Result<String> editUserMenu(UserMenuDto users);
+
+    Result<List<SysMenu>> menuList();
 }

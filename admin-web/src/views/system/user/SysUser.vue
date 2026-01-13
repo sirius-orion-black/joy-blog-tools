@@ -38,7 +38,7 @@
       </div>
       <a-table
         :columns="columns"
-        :data-source="user.list?.records"
+        :data-source="user.list?.records ?? []"
         :row-selection="{ selectedRowKeys: tableState.selectedRowKeys, onChange: onSelectChange }"
         rowKey="id"
         :pagination="pagination"

@@ -1,3 +1,5 @@
+import type { JSX } from 'vue/jsx-runtime'
+
 export interface MenuTypeState {
   //菜单类型
   id?: number
@@ -27,4 +29,27 @@ export interface MenuIconState {
   id?: number
   configName?: string
   configValue?: string
+}
+
+export interface MenuItemState {
+  //左侧菜单类型
+  key: number
+  icon: () => JSX.Element
+  label: string
+  path: string
+  title?: string
+  name: string
+  children?: MenuItemState[]
+}
+
+export interface MenuStackItemState {
+  //顶部菜单类型
+  path: string
+  name: string
+  key: number
+}
+export interface MenuStackState {
+  //顶部菜单类型
+  current: MenuStackItemState | null
+  items: MenuStackItemState[] | null | undefined
 }

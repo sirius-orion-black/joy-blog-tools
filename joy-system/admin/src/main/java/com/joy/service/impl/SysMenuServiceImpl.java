@@ -41,7 +41,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .collect(Collectors.groupingBy(SysMenu::getParentId)); // 按父ID分组
 
         // 3. 设置子菜单引用
-        sortedMenus.forEach(menu -> menu.setChildren(childrenMap.get(menu.getId())));
+        sortedMenus.forEach(menu -> menu.setChildren(childrenMap.getOrDefault(menu.getId(), Collections.emptyList())));
 
         // 4. 提取并返回根菜单
         return Result.success(sortedMenus.stream()

@@ -151,9 +151,17 @@
       border: 1px solid rgba(167, 108, 255, 0.1);
     }
   }
-  .base-bg-border {
-    background-color: #ffffff;
+  .base-a66cff {
     border: 1px solid #a66cff;
+    color: #a66cff;
+    &:hover {
+      border: 1px solid #9c9efe;
+      color: #9c9efe;
+    }
+    &.hover {
+      border: 1px solid #ffa1cf;
+      color: #ffa1cf;
+    }
   }
   .base-bg {
     background-color: rgba(167, 108, 255, 0.05);

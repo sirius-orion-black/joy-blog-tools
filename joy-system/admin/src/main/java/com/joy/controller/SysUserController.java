@@ -6,6 +6,7 @@ import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
 import com.joy.dto.sysUser.SysUserDto;
 import com.joy.dto.sysUser.UserMenuDto;
+import com.joy.entity.sysConfig.SysMenu;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +95,15 @@ public class SysUserController {
     @PostMapping("/editPermission")
     public Result<String> editUserMenu(@RequestBody UserMenuDto users){
         return sysUserService.editUserMenu(users);
+    }
+
+    /**
+     * 获取对应的用户菜单列表
+     * @return
+     */
+    @GetMapping("/menuList")
+    public Result<List<SysMenu>> menuList(){
+        return sysUserService.menuList();
     }
 
 

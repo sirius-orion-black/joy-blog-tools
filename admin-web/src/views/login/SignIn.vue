@@ -50,8 +50,11 @@ import { useRouter } from 'vue-router'
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 
 import { userLoginStore } from '@/stores/login'
+import { userStore } from '@/stores/user'
+import { menuStore } from '@/stores/menu'
 
 import type { LoginState } from '@/types/LoginType'
+import type { MenuTypeState, MenuStackItemState } from '@/types/MenuType'
 
 import ShowCaptcha from './ShowCaptcha.vue'
 
@@ -66,7 +69,9 @@ const changeLanguage = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh' // 切换语言逻辑
 }
 
-const loginStore = userLoginStore()
+const login = userLoginStore()
+const user = userStore()
+const menu = menuStore()
 
 const router = useRouter()
 
@@ -79,17 +84,38 @@ const formState = reactive<LoginState>({
   nonceStr: '',
 })
 const onFinish = () => {
-  loginStore.getCaptcha()
+  login.getCaptcha()
 }
 const disabled = computed(() => {
   return !(formState.username && formState.password)
 })
+
+// 递归查找首个 type=2 的菜单项
+function findFirstMenu(menuList: MenuTypeState[]): MenuTypeState | null {
+  for (const item of menuList) {
+    if (item.type === 2) return item // 找到目标菜单项
+
+    if (item.children?.length) {
+      const result = findFirstMenu(item.children)
+      if (result) return result // 在子菜单中找到目标
+    }
+  }
+  return null
+}
 const handleMoveUpdate = async (value: number) => {
   formState.move = value
-  formState.nonceStr = loginStore.captcha!.nonceStr + ''
-  const res = await loginStore.signin(formState) // 使用 await 等待 Promise 完成
-  loginStore.setUser(formState.remember, res)
-  router.push('/')
+  formState.nonceStr = login.captcha!.nonceStr + ''
+  const res = await login.signin(formState) // 使用 await 等待 Promise 完成
+  login.setUser(formState.remember, res)
+  const menus = await user.getMenuList(formState.remember)
+  const firstMenu = findFirstMenu(menus)
+  const item: MenuStackItemState = {
+    path: firstMenu?.path + '',
+    name: firstMenu?.name + '',
+    key: firstMenu?.id as number,
+  }
+  menu.setMenuStack(item)
+  router.push(firstMenu?.path + '')
 }
 </script>
 <style lang="scss" scoped>

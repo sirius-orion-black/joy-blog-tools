@@ -9,4 +9,5 @@ export default {
   isBanned: (data: UserTypeState[]) => service.post('/admin/user/isBanned', data),
   getPermission: (data: UserMenuState) => service.get('/admin/user/getPermission', { params: data }),
   editPermission: (data: UserMenuState) => service.post('/admin/user/editPermission', data),
+  getMenuList: () => service.get('/admin/user/menuList'),
 }

@@ -25,7 +25,7 @@
         </a-auto-complete>
       </div>
       <div class="header-personal header-margin-right">
-        <div class="header-margin-right">醉酒当歌</div>
+        <div class="header-margin-right">{{ login.user?.nickname }}</div>
         <a-badge :count="99" class="cursor-pointer header-margin-right">
           <IconFont type="icon-message" class="cursor-pointer header-margin-right font-size-24" />
         </a-badge>
@@ -41,7 +41,7 @@
               <a-menu-item>
                 <a href="javascript:;">个人资料</a>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item @click="logout">
                 <a href="javascript:;">登出</a>
               </a-menu-item>
             </a-menu>
@@ -50,32 +50,56 @@
       </div>
     </div>
     <div class="header-pannel">
-      <a-anchor
-        direction="horizontal"
-        :items="[
-          {
-            key: 'horizontally-part-1',
-            href: '#horizontally-part-1',
-            title: '首页',
-          },
-          {
-            key: 'horizontally-part-2',
-            href: '#horizontally-part-2',
-            title: '系统菜单',
-          },
-          {
-            key: 'horizontally-part-3',
-            href: '#horizontally-part-3',
-            title: $t('base.login_in'),
-          },
-        ]"
-      />
+      <div
+        :class="`header-item base-a66cff ${menu.menuStack.current?.key! === item.key ? 'hover' : ''}`"
+        v-for="item in menu.menuStack.items"
+        :key="item.key"
+      >
+        <span class="header-item-title" @click="goPage(item)">{{ $t(`menu.${item.name}`) }}</span>
+        <CloseOutlined v-if="menu.menuStack.current?.key !== item.key" />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
+import { userLoginStore } from '@/stores/login'
+import { menuStore } from '@/stores/menu'
+import { userStore } from '@/stores/user'
+
+import { CloseOutlined } from '@ant-design/icons-vue'
+
+import type { MenuStackItemState } from '@/types/MenuType'
+
+const router = useRouter()
+
+const login = userLoginStore()
+const menu = menuStore()
+const user = userStore()
+
+onMounted(() => {
+  setTimeout(() => {
+    menu.getMenuStack()
+    const path: string = router.currentRoute.value.path
+    menu.getCurrentMenuStack(user.menuList ?? [], path)
+  }, 200)
+})
+const goPage = (item: MenuStackItemState) => {
+  menu.setMenuStack(item)
+  router.push(item.path)
+  console.log(item)
+}
+const logout = async () => {
+  await login.signout()
+  router.push('/login')
+}
+
+//下面是会删除的
+//
+//
 
 interface Option {
   query: string
@@ -143,8 +167,21 @@ const handleSearch = (val: string) => {
     }
   }
   .header-pannel {
-    padding: 12px 15px 0 15px;
+    padding: 0 15px 0 15px;
     height: 48px;
+    display: flex;
+    font-size: 14px;
+    .header-item {
+      height: 30px;
+      line-height: 30px;
+      padding: 0 5px;
+      margin: 9px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      .header-item-title {
+        padding-right: 6px;
+      }
+    }
   }
 }
 </style>

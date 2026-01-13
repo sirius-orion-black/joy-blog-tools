@@ -1,7 +1,9 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
 import { i18n } from '@/i18n'
+import router from '@/router'
 
+import { userLoginStore } from '@/stores/login'
 import { localCache, sessionCache } from './storage'
 
 const service = axios.create({
@@ -35,8 +37,14 @@ service.interceptors.response.use(
   function (response) {
     // 2xx 范围内的状态码都会触发该函数。
     const { data } = response
+    const login = userLoginStore()
     if (data.code >= 200 && data.code < 300) message.success(t('request.' + data.message))
-    else if (data.code >= 400 && data.code < 500) message.error(t('request.' + data.message))
+    else if (data.code === 401) {
+      router.push('/login')
+      login.cleanUserInfo()
+      window.location.reload()
+      console.log('请重新登录')
+    } else if (data.code >= 402 && data.code < 500) message.error(t('request.' + data.message))
     else message.warning(t('request.' + data.message))
     return data
   },

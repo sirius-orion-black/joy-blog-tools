@@ -1,6 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { userLoginStore } from '@/stores/login'
 
+import type { RouteRecordRaw } from 'vue-router'
+import type { MenuTypeState } from '@/types/MenuType'
+
+import { localCache, sessionCache } from '@/utils/storage'
+
+const modules = import.meta.glob('@/views/**/*.vue') // 获取所有视图组件
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -10,32 +17,63 @@ const router = createRouter({
       component: () => import('../views/login/LoginIn.vue'),
     },
     {
-      path: '/',
-      name: 'home',
-      component: () => import('../views/home/DashBoard.vue'),
-    },
-    {
-      path: '/systemManage/sysUser',
-      name: 'sysUser',
-      component: () => import('../views/system/user/SysUser.vue'),
-    },
-    {
-      path: '/systemManage/sysMenu',
-      name: 'sysMenu',
-      component: () => import('../views/system/menu/SysMenu.vue'),
-    },
-    {
-      path: '/systemManage/sysLog',
-      name: 'sysLog',
-      component: () => import('../views/system/log/SysLog.vue'),
-    },
-    {
       path: '/email',
       name: 'email',
       component: () => import('../views/email/EmailView.vue'),
     },
   ],
 })
+// 动态添加路由
+export const addDynamicRoutes = async (menus: MenuTypeState[] = []) => {
+  // console.log(modules, 123123123, Object.keys(modules))
+  const routes = generateRoutes(menus)
+  routes.forEach((route) => router.addRoute(route))
+  // 最后添加404路由
+  router.addRoute({
+    path: '/:pathMatch(.*)*',
+    component: () => import('@/views/other/NotFound.vue'),
+  })
+}
+// 菜单数据生成路由配置
+const generateRoutes = (menus: MenuTypeState[]): RouteRecordRaw[] => {
+  return menus.flatMap((menu) => {
+    const routes: RouteRecordRaw[] = []
+    // 整理菜单项（type=2）
+    if (menu.type === 2) {
+      // 构建组件路径
+      const componentPath = `/src/views${menu.component!.startsWith('/') ? menu.component : '/' + menu.component}.vue`
+      // 获取组件
+      const component = modules[componentPath]
+      // console.log(777777, componentPath, component)
+      if (!component) {
+        console.error(`Component not found: ${componentPath}`)
+        return []
+      }
+
+      routes.push({
+        path: menu.path!,
+        name: menu.router!,
+        component,
+        meta: { title: menu.name },
+      } as RouteRecordRaw)
+    }
+
+    // 递归处理子项
+    if (menu.children && menu.children.length > 0) {
+      routes.push(...generateRoutes(menu.children))
+    }
+
+    return routes
+  })
+}
+
+// 应用启动时恢复路由
+const initDynamicRoutes = () => {
+  const cached = localCache.getCache<Record<string, string>>('menuList') ?? sessionCache.getCache<Record<string, string>>('menuList')
+  const menus = Array.isArray(cached) ? cached : []
+  addDynamicRoutes(menus)
+}
+
 router.beforeEach(async (to, from) => {
   const loginStore = userLoginStore()
 
@@ -57,3 +95,5 @@ router.beforeEach(async (to, from) => {
   }
 })
 export default router
+
+initDynamicRoutes()

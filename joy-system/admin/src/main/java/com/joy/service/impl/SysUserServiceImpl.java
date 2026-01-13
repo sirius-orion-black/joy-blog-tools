@@ -1,15 +1,19 @@
 package com.joy.service.impl;
 
 import cn.dev33.satoken.secure.BCrypt;
+import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.sysUser.SysUserDto;
 import com.joy.dto.sysUser.UserMenuDto;
+import com.joy.entity.sysConfig.SysMenu;
 import com.joy.entity.sysConfig.SysUserMenu;
 import com.joy.entity.sysUser.SysUser;
+import com.joy.mapper.sysConfig.SysMenuMapper;
 import com.joy.mapper.sysConfig.SysUserMenuMapper;
 import com.joy.mapper.sysUser.SysUserMapper;
 import com.joy.service.SysUserService;
@@ -19,10 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +36,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Autowired
     private SysUserMenuMapper sysUserMenuMapper;
+
+    @Autowired
+    private SysMenuMapper sysMenuMapper;
+
 
     /**
      * 获取用户列表
@@ -136,7 +142,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         });
         //删除所有权限
         QueryWrapper<SysUserMenu> query = new QueryWrapper<>();
-        query.in("user_id",userIds);
+        query.in("user_id", userIds);
         sysUserMenuMapper.delete(query);
         return this.updateBatchById(users) ? Result.success() : Result.internalServerError();
     }
@@ -175,16 +181,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     /**
-     *获取管理人员权限
+     * 获取管理人员权限
+     *
      * @param users
      * @return
      */
     @Override
     public Result<UserMenuDto> getUserMenu(UserMenuDto users) {
         QueryWrapper<SysUserMenu> query = new QueryWrapper<>();
-        query.eq("user_id",users.getUserId());
+        query.eq("user_id", users.getUserId());
         List<SysUserMenu> menus = sysUserMenuMapper.selectList(query);
-        if(!menus.isEmpty()){
+        if (!menus.isEmpty()) {
             List<Long> menuIds = menus.stream().map(SysUserMenu::getMenuId).collect(Collectors.toList());
             users.setMenuId(menuIds);
         }
@@ -214,6 +221,53 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .collect(Collectors.toList());
         sysUserMenuMapper.insertBatch(newRelations);
         return Result.success();
+    }
+
+    /**
+     * 获取对应的用户菜单列表
+     *
+     * @return
+     */
+    @Override
+    public Result<List<SysMenu>> menuList() {
+        // 获取用户菜单id
+        long userId = StpUtil.getLoginIdAsLong();
+        List<SysUserMenu> userMenus = sysUserMenuMapper.selectList(new LambdaQueryWrapper<SysUserMenu>().eq(SysUserMenu::getUserId, userId));
+        List<Long> menuIds = userMenus.stream().map(SysUserMenu::getMenuId).collect(Collectors.toList());
+        // 获取用户menu并排序
+        List<SysMenu> menus = sysMenuMapper.selectList(
+                new LambdaQueryWrapper<SysMenu>()
+                        .in(SysMenu::getId, menuIds)
+                        .orderByAsc(SysMenu::getSort)
+                        .orderByAsc(SysMenu::getId)
+        );
+
+        // 1. 一次性构建菜单映射和子菜单关系
+        Map<Long, SysMenu> menuMap = menus.stream()
+                .collect(Collectors.toMap(SysMenu::getId, Function.identity()));
+
+        Map<Long, List<SysMenu>> childrenMap = menus.stream()
+                .filter(menu -> menu.getParentId() != 0)
+                .collect(Collectors.groupingBy(SysMenu::getParentId));
+
+        // 2. 单次遍历完成权限设置和子菜单关联
+        menus.forEach(menu -> {
+            // 设置按钮权限标识（type=3）
+            if (menu.getType() == 3) {
+                SysMenu parent = menuMap.get(menu.getParentId());
+                menu.setPermission(parent != null ? "permission:" + parent.getName() + ":" + menu.getPermission() : menu.getPermission());
+            }
+            // 关联子菜单
+            menu.setChildren(childrenMap.getOrDefault(menu.getId(), Collections.emptyList()));
+        });
+
+        // 3. 直接返回根菜单
+        return Result.success(
+                menus.stream()
+                        .filter(menu -> menu.getParentId() == 0)
+                        .collect(Collectors.toList())
+        );
+
     }
 
 }

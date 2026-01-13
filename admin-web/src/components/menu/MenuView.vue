@@ -1,67 +1,84 @@
 <template>
   <div class="menu-main">
     <div class="menu-pannel">
-      <div class="menu-logo" @click="goPage('/')">
+      <div class="menu-logo">
         <img src="@/assets/img/logo.png" />
         徐徐乐之
       </div>
       <div class="menu-container">
-        <a-menu
-          v-model:selectedKeys="state.selectedKeys"
-          style="width: 271px"
-          mode="inline"
-          :open-keys="state.openKeys"
-          :items="items"
-          @openChange="onOpenChange"
-        ></a-menu>
+        <a-menu style="width: 271px" mode="inline" :selectedKeys="selectedMenu" :items="menuItems" @click="handleClick"></a-menu>
       </div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-import { VueElement, h, reactive } from 'vue'
+import { h, computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { MailOutlined } from '@ant-design/icons-vue'
-import type { ItemType } from 'ant-design-vue'
-// import { IconFont } from '@/utils/iconfont'
+
+import type { ComputedRef } from 'vue'
+import type { MenuProps } from 'ant-design-vue'
+import type { MenuItemState, MenuTypeState, MenuStackItemState } from '@/types/MenuType'
+
+import { userStore } from '@/stores/user'
+import { menuStore } from '@/stores/menu'
+import { IconFont } from '@/utils/iconfont'
+
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const user = userStore()
+const menu = menuStore()
+const { t } = useI18n()
+
+const selectedMenu = computed(() => {
+  return [menu.menuStack.current?.key]
+})
+
+onMounted(() => {
+  user.getCacheMenu()
+  setTimeout(() => {
+    menu.getMenuStack()
+    const path: string = router.currentRoute.value.path
+    menu.getCurrentMenuStack(user.menuList ?? [], path)
+  }, 200)
+})
 
 function goPage(path: string) {
   router.push(path)
 }
 
-function getItem(label: VueElement | string, key: string, icon?: unknown, children?: ItemType[], type?: 'group'): ItemType {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-  } as ItemType
+function convertMenu(data: MenuTypeState[]): MenuItemState[] {
+  return data
+    .filter((menu) => menu.type !== 3) // 过滤 type=3 的节点
+    .map((menu) => {
+      const children = menu.children?.length ? convertMenu(menu.children) : undefined
+      const item: MenuItemState = {
+        key: menu.id ?? 0,
+        icon: () => h(IconFont, { type: menu.icon ?? 'icon-system' }),
+        label: t('menu.' + menu.name) ?? '',
+        path: menu.path ?? '',
+        name: menu.name ?? '',
+      }
+      // 转换后若子项不为空则添加 children 属性
+      if (children?.length) {
+        item.children = children
+      }
+      return item
+    })
 }
 
-const items: ItemType[] = reactive([
-  getItem('系统管理', 'sub1', () => h(MailOutlined), [
-    // getItem('系统用户', '1', () => h(IconFont, { type: 'icon-user-plus' })),
-    getItem('系统菜单', '2'),
-    getItem('系统日志', '3'),
-    getItem('网站配置', '4'),
-  ]),
-])
-
-const state = reactive({
-  rootSubmenuKeys: ['sub1', 'sub2', 'sub4'],
-  openKeys: ['sub1'],
-  selectedKeys: [],
+const menuItems: ComputedRef<MenuItemState[]> = computed(() => {
+  const menus: MenuTypeState[] = Array.isArray(user.menuList) ? user.menuList : []
+  return convertMenu(menus)
 })
-const onOpenChange = (openKeys: string[]) => {
-  const latestOpenKey = openKeys.find((key) => state.openKeys.indexOf(key) === -1) as string | undefined
-  if (state.rootSubmenuKeys.indexOf(latestOpenKey ?? '') === -1) {
-    state.openKeys = openKeys
-  } else {
-    state.openKeys = latestOpenKey ? [latestOpenKey] : []
+const handleClick: MenuProps['onClick'] = (e) => {
+  goPage(e.item.path)
+  const item: MenuStackItemState = {
+    key: e.key as number,
+    name: e.item.name,
+    path: e.item.path,
   }
+  menu.setMenuStack(item)
 }
 </script>
 <style lang="scss" scoped>
