@@ -99,7 +99,6 @@ export const menuStore = defineStore('menu', () => {
         menuStackStatus.value = false
         const menuList: MenuTypeState[] = menus || []
         if (menuList.length > 0) {
-          console.log(11369857, !!menuList, menuList)
           const item: MenuTypeState = findPathMenu(menuList, path) || {}
           setMenuStack({
             path: item.path + '',

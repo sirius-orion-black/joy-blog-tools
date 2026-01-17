@@ -46,6 +46,7 @@ export const userLoginStore = defineStore('userLogin', () => {
     token.value = user.value!.token
     if (remember) localCache.setCache('user', useInfo)
     else sessionCache.setCache('user', useInfo)
+    localCache.setCache('remember', remember)
   }
 
   function getUser() {

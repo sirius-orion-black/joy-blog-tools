@@ -1,0 +1,1 @@
+<template><div>label</div></template>

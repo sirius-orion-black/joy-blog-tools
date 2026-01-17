@@ -12,13 +12,14 @@
       <a-table :columns="columns" :data-source="menu.menuList" :row-selection="rowSelection" rowKey="id" :pagination="false">
         <template #bodyCell="{ column, text, record }">
           <template v-if="column.key === 'name'">
-            {{ $t(`menu.${record.name}`) }}
+            <IconFont :type="record.icon" />
+            <span style="margin-left: 5px">{{ $t(`menu.${text}`) }} </span>
           </template>
           <template v-else-if="column.key === 'type'">
-            <span class="a66cff">{{ $t(getType(record.type)) }}</span>
+            <span class="a66cff">{{ $t(getType(text)) }}</span>
           </template>
           <template v-else-if="column.key === 'state'">
-            <span class="a66cff">{{ $t(record.state === 1 ? 'columns.normal' : 'columns.disabled') }}</span>
+            <span class="a66cff">{{ $t(text === 1 ? 'columns.normal' : 'columns.disabled') }}</span>
           </template>
           <template v-else-if="column.key === 'operation'">
             <div class="ase-btn-a font-size-16">
@@ -44,6 +45,7 @@ import { menuStore } from '@/stores/menu'
 import type { MenuTypeState } from '@/types/MenuType'
 
 import MenuDrawer from './MenuDrawer.vue'
+import { IconFont } from '@/utils/iconfont'
 
 const { t } = useI18n()
 const menu = menuStore()
@@ -155,6 +157,11 @@ const columns = [
     title: t('columns.type'),
     dataIndex: 'type',
     key: 'type',
+  },
+  {
+    title: t('columns.sort'),
+    dataIndex: 'sort',
+    key: 'sort',
   },
   {
     title: t('columns.description'),

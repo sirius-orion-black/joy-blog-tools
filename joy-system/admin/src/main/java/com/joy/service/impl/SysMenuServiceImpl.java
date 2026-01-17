@@ -41,7 +41,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .collect(Collectors.groupingBy(SysMenu::getParentId)); // 按父ID分组
 
         // 3. 设置子菜单引用
-        sortedMenus.forEach(menu -> menu.setChildren(childrenMap.getOrDefault(menu.getId(), Collections.emptyList())));
+        sortedMenus.forEach(menu -> menu.setChildren(childrenMap.get(menu.getId())));
+//        sortedMenus.forEach(menu -> menu.setChildren(childrenMap.getOrDefault(menu.getId(), Collections.emptyList())));
 
         // 4. 提取并返回根菜单
         return Result.success(sortedMenus.stream()
@@ -59,6 +60,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public Result<String> addMenu(SysMenu menu) {
         if (menu.getId() == null || menu.getId().equals(0L)) {
             menu.setId(null);
+            if (menu.getType().equals(2))
+                menu.setPermission("query");
+            else {
+                menu.setComponent("");
+                menu.setPath("");
+                menu.setRouter("");
+            }
             return this.save(menu) ? Result.success() : Result.internalServerError();
         } else
             return Result.badRequest();
@@ -75,8 +83,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public Result<String> edit(SysMenu menu) {
         if (menu.getId() != null && !menu.getId().equals(0L)) {
             menu.setUpdateTime(new Date());
+            if (menu.getType().equals(2))
+                menu.setPermission("query");
+            else {
+                menu.setComponent("");
+                menu.setPath("");
+                menu.setRouter("");
+            }
             this.updateById(menu);
-            return this.updateById(menu) ? Result.success():Result.internalServerError();
+            return this.updateById(menu) ? Result.success() : Result.internalServerError();
         } else
             return Result.badRequest();
     }

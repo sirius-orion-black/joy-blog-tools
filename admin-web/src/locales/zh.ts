@@ -43,6 +43,7 @@ export default {
     demo_account: '演示账号',
     unverified: '未验证',
     account_deletion: '账户删除',
+    sort: '排序',
   },
   drawer: {
     new_menu: '新增菜单',
@@ -80,6 +81,10 @@ export default {
     batch_is_banned: '批量封禁/解封',
     search: '查询',
     reset: '重置',
+    content_manage: '内容管理',
+    label_manage: '标签管理',
+    type_manage: '类型管理',
+    article_manage: '文章管理',
   },
   request: {
     success: '请求成功',
@@ -109,5 +114,7 @@ export default {
     verification_code_expired: '验证码已失效',
     username_password_incorrect: '用户名或密码错误',
     verification_failed__puzzle_gap: '验证失败，请控制拼图对齐缺口',
+    request_been_throttled: '请求被节流',
+    operation_too_frequent: '操作过于频繁，请稍后再试',
   },
 }

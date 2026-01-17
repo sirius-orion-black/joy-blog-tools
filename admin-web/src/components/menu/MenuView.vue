@@ -12,7 +12,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { h, computed, onMounted, ref } from 'vue'
+import { h, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 import type { ComputedRef } from 'vue'

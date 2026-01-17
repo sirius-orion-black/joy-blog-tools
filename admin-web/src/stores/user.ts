@@ -70,7 +70,7 @@ export const userStore = defineStore('user', () => {
     userApi.editPermission(params)
   }
 
-  async function getMenuList(remember: boolean) {
+  async function getMenuList(remember: boolean = true) {
     //获取用户所有菜单
     // userApi.getMenuList().then((rs) => {
     //   const menus = rs.data
@@ -95,7 +95,10 @@ export const userStore = defineStore('user', () => {
   function getCacheMenu() {
     const cached = localCache.getCache<Record<string, string>>('menuList') ?? sessionCache.getCache<Record<string, string>>('menuList')
     const menus = Array.isArray(cached) ? cached : []
-    menuList.value = menus
+    if (menus.length < 1) {
+      // const remember = localCache.getCache<boolean>('remember')
+      // getMenuList(remember)
+    } else menuList.value = menus
     // if (menus.length > 0) {
     //   addDynamicRoutes(menus)
     // }

@@ -113,7 +113,6 @@ const getState = (state: number) => {
 }
 // 用户列表
 const serchUserList = () => {
-  console.log('fu zu jian lai lee ')
   user.getList(searchParam)
 }
 // 重置

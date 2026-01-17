@@ -1,53 +1,85 @@
 # 徐徐乐之博客与工具集合
 
-#### 介绍
+### 介绍
 
-因为平台不需要要求不高，手撸了一个极为简单的权限控制，没有角色表，仅仅是用户，菜单，用户菜单关联表形成了简单的权限控制系统
+#### **我的博客诞生记：一行代码，十年执念**‌
 
-#### 软件架构
+还记得大学宿舍里那台风扇轰鸣的旧笔记本吗？当室友在峡谷酣战时，我正对着黑乎乎的终端敲下人生第一个`console.log("Hello Blog!")`。学生时代的博客梦像颗倔强的种子——可服务器费用是堵高墙，免费空间慢得像蜗牛爬 Git 仓库，毕设、求职、加班接踵而至……时间成了最奢侈的变量。
 
-后台包含：
-spring boot,JDK 1.8,Sa-Token,Redis,knife4j,MyBatis Plus ,MySQL
+直到 2025 年的某个深夜，当我在代码堆里抬起头，忽然意识到那个执念更鲜活了\*\*‌——这次，我要亲手铸造每个像素
+于是这个站点从想象走向现实：
 
-admin web 包含
-请选择要包含的功能：
-│ TypeScript, JSX 支持, Router（单页面应用开发）, Pinia（状态管理）,
-Prettier（代码格式化）
-│
-◇ 选择要包含的试验特性：
-│ Oxlint
-◇ 框架：
-│ ant-design-vue@4.x
-◇ css：
-│ sass
+- ‌**键盘为锤**‌：拒绝模版，无数次打磨交互细节
+- ‌**深夜作炉**‌：为那个飘落的花朵调试到晨光微熹
+- ‌**信念为火**‌：在暗黑模式下游弋发光时，我知道十年等待值得
+
+这不是完美作品，而是程序员写给自己的情书：
+
+那些省吃俭用攒云服务的少年
+那些通宵调试免费主机的愤懑
+终在 2025 年凝结成一行`git push -u origin main`
+欢迎走进我的代码宇宙——
+此处星光，皆为你亮 ✨
+
+[点击体验博客] | [[查看源码仓库](https://gitee.com/sirous-black/joy-blog-tools)]
+_——每个 Star 都是续写故事的墨水_
+
+#### ⭐ Star
+
+亲爱的访客朋友：
+
+我知道，在代码世界里“下载即走”是常态——你风尘仆仆地搜索简而美的博客站，一把拽走源码，转身投入新的改建战场，像极了当年我写`while(true)`时忘记设退出条件的模样（笑）。
+
+‌‌**但请留步 3 秒钟**‌‌：
+当你在深夜调试终于看到`Hello World!`时，可曾想过这个极简引擎为你省下多少试错成本？当界面从“代码废墟”蜕变成“极客美术馆”，是否想起某个优雅的 CSS 方案藏在这儿的抽屉？
+
+你的每一次 🌟‌**Star**‌
+▸ 是让「简而美」哲学延续的氧气罐
+▸ 是阻止我删库跑路的防暴锁
+▸ 更是向世界说：‌**“这个破站，有点东西！”**‌
+
+不必鲜花掌声，只要指尖轻点，让这颗星星照亮更多人的技术夜路 ✨
+_——毕竟这个用头发换代码的地方，该有它的星图_
+
+### 软件架构
+
+#### 技术栈
+
+| 客户端    | 管理端         | 服务端       |
+| --------- | -------------- | ------------ |
+| uni-app x | vue3           | spring boot  |
+|           | vite           | JDK 1.8      |
+|           | ts             | Sa-Token     |
+|           | pinia          | Redis        |
+|           | vue-i18n       | knife4j      |
+|           | vue-router     | MyBatis Plus |
+|           | ant-design-vue | MySQL        |
+|           | axios          |              |
+|           | scss           |              |
 
 在前端 class name 我习惯的命名方式 exp:test_main,为了和其它三方插件命名同步，强行改成了 exp:test-main
-
+因为平台不需要要求不高，手撸了一个极为简单的权限控制，没有角色表，仅仅是用户，菜单，用户菜单关联表形成了简单的权限控制系统
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+##### 客户端
 
-#### 使用说明
+> 使用 HBuilder X 在各个平台构建
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+##### 管理端
 
-#### 参与贡献
+> 1. 添加依赖————yarn add
+> 2. 开放环境运行——yarn dev
+> 3. 生产部署————yarn build
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+##### 服务端
 
-#### 特技
+> 1. 导入 SQL 文件到数据库
+> 2. 配置数据库连接（application-环境.yml）
+> 3. maven 构建
+> 4. 启动（Application）
+> 5. 配置 nginx
 
-1.  使用 Readme_XXX.md 来支持不同的语言，例如 Readme_en.md, Readme_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+### 项目截图
+
+![1768641603613](images/README/1768641603613.png)
