@@ -44,6 +44,8 @@ export default {
     unverified: '未验证',
     account_deletion: '账户删除',
     sort: '排序',
+    label_name: '标签名',
+    type_name: '类型名',
   },
   drawer: {
     new_menu: '新增菜单',
@@ -85,6 +87,7 @@ export default {
     label_manage: '标签管理',
     type_manage: '类型管理',
     article_manage: '文章管理',
+    moments‌_manage: '说说管理',
   },
   request: {
     success: '请求成功',

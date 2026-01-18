@@ -45,17 +45,18 @@ _——毕竟这个用头发换代码的地方，该有它的星图_
 
 #### 技术栈
 
-| 客户端    | 管理端         | 服务端       |
-| --------- | -------------- | ------------ |
-| uni-app x | vue3           | spring boot  |
-|           | vite           | JDK 1.8      |
-|           | ts             | Sa-Token     |
-|           | pinia          | Redis        |
-|           | vue-i18n       | knife4j      |
-|           | vue-router     | MyBatis Plus |
-|           | ant-design-vue | MySQL        |
-|           | axios          |              |
-|           | scss           |              |
+
+| 客户端(小程序，app) | 客户端(pc)      | 管理端         | 服务端       |
+| ------------------- | --------------- | -------------- | ------------ |
+| Uni-app x           | React           | Vue3           | Spring boot  |
+|                     | Zustand         | Vite           | JDK 1.8      |
+|                     | React Router v6 | TS             | Sa-Token     |
+|                     | React Query     | Pinia          | Redis        |
+|                     | TS              | Vue-i18n       | knife4j      |
+|                     | Vite            | Vue-router     | MyBatis Plus |
+|                     | Axios           | Ant-design-vue | MySQL        |
+|                     |                 | Axios          |              |
+|                     |                 | Scss           |              |
 
 在前端 class name 我习惯的命名方式 exp:test_main,为了和其它三方插件命名同步，强行改成了 exp:test-main
 因为平台不需要要求不高，手撸了一个极为简单的权限控制，没有角色表，仅仅是用户，菜单，用户菜单关联表形成了简单的权限控制系统

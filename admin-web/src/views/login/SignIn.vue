@@ -66,7 +66,7 @@ const forgotPassword = () => emit('update:page', 'email')
 // 多语系处理
 const { locale } = useI18n()
 const changeLanguage = () => {
-  locale.value = locale.value === 'zh' ? 'en' : 'zh' // 切换语言逻辑
+  locale.value = locale.value === 'zhCN' ? 'enUS' : 'zhCN' // 切换语言逻辑
 }
 
 const login = userLoginStore()

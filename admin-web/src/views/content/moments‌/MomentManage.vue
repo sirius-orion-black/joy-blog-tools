@@ -1,5 +1,5 @@
 <template>
   <div class="base-main">
-    <div>ArticleManage</div>
+    <div>MomentManage</div>
   </div>
 </template>
