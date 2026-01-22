@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { userLoginStore } from '@/stores/login'
 
 import type { RouteRecordRaw } from 'vue-router'
-import type { MenuTypeState } from '@/types/MenuType'
+import type { MenuTypeState } from '@/types/menuType'
 
 import { localCache, sessionCache } from '@/utils/storage'
 

@@ -1,5 +1,5 @@
 import service from '../utils/request'
-import type { MenuTypeState } from '@/types/MenuType'
+import type { MenuTypeState } from '@/types/menuType'
 
 export default {
   getList: () => service.get('/admin/menu/getList'),

@@ -1,5 +1,5 @@
 import service from '../utils/request'
-import type { UserTypeState, UserMenuState, UserSearchTypeState } from '@/types/UserType'
+import type { UserTypeState, UserMenuState, UserSearchTypeState } from '@/types/userType'
 
 export default {
   getList: (data: UserSearchTypeState) => service.get('/admin/user/getList', { params: data }),

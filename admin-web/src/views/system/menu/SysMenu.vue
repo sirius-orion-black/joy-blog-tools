@@ -42,7 +42,7 @@ import { Modal } from 'ant-design-vue'
 
 import { menuStore } from '@/stores/menu'
 
-import type { MenuTypeState } from '@/types/MenuType'
+import type { MenuTypeState } from '@/types/menuType'
 
 import MenuDrawer from './MenuDrawer.vue'
 import { IconFont } from '@/utils/iconfont'

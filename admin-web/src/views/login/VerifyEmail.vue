@@ -38,7 +38,7 @@ import { useI18n } from 'vue-i18n'
 import { reactive, computed } from 'vue'
 import { UserOutlined } from '@ant-design/icons-vue'
 
-import type { EmailState } from '@/types/LoginType'
+import type { EmailState } from '@/types/loginType'
 
 // 跳转到忘记密码页面
 const emit = defineEmits<{

@@ -145,7 +145,7 @@ import { DownOutlined } from '@ant-design/icons-vue'
 
 import { menuStore } from '@/stores/menu'
 
-import type { MenuTypeState, MenuParentState, MenuIconState } from '@/types/MenuType'
+import type { MenuTypeState, MenuParentState, MenuIconState } from '@/types/menuType'
 
 const menu = menuStore()
 

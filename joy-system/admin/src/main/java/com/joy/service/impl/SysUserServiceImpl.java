@@ -109,8 +109,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public Result<String> editUser(SysUser sysUser) {
         //格式校验
-        log.info("email-format====>" + !UserVerifyUtil.emailFormat(sysUser.getEmail()) + "," + StringUtils.isEmpty(sysUser.getEmail()));
-        log.info("email-format====>" + !UserVerifyUtil.phoneFormat(sysUser.getPhone()) + "," + StringUtils.isEmpty(sysUser.getPhone()));
         if (!UserVerifyUtil.emailFormat(sysUser.getEmail()) || StringUtils.isEmpty(sysUser.getEmail()))
             return Result.badRequest("email_format_incorrect");
         else if (!UserVerifyUtil.phoneFormat(sysUser.getPhone()) || StringUtils.isEmpty(sysUser.getPhone()))

@@ -17,7 +17,7 @@ import { useRouter } from 'vue-router'
 
 import type { ComputedRef } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
-import type { MenuItemState, MenuTypeState, MenuStackItemState } from '@/types/MenuType'
+import type { MenuItemState, MenuTypeState, MenuStackItemState } from '@/types/menuType'
 
 import { userStore } from '@/stores/user'
 import { menuStore } from '@/stores/menu'
@@ -40,7 +40,7 @@ onMounted(() => {
     menu.getMenuStack()
     const path: string = router.currentRoute.value.path
     menu.getCurrentMenuStack(user.menuList ?? [], path)
-  }, 200)
+  }, 100)
 })
 
 function goPage(path: string) {

@@ -34,7 +34,7 @@
         :key="item.key"
       >
         <span class="header-item-title" @click="goPage(item)">{{ $t(`menu.${item.name}`) }}</span>
-        <CloseOutlined v-if="menu.menuStack.current?.key !== item.key" />
+        <CloseOutlined v-if="menu.menuStack.current?.key !== item.key" @click="delMenuItem(item)" />
       </div>
     </div>
   </div>
@@ -51,7 +51,7 @@ import { userStore } from '@/stores/user'
 
 import { CloseOutlined } from '@ant-design/icons-vue'
 
-import type { MenuStackItemState } from '@/types/MenuType'
+import type { MenuStackItemState } from '@/types/menuType'
 
 const router = useRouter()
 
@@ -69,16 +69,18 @@ onMounted(() => {
     menu.getMenuStack()
     const path: string = router.currentRoute.value.path
     menu.getCurrentMenuStack(user.menuList ?? [], path)
-  }, 200)
+  }, 100)
 })
 const goPage = (item: MenuStackItemState) => {
   menu.setMenuStack(item)
   router.push(item.path)
-  console.log(item)
 }
 const logout = async () => {
   await login.signout()
   router.push('/login')
+}
+const delMenuItem = (item: MenuStackItemState) => {
+  menu.delMenuStack(item)
 }
 </script>
 

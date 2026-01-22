@@ -1,6 +1,6 @@
 import service from '../utils/request'
 
-import type { LoginState, EmailState } from '@/types/LoginType'
+import type { LoginState, EmailState } from '@/types/loginType'
 
 export default {
   login: (data: LoginState) => service.post('/admin/auth/login', data, { headers: { 'Content-Type': 'multipart/form-data' } }),

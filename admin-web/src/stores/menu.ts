@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 import menuApi from '@/apis/menu'
-import type { MenuTypeState, MenuStackItemState, MenuStackState } from '@/types/MenuType'
+import type { MenuTypeState, MenuStackItemState, MenuStackState } from '@/types/menuType'
 import { sessionCache } from '@/utils/storage'
 
 export const menuStore = defineStore('menu', () => {
@@ -58,21 +58,23 @@ export const menuStore = defineStore('menu', () => {
 
   //设置顶部菜单
   function setMenuStack(item: MenuStackItemState) {
-    if (menuStack.value && menuStack.value.items && menuStack.value.items.length > 0) {
-      const items: MenuStackItemState[] = menuStack.value.items
-      const index = items.findIndex((menu) => menu.key === item.key)
-      if (index !== -1)
-        // 覆盖现有项 (保留响应性)
-        items.splice(index, 1, item)
-      else
-        // 添加新项
-        items.push(item)
-      menuStack.value.items = items
-    } else {
-      menuStack.value.items?.push(item)
+    if (!!item.key && item.path != 'undefined' && item.name != 'undefined') {
+      if (menuStack.value && menuStack.value.items && menuStack.value.items.length > 0) {
+        const items: MenuStackItemState[] = menuStack.value.items
+        const index = items.findIndex((menu) => menu.key === item.key)
+        if (index !== -1)
+          // 覆盖现有项 (保留响应性)
+          items.splice(index, 1, item)
+        else
+          // 添加新项
+          items.push(item)
+        menuStack.value.items = items
+      } else {
+        menuStack.value.items?.push(item)
+      }
+      menuStack.value.current = item
+      sessionCache.setCache('menuItem', menuStack.value)
     }
-    menuStack.value.current = item
-    sessionCache.setCache('menuItem', menuStack.value)
   }
   //获取顶部菜单
   function getMenuStack() {
@@ -93,6 +95,7 @@ export const menuStore = defineStore('menu', () => {
     return null
   }
 
+  //获取顶部菜单
   function getCurrentMenuStack(menus: MenuTypeState[], path: string) {
     if (menuStackStatus.value) {
       if (menuStack.value.current || menuStack.value.items) {
@@ -113,6 +116,17 @@ export const menuStore = defineStore('menu', () => {
     }
   }
 
+  //删除顶部菜单
+  function delMenuStack(item: MenuStackItemState) {
+    if (menuStack.value && menuStack.value.items && menuStack.value.items.length > 0) {
+      const items: MenuStackItemState[] = menuStack.value.items
+      const index = items.findIndex((menu) => menu.key === item.key)
+      if (index > -1) items.splice(index, 1)
+      menuStack.value.items = items
+      sessionCache.setCache('menuItem', menuStack.value)
+    }
+  }
+
   return {
     menuList,
     menuDraw,
@@ -127,5 +141,6 @@ export const menuStore = defineStore('menu', () => {
     setMenuStack,
     getMenuStack,
     getCurrentMenuStack,
+    delMenuStack,
   }
 })

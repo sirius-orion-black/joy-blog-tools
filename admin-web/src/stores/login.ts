@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import loginApi from '@/apis/login'
 
 import { localCache, sessionCache } from '@/utils/storage'
-import type { LoginState } from '@/types/LoginType'
+import type { LoginState } from '@/types/loginType'
 
 export const userLoginStore = defineStore('userLogin', () => {
   const user = ref<Record<string, string>>()

@@ -95,8 +95,8 @@ import { message, Modal } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
 
 import type { TreeProps } from 'ant-design-vue'
-import type { UserTypeState, UserMenuState } from '@/types/UserType'
-import type { MenuTypeState } from '@/types/MenuType'
+import type { UserTypeState, UserMenuState } from '@/types/userType'
+import type { MenuTypeState } from '@/types/menuType'
 
 const user = userStore()
 const menu = menuStore()

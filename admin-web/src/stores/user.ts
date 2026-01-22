@@ -2,9 +2,9 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 import userApi from '@/apis/user'
-import type { UserSearchTypeState, UserTypeState, UserDrawerState, UserMenuState } from '@/types/UserType'
-import type { PageDataState } from '@/types/result'
-import type { MenuTypeState } from '@/types/MenuType'
+import type { UserSearchTypeState, UserTypeState, UserDrawerState, UserMenuState } from '@/types/userType'
+import type { PageDataState } from '@/types/resultType'
+import type { MenuTypeState } from '@/types/menuType'
 
 import { localCache, sessionCache } from '@/utils/storage'
 import { addDynamicRoutes } from '@/router'

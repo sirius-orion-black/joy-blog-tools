@@ -50,7 +50,7 @@ import { RightOutlined } from '@ant-design/icons-vue'
 
 import { userLoginStore } from '@/stores/login'
 
-import type { CaptchaState } from '@/types/LoginType'
+import type { CaptchaState } from '@/types/loginType'
 
 // login store
 const loginStore = userLoginStore()

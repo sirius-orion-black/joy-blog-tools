@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 
-import type { FlowerState } from '@/types/LoginType'
+import type { FlowerState } from '@/types/loginType'
 
 import SignIn from './SignIn.vue'
 import VerifyEmail from './VerifyEmail.vue'

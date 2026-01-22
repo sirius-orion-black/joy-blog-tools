@@ -75,8 +75,8 @@ import { userStore } from '@/stores/user'
 import { menuStore } from '@/stores/menu'
 
 import type { Ref } from 'vue'
-import type { UserSearchTypeState, UserTypeState } from '@/types/UserType'
-import type { PageTableState } from '@/types/result'
+import type { UserSearchTypeState, UserTypeState } from '@/types/userType'
+import type { PageTableState } from '@/types/resultType'
 
 import UserDrawer from './UserDrawer.vue'
 

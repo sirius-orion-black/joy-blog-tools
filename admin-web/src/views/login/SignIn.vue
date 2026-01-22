@@ -53,8 +53,8 @@ import { userLoginStore } from '@/stores/login'
 import { userStore } from '@/stores/user'
 import { menuStore } from '@/stores/menu'
 
-import type { LoginState } from '@/types/LoginType'
-import type { MenuTypeState, MenuStackItemState } from '@/types/MenuType'
+import type { LoginState } from '@/types/loginType'
+import type { MenuTypeState, MenuStackItemState } from '@/types/menuType'
 
 import ShowCaptcha from './ShowCaptcha.vue'
 
