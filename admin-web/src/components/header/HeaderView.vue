@@ -48,6 +48,7 @@ import { useI18n } from 'vue-i18n'
 import { userLoginStore } from '@/stores/login'
 import { menuStore } from '@/stores/menu'
 import { userStore } from '@/stores/user'
+import { setLocale } from '@/i18n/i18n'
 
 import { CloseOutlined } from '@ant-design/icons-vue'
 
@@ -62,6 +63,7 @@ const user = userStore()
 const { locale } = useI18n()
 const changeLanguage = () => {
   locale.value = locale.value === 'zhCN' ? 'enUS' : 'zhCN' // 切换语言逻辑
+  setLocale(locale.value)
 }
 
 onMounted(() => {
@@ -77,6 +79,9 @@ const goPage = (item: MenuStackItemState) => {
 }
 const logout = async () => {
   await login.signout()
+  user.$reset()
+  menu.$reset()
+  setLocale(locale.value)
   router.push('/login')
 }
 const delMenuItem = (item: MenuStackItemState) => {

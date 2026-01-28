@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Modal } from 'ant-design-vue'
 
@@ -86,6 +86,7 @@ const list = ref<MenuTypeState>({
 const selectMenus = ref<MenuTypeState[]>([])
 // 菜单编辑页面
 const showDrawer = (key: string = '', val: MenuTypeState = {}) => {
+  list.value = {}
   drawTitle.value = key
   val.id = val.id ?? 0
   if (!val.parentId) val.parentId = 0
@@ -122,7 +123,7 @@ const batchDeletionMenu = () => {
   }
 }
 // 表格列表
-const columns = [
+const columns = computed(() => [
   {
     title: t('columns.name'),
     dataIndex: 'name',
@@ -174,7 +175,7 @@ const columns = [
     fixed: 'right',
     width: 100,
   },
-]
+])
 const rowSelection = ref({
   checkStrictly: false,
   onChange: (selectedRowKeys: (string | number)[], selectedRows: MenuTypeState[]) => {

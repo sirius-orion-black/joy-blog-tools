@@ -21,4 +21,23 @@ export default defineConfigWithVueTs(
   vueTsConfigs.recommended,
   ...pluginOxlint.configs['flat/recommended'],
   skipFormatting,
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+          vars: 'all',
+          args: 'after-used',
+        },
+      ],
+
+      // 可选：同时配置 JavaScript 版本的规则（针对 .js 文件）
+      'no-unused-vars': 'off', // 关闭基础规则，使用 TypeScript 版本
+    },
+  },
 )

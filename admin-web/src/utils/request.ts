@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { message } from 'ant-design-vue'
-import { i18n } from '@/i18n'
+import { i18n } from '@/i18n/i18n'
 import router from '@/router'
 
 import { userLoginStore } from '@/stores/login'

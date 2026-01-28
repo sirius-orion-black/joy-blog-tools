@@ -170,10 +170,10 @@ const menuData = computed(() => {
 
 const treeData = computed(() => {
   // 递归处理函数
-  const menuNode = (menu: { name: string; id: number; children?: MenuParentState[] }): MenuParentState => {
+  const menuNode = (menu: MenuTypeState): MenuParentState => {
     const result: MenuParentState = {
-      name: menu.name,
-      id: menu.id,
+      name: menu.name ?? '',
+      id: menu.id ?? 0,
     }
     // 递归处理非空子节点
     if (Array.isArray(menu.children) && menu.children.length > 0) {
@@ -181,10 +181,8 @@ const treeData = computed(() => {
     }
     return result
   }
-  const cleanList = menu.menuList?.map(menuNode)
-
-  console.log(menu.menuList)
-  console.log(cleanList)
+  const cleanList = (menu.menuList || []).map(menuNode)
+  console.log(cleanList, menu.menuList)
   return [
     {
       id: 0,

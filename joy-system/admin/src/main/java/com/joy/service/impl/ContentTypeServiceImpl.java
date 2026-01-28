@@ -36,6 +36,13 @@ public class ContentTypeServiceImpl extends ServiceImpl<FeContentTypeMapper, FeC
         return Result.success(this.page(page,query));
     }
 
+    @Override
+    public Result<String> addType(FeContentType type) {
+        if (StringUtils.isEmpty(type.getName()))
+            return Result.badRequest();
+        return this.save(type) ? Result.success() : Result.internalServerError();
+    }
+
     /**
      * 修改类型
      * @param type

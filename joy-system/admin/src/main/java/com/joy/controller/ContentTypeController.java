@@ -34,6 +34,16 @@ public class ContentTypeController {
     }
 
     /**
+     * 新增类型
+     * @param type
+     * @return
+     */
+    @PostMapping("/add")
+    public Result<String> addType(@RequestBody FeContentType type){
+        return contentTypeService.addType(type);
+    }
+
+    /**
      * 修改类型
      * @param type
      * @return

@@ -7,9 +7,10 @@ export interface LabelTypeSearchState {
 }
 
 export interface LabelTypeState {
-  id: number
+  id: number | null
   name: string
   state: number | null
   type?: number | null
   description: string
+  createTime?: string
 }

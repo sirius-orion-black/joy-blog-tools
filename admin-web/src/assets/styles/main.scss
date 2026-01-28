@@ -77,6 +77,10 @@
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
+      .base-search-height {
+        width: 150px;
+        height: 32px;
+      }
       .base-search-label {
         margin-top: 15px;
         margin-right: 15px;

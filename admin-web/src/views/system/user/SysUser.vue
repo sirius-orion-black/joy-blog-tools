@@ -3,25 +3,25 @@
     <div class="base-search">
       <div class="base-search-label">
         <span class="base-search-title">{{ $t('base.user_name') }}:</span>
-        <a-input v-model:value="searchParam.username" style="width: 150px; height: 32px" />
+        <a-input v-model:value="searchParam.username" class="base-search-height" />
       </div>
       <div class="base-search-label">
         <span class="base-search-title">{{ $t('base.user_phone') }}:</span>
-        <a-input v-model:value="searchParam.phone" style="width: 150px; height: 32px" />
+        <a-input v-model:value="searchParam.phone" class="base-search-height" />
       </div>
       <div class="base-search-label">
         <span class="base-search-title">{{ $t('base.user_email') }}:</span>
-        <a-input v-model:value="searchParam.email" style="width: 150px; height: 32px" />
+        <a-input v-model:value="searchParam.email" class="base-search-height" />
       </div>
       <div class="base-search-label">
         <span class="base-search-title">{{ $t('columns.state') }}:</span>
-        <a-select v-model:value="searchParam.state" style="width: 100px; height: 32px" :options="options"></a-select>
+        <a-select v-model:value="searchParam.state" class="base-search-height" :options="options"></a-select>
       </div>
       <div class="base-search-label">
-        <a-button type="primary" @click="serchUserList">{{ $t('menu.search') }}</a-button>
+        <a-button type="primary" @click="searchUserList">{{ $t('menu.search') }}</a-button>
       </div>
       <div class="base-search-label">
-        <a-button @click="restSearch">{{ $t('menu.reset') }}</a-button>
+        <a-button @click="resetSearch">{{ $t('menu.reset') }}</a-button>
       </div>
     </div>
     <div class="base-container">
@@ -30,7 +30,7 @@
           <a-button @click="showUserDrawer('add', 360)"><IconFont type="icon-add" />{{ $t('menu.add') }}</a-button>
         </div>
         <div class="base-operate-label">
-          <a-button @click="batchIsbanned"><IconFont type="icon-is-banned" />{{ $t('menu.batch_is_banned') }}</a-button>
+          <a-button @click="batchIsBanned"><IconFont type="icon-is-banned" />{{ $t('menu.batch_is_banned') }}</a-button>
         </div>
         <div class="base-operate-label">
           <a-button @click="batchDeletion"><IconFont type="icon-delete" />{{ $t('menu.batch_deletion') }}</a-button>
@@ -62,7 +62,7 @@
         </template>
       </a-table>
     </div>
-    <UserDrawer @update:list="serchUserList" />
+    <UserDrawer @update:list="searchUserList" />
   </div>
 </template>
 
@@ -112,11 +112,11 @@ const getState = (state: number) => {
   }
 }
 // 用户列表
-const serchUserList = () => {
+const searchUserList = () => {
   user.getList(searchParam)
 }
 // 重置
-const restSearch = () => {
+const resetSearch = () => {
   searchParam.username = ''
   searchParam.email = ''
   searchParam.phone = ''
@@ -128,7 +128,7 @@ const restSearch = () => {
 const { t } = useI18n()
 
 // 表格数据
-const options = [
+const options = computed(() => [
   {
     label: t('columns.normal'),
     value: 1,
@@ -145,8 +145,8 @@ const options = [
     label: t('columns.demo_account'),
     value: 4,
   },
-]
-const columns = [
+])
+const columns = computed(() => [
   {
     title: t('base.user_nickname'),
     dataIndex: 'nickname',
@@ -183,7 +183,7 @@ const columns = [
     fixed: 'right',
     width: 165,
   },
-]
+])
 // 分页
 const pagination = computed(() => {
   return {
@@ -240,12 +240,9 @@ const isBannedUser = (text: UserTypeState) => {
   param.push({ id: text.id, state: text.state === 2 ? 1 : 2 })
   bannedUser(param)
 }
-const batchIsbanned = () => {
+const batchIsBanned = () => {
   if (selectUsers.value.length > 0) {
-    const param: UserTypeState[] = []
-    selectUsers.value.forEach((rs) => {
-      param.push({ id: rs.id, state: rs.state === 2 ? 1 : 2 })
-    })
+    const param: UserTypeState[] = selectUsers.value.map((rs) => ({ id: rs.id, state: rs.state === 2 ? 1 : 2 }))
     bannedUser(param)
   }
 }

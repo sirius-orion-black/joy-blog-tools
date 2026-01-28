@@ -52,6 +52,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { userLoginStore } from '@/stores/login'
 import { userStore } from '@/stores/user'
 import { menuStore } from '@/stores/menu'
+import { setLocale } from '@/i18n/i18n'
 
 import type { LoginState } from '@/types/loginType'
 import type { MenuTypeState, MenuStackItemState } from '@/types/menuType'
@@ -67,6 +68,7 @@ const forgotPassword = () => emit('update:page', 'email')
 const { locale } = useI18n()
 const changeLanguage = () => {
   locale.value = locale.value === 'zhCN' ? 'enUS' : 'zhCN' // 切换语言逻辑
+  setLocale(locale.value)
 }
 
 const login = userLoginStore()

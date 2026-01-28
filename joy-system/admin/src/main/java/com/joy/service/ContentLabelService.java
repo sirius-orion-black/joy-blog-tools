@@ -10,7 +10,10 @@ import java.util.List;
 public interface ContentLabelService {
     Result<Page<FeContentLabel>> getLabel(SearchParamDto params);
 
+    Result<String> addLabel(FeContentLabel label);
+
     Result<String> editLabel(FeContentLabel label);
 
     Result<String> delLabel(List<Long> labelIds);
+
 }

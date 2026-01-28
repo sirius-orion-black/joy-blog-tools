@@ -5,18 +5,32 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.content.SearchParamDto;
+import com.joy.entity.content.FeContentBlogpostLabel;
 import com.joy.entity.content.FeContentLabel;
+import com.joy.entity.content.FeContentMomentsLabel;
+import com.joy.mapper.content.FeContentBlogpostLabelMapper;
 import com.joy.mapper.content.FeContentLabelMapper;
+import com.joy.mapper.content.FeContentMomentsLabelMapper;
 import com.joy.service.ContentLabelService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class ContentLabelServiceImpl extends ServiceImpl<FeContentLabelMapper, FeContentLabel> implements ContentLabelService {
+
+    @Autowired
+    private FeContentBlogpostLabelMapper feContentBlogpostLabelMapper;
+    @Autowired
+    private FeContentMomentsLabelMapper feContentMomentsLabelMapper;
 
     /**
      * 获取标签列表
@@ -35,6 +49,19 @@ public class ContentLabelServiceImpl extends ServiceImpl<FeContentLabelMapper, F
         if (params.getType() != null)
             query.eq("type", params.getType());
         return Result.success(this.page(page, query));
+    }
+
+    /**
+     * 新增标签
+     *
+     * @param label
+     * @return
+     */
+    @Override
+    public Result<String> addLabel(FeContentLabel label) {
+        if (StringUtils.isEmpty(label.getName()))
+            return Result.badRequest();
+        return this.save(label) ? Result.success() : Result.internalServerError();
     }
 
     /**
@@ -62,13 +89,25 @@ public class ContentLabelServiceImpl extends ServiceImpl<FeContentLabelMapper, F
     public Result<String> delLabel(List<Long> labelIds) {
         if (labelIds.isEmpty())
             return Result.success();
+        List<FeContentLabel> list = this.listByIds(labelIds);
+        //获取标签类型分组数据
+        Map<Integer, List<Long>> labelMap = list.stream().collect(Collectors.groupingBy(FeContentLabel::getType, Collectors.mapping(FeContentLabel::getId, Collectors.toList())));
 
-//        List<FeContentLabel> labels = new ArrayList<>();
-//        labelIds.forEach(m -> {
-//            FeContentLabel label = new FeContentLabel();
-//            label.setId(m);
-//            labels.add(label);
-//        });
+        // 按类型删除关联数据
+        List<Long> blogpostIds = labelMap.getOrDefault(1, Collections.emptyList());
+        if(!CollectionUtils.isEmpty(blogpostIds)){
+            QueryWrapper<FeContentBlogpostLabel> blogpost = new QueryWrapper<>();
+            blogpost.in("label_id",blogpostIds);
+            feContentBlogpostLabelMapper.delete(blogpost);
+
+        }
+        List<Long> momentsIds = labelMap.getOrDefault(2, Collections.emptyList());
+        if(!CollectionUtils.isEmpty(momentsIds)){
+            QueryWrapper<FeContentMomentsLabel> moments = new QueryWrapper<>();
+            moments.in("label_id",momentsIds);
+            feContentMomentsLabelMapper.delete(moments);
+        }
+
         return this.removeBatchByIds(labelIds) ? Result.success() : Result.internalServerError();
     }
 }

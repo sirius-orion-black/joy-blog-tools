@@ -46,6 +46,8 @@ export default {
     sort: '排序',
     label_name: '标签名',
     type_name: '类型名',
+    blog: '博客',
+    moments: '说说',
   },
   drawer: {
     new_menu: '新增菜单',
@@ -67,6 +69,12 @@ export default {
     edit_user: '编辑管理人员',
     edit_user_permission: '编辑管理人员权限',
     content_bee_modified: '内容没有修改',
+    new_label: '新增标签',
+    edit_label: '编辑标签',
+    label_name_empty: '标签名称不能为空',
+    new_type: '新增类型',
+    edit_type: '编辑类型',
+    type_name_empty: '类型名称不能为空',
   },
   menu: {
     root: '顶级菜单',

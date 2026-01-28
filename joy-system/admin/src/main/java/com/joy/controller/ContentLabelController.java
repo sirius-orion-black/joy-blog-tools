@@ -34,6 +34,16 @@ public class ContentLabelController {
     }
 
     /**
+     * 新增标签
+     * @param label
+     * @return
+     */
+    @PostMapping("/add")
+    public Result<String> addLabel(@RequestBody FeContentLabel label){
+        return contentLabelService.addLabel(label);
+    }
+
+    /**
      * 修改标签
      * @param label
      * @return

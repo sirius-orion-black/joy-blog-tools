@@ -10,7 +10,10 @@ import java.util.List;
 public interface ContentTypeService {
     Result<Page<FeContentType>> getType(SearchParamDto params);
 
+    Result<String> addType(FeContentType type);
+
     Result<String> editType(FeContentType type);
 
     Result<String> delType(List<Long> typeIds);
+
 }
