@@ -9,6 +9,7 @@ export interface UserSearchTypeState {
 }
 
 export interface UserTypeState {
+  //用户修改类型
   id?: number
   state?: number
   email?: string
@@ -19,6 +20,7 @@ export interface UserTypeState {
 }
 
 export interface UserDrawerState {
+  //弹窗类型
   type: string
   show: boolean
   width: number
@@ -26,6 +28,7 @@ export interface UserDrawerState {
 }
 
 export interface UserMenuState {
+  //用户菜单关联类型
   userId: number
   menuId?: number[]
 }

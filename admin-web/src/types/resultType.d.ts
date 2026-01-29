@@ -1,4 +1,5 @@
 export interface PageDataState {
+  //返回分页数据
   current: number
   size: number
   total: number
@@ -7,6 +8,7 @@ export interface PageDataState {
 }
 
 export interface PageTableState {
+  //表格分页
   current?: number
   pageSize?: number
   total?: number

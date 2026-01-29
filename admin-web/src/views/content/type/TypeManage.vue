@@ -49,29 +49,22 @@
     </div>
 
     <a-drawer :open="showDrawer" :title="$t(drawerTitle)" @close="onClose" :closable="false">
-      <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-        <a-col :span="5" style="text-align: right">{{ $t('columns.label_name') }}</a-col>
-        <a-col :span="19">
-          <a-input v-model:value="typeInfo.name" :placeholder="$t('columns.label_name')" />
-        </a-col>
-      </a-row>
+      <a-form :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+        <a-form-item :label="$t('columns.type_name')" :rules="[{ required: true, message: '' }]">
+          <a-input v-model:value="typeInfo.name" :placeholder="$t('columns.type_name')" />
+        </a-form-item>
 
-      <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-        <a-col :span="5" style="text-align: right">{{ $t('columns.state') }}</a-col>
-        <a-col :span="19">
+        <a-form-item :label="$t('columns.state')" :rules="[{ required: true, message: '' }]">
           <a-radio-group v-model:value="typeInfo.state">
             <a-radio-button :value="1">{{ $t('columns.normal') }}</a-radio-button>
             <a-radio-button :value="2">{{ $t('columns.disabled') }}</a-radio-button>
           </a-radio-group>
-        </a-col>
-      </a-row>
+        </a-form-item>
 
-      <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-        <a-col :span="5" style="text-align: right">{{ $t('columns.description') }}</a-col>
-        <a-col :span="19">
+        <a-form-item :label="$t('columns.description')">
           <a-input v-model:value="typeInfo.description" :placeholder="$t('columns.description')" />
-        </a-col>
-      </a-row>
+        </a-form-item>
+      </a-form>
 
       <template #extra>
         <a-space>

@@ -8,9 +8,8 @@
     :footer-style="{ textAlign: 'right' }"
     @close="onClose"
   >
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.superior_menu') }}</a-col>
-      <a-col :span="19">
+    <a-form :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+      <a-form-item :label="$t('drawer.superior_menu')" :rules="[{ required: true, message: '' }]">
         <a-tree-select
           v-model:value="menuData.parentId"
           show-search
@@ -25,23 +24,17 @@
         >
           <template #title="{ name }"> {{ $t(`menu.${name}`) }} </template>
         </a-tree-select>
-      </a-col>
-    </a-row>
+      </a-form-item>
 
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.menu_type') }}</a-col>
-      <a-col :span="19">
+      <a-form-item :label="$t('drawer.menu_type')" :rules="[{ required: true, message: '' }]">
         <a-radio-group v-model:value="menuData.type">
           <a-radio-button :value="1">{{ $t('columns.directory') }}</a-radio-button>
           <a-radio-button :value="2">{{ $t('columns.menu') }}</a-radio-button>
           <a-radio-button :value="3">{{ $t('columns.permission') }}</a-radio-button>
         </a-radio-group>
-      </a-col>
-    </a-row>
+      </a-form-item>
 
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px" v-show="menuData.type !== 3">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.menu_icon') }}</a-col>
-      <a-col :span="19">
+      <a-form-item :label="$t('drawer.menu_icon')" v-show="menuData.type !== 3">
         <div class="menu-draw-icon base-day">
           <a-button @click="showIcons()">
             <IconFont v-if="menuData.icon" :type="menuData.icon" />{{ $t('drawer.icon_select') }}<DownOutlined />
@@ -54,83 +47,54 @@
             </a-flex>
           </div>
         </div>
-      </a-col>
-    </a-row>
+      </a-form-item>
 
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.menu_name') }}</a-col>
-      <a-col :span="19">
+      <a-form-item :label="$t('drawer.menu_name')" :rules="[{ required: true, message: '' }]">
         <a-input v-model:value="menuData.name" placeholder="exp:system_manage" />
-      </a-col>
-    </a-row>
+      </a-form-item>
 
-    <div v-show="menuData.type === 2">
-      <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-        <a-col :span="5" style="text-align: right">{{ $t('drawer.component_name') }}</a-col>
-        <a-col :span="19">
+      <div v-show="menuData.type === 2">
+        <a-form-item :label="$t('drawer.component_name')" :rules="[{ required: true, message: '' }]">
           <a-input v-model:value="menuData.router" placeholder="exp:systemManage" />
-        </a-col>
-      </a-row>
+        </a-form-item>
 
-      <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-        <a-col :span="5" style="text-align: right">{{ $t('drawer.component_path') }}</a-col>
-        <a-col :span="19">
+        <a-form-item :label="$t('drawer.component_path')" :rules="[{ required: true, message: '' }]">
           <a-input v-model:value="menuData.component" placeholder="exp:/home/DashBoard" />
-        </a-col>
-      </a-row>
+        </a-form-item>
 
-      <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-        <a-col :span="5" style="text-align: right">{{ $t('drawer.component_link') }}</a-col>
-        <a-col :span="19">
+        <a-form-item :label="$t('drawer.component_link')" :rules="[{ required: true, message: '' }]">
           <a-input v-model:value="menuData.path" placeholder="exp:/home/DashBoard" />
-        </a-col>
-      </a-row>
-    </div>
+        </a-form-item>
+      </div>
 
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.component_description') }}</a-col>
-      <a-col :span="19">
+      <a-form-item :label="$t('drawer.component_description')">
         <a-input v-model:value="menuData.description" :placeholder="`exp:${$t('menu.system_manage')}`" />
-      </a-col>
-    </a-row>
+      </a-form-item>
 
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px" v-show="menuData.type === 3">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.component_permission') }}</a-col>
-      <a-col :span="19">
+      <a-form-item :label="$t('drawer.component_permission')" :rules="[{ required: true, message: '' }]" v-show="menuData.type === 3">
         <a-radio-group v-model:value="menuData.permission">
           <a-radio-button value="add">{{ $t('menu.add') }}</a-radio-button>
           <a-radio-button value="edit">{{ $t('menu.edit') }}</a-radio-button>
           <a-radio-button value="delete">{{ $t('menu.delete') }}</a-radio-button>
         </a-radio-group>
-      </a-col>
-    </a-row>
+      </a-form-item>
 
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.component_state') }}</a-col>
-      <a-col :span="19">
+      <a-form-item :label="$t('drawer.component_state')" :rules="[{ required: true, message: '' }]">
         <a-radio-group v-model:value="menuData.state">
           <a-radio-button :value="1">{{ $t('columns.normal') }}</a-radio-button>
           <a-radio-button :value="2">{{ $t('columns.disabled') }}</a-radio-button>
         </a-radio-group>
-      </a-col>
-    </a-row>
-
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px" v-show="menuData.type === 2">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.is_external') }}</a-col>
-      <a-col :span="19">
+      </a-form-item>
+      <a-form-item :label="$t('drawer.is_external')" :rules="[{ required: true, message: '' }]" v-show="menuData.type === 2">
         <a-radio-group v-model:value="menuData.isExternal">
           <a-radio-button :value="1">{{ $t('columns.yes') }}</a-radio-button>
           <a-radio-button :value="2">{{ $t('columns.no') }}</a-radio-button>
         </a-radio-group>
-      </a-col>
-    </a-row>
-
-    <a-row align="middle" :gutter="[16, 16]" style="margin-bottom: 15px">
-      <a-col :span="5" style="text-align: right">{{ $t('drawer.component_sorting') }}</a-col>
-      <a-col :span="19">
+      </a-form-item>
+      <a-form-item :label="$t('drawer.component_sorting')">
         <a-input-number v-model:value="menuData.sort" />
-      </a-col>
-    </a-row>
+      </a-form-item>
+    </a-form>
 
     <template #extra>
       <a-space>

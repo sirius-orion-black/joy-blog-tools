@@ -48,6 +48,8 @@ export default {
     type_name: '类型名',
     blog: '博客',
     moments: '说说',
+    article_name: '文章名',
+    article_introduction: '文章简介',
   },
   drawer: {
     new_menu: '新增菜单',
