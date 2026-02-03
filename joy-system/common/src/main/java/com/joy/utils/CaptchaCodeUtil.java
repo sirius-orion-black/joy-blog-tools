@@ -19,13 +19,13 @@ import java.util.UUID;
 public class CaptchaCodeUtil {
 
     //网络图片地址
-    private final static String ImgUrl = "https://picsum.photos/320/160";
+    private final static String IMG_URL  = "https://picsum.photos/320/160";
 
     //本地图片地址
-    private final static String ImgPath = "./%s.jpg";
+    private final static String IMG_PATH = "./%s.jpg";
 
     //拼图验证码允许偏差
-    private final static Integer AllowableDeviation = 3;
+    private final static Integer ALLOWABLE_DEVIATION = 5;
 
     /**
      * 入参校验设置默认值
@@ -74,12 +74,12 @@ public class CaptchaCodeUtil {
             int nonce = getNonceByRange(0, 1000);
             //获取网络资源图片
             if (0 == place) {
-                URL url = new URL(ImgUrl);
+                URL url = new URL(IMG_URL);
                 return ImageIO.read(url.openStream());
             }
             //获取本地图片
             else {
-                String imgPath = String.format(ImgPath, nonce);
+                String imgPath = String.format(IMG_PATH, nonce);
                 File file = new File(imgPath);
                 return ImageIO.read(file);
             }
@@ -240,7 +240,7 @@ public class CaptchaCodeUtil {
         if(Objects.isNull(text))
             return "verification_code_expired";
         // 根据移动距离判断验证是否成功
-        if (Math.abs(Integer.parseInt(text.toString()) - blockMove) > AllowableDeviation)
+        if (Math.abs(Integer.parseInt(text.toString()) - blockMove) > ALLOWABLE_DEVIATION)
             return "verification_failed__puzzle_gap";
         return null;
     }

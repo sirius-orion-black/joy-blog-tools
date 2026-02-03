@@ -15,3 +15,16 @@ export interface PageTableState {
   defaultPageSize?: number
   disabled?: boolean
 }
+
+export type InsertFnType = (url: string, alt: string, href: string) => void
+
+export interface ResultFileSingState {
+  url: string
+}
+
+export interface ResultFileState {
+  code: number
+  data: ResultFileSingState
+  state: string
+  message: string
+}

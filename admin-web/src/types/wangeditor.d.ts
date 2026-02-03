@@ -7,6 +7,7 @@ declare module '@wangeditor/editor-for-vue' {
     modelValue: string
     defaultConfig: Record<string, unknown>
     mode: 'default' | 'simple'
+    bundle: false | true
     // onCreated: (editor: IDomEditor) => void
     style?: Record<string, string>
   }>

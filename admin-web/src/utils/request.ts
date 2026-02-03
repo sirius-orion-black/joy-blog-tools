@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { AxiosRequestConfig, AxiosResponse } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
 import { message } from 'ant-design-vue'
 import { i18n } from '@/i18n/i18n'
 import router from '@/router'
@@ -48,14 +48,14 @@ const apiThrottleTimes: Record<string, number> = {
 service.interceptors.request.use(
   // 在发送请求之前做些什么
   function (config) {
-    config.headers['X-Timestamp'] = Date.now()
+    const now = Date.now()
+    config.headers['X-Timestamp'] = now
     if (!config.url?.includes('/admin/auth/')) {
       const user = localCache.getCache<Record<string, string>>('user') ?? sessionCache.getCache<Record<string, string>>('user')
       const token = user?.token ?? undefined
       config.headers['X-Auth-Token'] = token
     }
     const key = generateRequestKey(config)
-    const now = Date.now()
     // 获取该API的节流时间
     const throttleTime = config.url && apiThrottleTimes[config.url] ? apiThrottleTimes[config.url] : apiThrottleTimes.default
     // 检查节流状态

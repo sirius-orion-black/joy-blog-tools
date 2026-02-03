@@ -1,4 +1,5 @@
-package com.joy.entity.content;
+package com.joy.entity.sysConfig;
+
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -10,25 +11,25 @@ import java.util.Date;
 
 @Data
 @TableName
-public class FeContentType {
+public class SysMenuIcon {
+
     //主键id
     @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
-    //类型名称
+    //icon 名称
     @TableField
     private String name;
 
-    //1 正常 2 禁用 3 删除
+    //icon key 值
     @TableField
-    private Integer state;
+    private String iconKey;
 
-    //描述
+    //排序
     @TableField
-    private String description;
+    private Integer sort;
 
     //创建时间
     @TableField
     private Date createTime;
-
 }

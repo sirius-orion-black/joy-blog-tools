@@ -3,6 +3,7 @@ package com.joy.service;
 import com.joy.common.Result;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysMenu;
+import com.joy.entity.sysConfig.SysMenuIcon;
 
 import java.util.List;
 
@@ -16,6 +17,6 @@ public interface SysMenuService {
 
     Result<String> delMenu(List<Long> menuIds);
 
-    Result<List<SysConfig>> getIcons();
+    Result<List<SysMenuIcon>> getIcons();
 
 }

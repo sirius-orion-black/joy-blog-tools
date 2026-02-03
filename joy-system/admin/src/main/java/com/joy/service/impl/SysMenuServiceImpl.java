@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysMenu;
+import com.joy.entity.sysConfig.SysMenuIcon;
 import com.joy.mapper.sysConfig.SysConfigMapper;
+import com.joy.mapper.sysConfig.SysMenuIconMapper;
 import com.joy.mapper.sysConfig.SysMenuMapper;
 import com.joy.service.SysMenuService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 
     @Autowired
     private SysConfigMapper sysConfigMapper;
+
+    @Autowired
+    private SysMenuIconMapper sysMenuIconMapper;
 
     /**
      * 获取菜单
@@ -138,10 +143,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * @return
      */
     @Override
-    public Result<List<SysConfig>> getIcons() {
-        QueryWrapper<SysConfig> query = new QueryWrapper<>();
-        query.eq("config_type", "icons").eq("config_state", "1").eq("config_key", "menu");
-        List<SysConfig> list = sysConfigMapper.selectList(query);
+    public Result<List<SysMenuIcon>> getIcons() {
+        QueryWrapper<SysMenuIcon> query = new QueryWrapper<>();
+        List<SysMenuIcon> list = sysMenuIconMapper.selectList(query);
         return Result.success(list);
     }
 

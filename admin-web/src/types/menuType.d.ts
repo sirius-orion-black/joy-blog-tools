@@ -27,8 +27,8 @@ export interface MenuParentState {
 export interface MenuIconState {
   //menu icon
   id?: number
-  configName?: string
-  configValue?: string
+  name?: string
+  iconKey?: string
 }
 
 export interface MenuItemState {

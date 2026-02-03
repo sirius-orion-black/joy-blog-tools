@@ -98,6 +98,7 @@ export default {
     type_manage: '类型管理',
     article_manage: '文章管理',
     moments‌_manage: '说说管理',
+    column_manage: '专栏管理',
   },
   request: {
     success: '请求成功',
@@ -129,5 +130,10 @@ export default {
     verification_failed__puzzle_gap: '验证失败，请控制拼图对齐缺口',
     request_been_throttled: '请求被节流',
     operation_too_frequent: '操作过于频繁，请稍后再试',
+    unsupported_file_type: '类型不支持的文件格式',
+    invalid_file_type: '无效文件类型',
+    file_saving_failed: '文件保存失败',
+    file_cannot_empty: '文件不能为空',
+    please_select_file: '请选择文件',
   },
 }

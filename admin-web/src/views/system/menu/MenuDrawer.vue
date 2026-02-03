@@ -41,8 +41,8 @@
           </a-button>
           <div class="icon-list base-bg-shadow" v-show="showIconSelect">
             <a-flex wrap="wrap" gap="small" justify="space-between">
-              <div class="icon-content base-bg" v-for="value in menuIcoons" :key="value.configValue" @click="setIcon(value.configValue + '')">
-                <IconFont :type="value.configValue" style="font-size: 32px" />
+              <div class="icon-content base-bg" v-for="value in menuIcons" :key="value.iconKey" @click="setIcon(value.iconKey + '')">
+                <IconFont :type="value.iconKey" style="font-size: 32px" />
               </div>
             </a-flex>
           </div>
@@ -118,10 +118,10 @@ const props = defineProps<{
   list: MenuTypeState
 }>()
 
-const menuIcoons = computed(() => {
+const menuIcons = computed(() => {
   return menu.menuIcons?.map(
-    (icon: { configValue: string }): MenuIconState => ({
-      configValue: icon.configValue, // 保留 configValue
+    (icon: { iconKey: string }): MenuIconState => ({
+      iconKey: icon.iconKey, // 保留 configValue
     }),
   )
 })

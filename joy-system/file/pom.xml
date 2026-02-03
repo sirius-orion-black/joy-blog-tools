@@ -12,6 +12,14 @@
     <artifactId>file</artifactId>
     <description>文件处理模块</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.joy</groupId>
+            <artifactId>common</artifactId>
+            <version>${package.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

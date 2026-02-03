@@ -4,6 +4,7 @@ import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysMenu;
+import com.joy.entity.sysConfig.SysMenuIcon;
 import com.joy.service.SysMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class SysMenuController {
      * @return
      */
     @GetMapping("/icons")
-    public Result<List<SysConfig>> getIcons(){
+    public Result<List<SysMenuIcon>> getIcons(){
         return sysMenuService.getIcons();
     }
 }
