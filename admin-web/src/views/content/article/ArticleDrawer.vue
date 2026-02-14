@@ -103,7 +103,7 @@ const editorConfig = {
         try {
           const formData = new FormData()
           formData.append('file', file)
-          formData.append('type', 'avatar')
+          formData.append('type', 'avatar-images')
           formData.append('platform', '1')
           const res = await filesManage.singUpliad(formData, {})
           if (res && res.url) {
@@ -163,7 +163,7 @@ const customRequest: UploadProps['customRequest'] = async (options) => {
   const formData = new FormData()
   // 添加文件和其他参数
   formData.append('file', file as File)
-  formData.append('type', 'avatar')
+  formData.append('type', 'avatar-images')
   formData.append('platform', '1')
   const res = await filesManage.singUpliad(formData, {
     onUploadProgress: (e) => {

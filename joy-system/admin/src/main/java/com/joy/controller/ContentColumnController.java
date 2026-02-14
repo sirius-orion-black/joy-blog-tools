@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @ApiPrefixAdminRestController
@@ -36,7 +37,7 @@ public class ContentColumnController {
      * @return
      */
     @PostMapping("/add")
-    public Result<String> addColumn(FeContentColumn column){
+    public Result<String> addColumn(@RequestBody FeContentColumn column){
         return contentColumnService.addColumn(column);
     }
 
@@ -46,7 +47,7 @@ public class ContentColumnController {
      * @return
      */
     @PostMapping("/edit")
-    public Result<String> editColumn(FeContentColumn column){
+    public Result<String> editColumn(@RequestBody FeContentColumn column){
         return contentColumnService.editColumn(column);
     }
 
@@ -56,7 +57,7 @@ public class ContentColumnController {
      * @return
      */
     @PostMapping("/delete")
-    public  Result<String> delColumn(FeContentColumn column){
+    public  Result<String> delColumn(@RequestBody FeContentColumn column){
         return contentColumnService.delColumn(column);
     }
 

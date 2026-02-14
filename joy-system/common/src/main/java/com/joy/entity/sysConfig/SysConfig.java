@@ -40,6 +40,10 @@ public class SysConfig {
     @TableField
     private Integer configState;
 
+    //约束
+    @TableField
+    private String configRestrict;
+
     //创建时间
     @TableField
     private Date createTime;

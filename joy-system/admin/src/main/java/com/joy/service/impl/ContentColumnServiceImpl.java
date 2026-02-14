@@ -1,5 +1,6 @@
 package com.joy.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -38,6 +40,7 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
             query.like("name",params.getName());
         if(params.getState() != null)
             query.eq("state",params.getState());
+        query.ne("state",4);
         return Result.success(this.page(page,query));
     }
 
@@ -48,6 +51,7 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
      */
     @Override
     public Result<String> addColumn(FeContentColumn column) {
+        column.setUserId(StpUtil.getLoginIdAsLong());
         if (StringUtils.isEmpty(column.getName()) || StringUtils.isEmpty(column.getCover()) || StringUtils.isEmpty(column.getIntroduction()))
             return Result.badRequest();
         return this.save(column) ? Result.success() : Result.internalServerError();
@@ -60,9 +64,20 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
      */
     @Override
     public Result<String> editColumn(FeContentColumn column) {
+        //判断是否是该专栏创建者
+        Long userId = StpUtil.getLoginIdAsLong();
+        if(!userId.equals(column.getUserId()))
+            return Result.unauthorized();
+
         if (StringUtils.isEmpty(column.getName()) || StringUtils.isEmpty(column.getCover()) || StringUtils.isEmpty(column.getIntroduction()))
             return Result.badRequest();
-        return this.updateById(column) ? Result.success() : Result.internalServerError();
+        FeContentColumn info = new FeContentColumn();
+        info.setId(column.getId());
+        info.setUpdateTime(new Date());
+        info.setCover(column.getCover());
+        info.setName(column.getName());
+        info.setIntroduction(column.getIntroduction());
+        return this.updateById(info) ? Result.success() : Result.internalServerError();
     }
 
     /**
@@ -74,10 +89,15 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
     public Result<String> delColumn(FeContentColumn column) {
         FeContentColumn detail = this.getById(column.getId());
 
+        //判断是否是该专栏创建者
+        Long userId = StpUtil.getLoginIdAsLong();
+        if(!userId.equals(column.getUserId()))
+            return Result.unauthorized();
+
         QueryWrapper<FeContentBlogpost> postQuery = new QueryWrapper<>();
         postQuery.eq("column_id",detail.getId()).ne("state",8);
         List<FeContentBlogpost> list = feContentBlogpostMapper.selectList(postQuery);
-        if(list != null )
+        if(!list.isEmpty())
             return Result.internalServerError("delete_articles_column");
         detail.setState(4);
         return this.updateById(detail) ? Result.success() : Result.internalServerError();

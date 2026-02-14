@@ -50,6 +50,14 @@ export default {
     moments: '说说',
     article_name: '文章名',
     article_introduction: '文章简介',
+    column_name: '专栏名',
+    shelve: '上架',
+    reviewing: '预审',
+    offline: '已下线',
+    deleted: '已删除',
+    returned: '已退回',
+    cover: '封面',
+    introduction: '简介',
   },
   drawer: {
     new_menu: '新增菜单',
@@ -77,6 +85,9 @@ export default {
     new_type: '新增类型',
     edit_type: '编辑类型',
     type_name_empty: '类型名称不能为空',
+    new_column: '新增专栏',
+    edit_column: '编辑专栏',
+    input_empty: '必填栏不能为空',
   },
   menu: {
     root: '顶级菜单',
@@ -135,5 +146,6 @@ export default {
     file_saving_failed: '文件保存失败',
     file_cannot_empty: '文件不能为空',
     please_select_file: '请选择文件',
+    file_size_exceed_3MB: '文件大小不能超过3MB',
   },
 }

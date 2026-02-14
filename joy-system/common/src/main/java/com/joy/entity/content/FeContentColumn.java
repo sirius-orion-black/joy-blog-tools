@@ -30,6 +30,11 @@ public class FeContentColumn {
     @TableField
     private String introduction;
 
+    //用户id
+    @TableField
+    private Long userId;
+
+
     //创建时间
     @TableField
     private Date createTime;

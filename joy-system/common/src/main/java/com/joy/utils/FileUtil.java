@@ -1,5 +1,6 @@
 package com.joy.utils;
 
+import com.joy.entity.sysConfig.SysConfig;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -8,26 +9,19 @@ import java.util.*;
 
 public class FileUtil {
 
-    // 文件类型校验规则
-    private static final Map<String, List<String>> TYPE_RULES = new HashMap<>();
-    static {
-        TYPE_RULES.put("avatar", Arrays.asList("image/jpeg", "image/png", "image/gif"));
-        TYPE_RULES.put("cover", Arrays.asList("image/jpeg", "image/png", "image/webp"));
-        TYPE_RULES.put("document", Arrays.asList("application/pdf", "text/plain"));
-    }
-
     /**
      * 文件类型校验
-     * @param file 文件对象
-     * @param type 文件类型标识
+     *
+     * @param file       文件对象
+     * @param type       文件类型标识
+     * @param configList
      * @return 错误码或null（校验通过）
      */
-    public static String validateFile(MultipartFile file, String type) {
-        if (!TYPE_RULES.containsKey(type))
+    public static String validateFile(MultipartFile file, String type, Map<String, SysConfig> configList) {
+        if (!configList.containsKey(type))
             return "invalid_file_type";
-
         String contentType = file.getContentType();
-        if (contentType == null || !TYPE_RULES.get(type).contains(contentType))
+        if (contentType == null || !configList.get(type).getConfigRestrict().contains(contentType))
             return "unsupported_file_type";
 
         return null; // 校验通过

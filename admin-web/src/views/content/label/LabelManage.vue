@@ -107,7 +107,7 @@ const labelInfo = ref<LabelTypeState>({
 })
 const drawerTitle = ref<string>('drawer.new_label')
 
-// 获取用户列表参数
+// 获取列表参数
 const searchParam = ref<LabelTypeSearchState>({
   name: '',
   state: null,
@@ -174,6 +174,7 @@ const onSubmit = () => {
   showDrawer.value = false
 }
 
+//表格列表
 const columns = computed(() => [
   {
     title: t('columns.label_name'),

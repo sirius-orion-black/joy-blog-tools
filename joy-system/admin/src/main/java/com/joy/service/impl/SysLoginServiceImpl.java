@@ -126,6 +126,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     @NotNull
     private static SysUserInfoDto getUserInfoDto(SysUser user) {
         SysUserInfoDto sysUser = new SysUserInfoDto();
+        sysUser.setId(user.getId());
         sysUser.setEmail(user.getEmail());
         sysUser.setBirthday(user.getBirthday());
         sysUser.setPhone(user.getPhone());

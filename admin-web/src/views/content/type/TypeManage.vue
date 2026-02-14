@@ -95,7 +95,7 @@ const typeInfo = ref<LabelTypeState>({
 })
 const drawerTitle = ref<string>('drawer.new_type')
 
-// 获取用户列表参数
+// 获取列表参数
 const searchParam = ref<LabelTypeSearchState>({
   name: '',
   state: null,
