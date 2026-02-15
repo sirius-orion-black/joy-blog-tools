@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Data
 @TableName
-public class FeContentMomentsLabel {
-    //说说id
+public class ContentBlogpostLabel {
+    //文章id
     @TableField
-    private Long momentsId;
+    private Long blogpostId;
 
     //标签id
     @TableField

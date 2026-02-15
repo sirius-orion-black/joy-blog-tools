@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Data
 @TableName
-public class FeContentType {
+public class ContentType {
     //主键id
     @TableId(value = "id",type = IdType.AUTO)
     private Long id;

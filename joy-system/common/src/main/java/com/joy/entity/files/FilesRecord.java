@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Data
 @TableName
-public class FeFilesRecord {
+public class FilesRecord {
 
     //主键id
     @TableId(value = "id",type = IdType.AUTO)

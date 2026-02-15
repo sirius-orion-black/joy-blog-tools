@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
 import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.FeContentLabel;
+import com.joy.entity.content.ContentLabel;
 import com.joy.service.ContentLabelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class ContentLabelController {
      * @return
      */
     @GetMapping("/getList")
-    public Result<Page<FeContentLabel>> getLabel(SearchParamDto params){
+    public Result<Page<ContentLabel>> getLabel(SearchParamDto params){
         return contentLabelService.getLabel(params);
     }
 
@@ -39,7 +39,7 @@ public class ContentLabelController {
      * @return
      */
     @PostMapping("/add")
-    public Result<String> addLabel(@RequestBody FeContentLabel label){
+    public Result<String> addLabel(@RequestBody ContentLabel label){
         return contentLabelService.addLabel(label);
     }
 
@@ -49,7 +49,7 @@ public class ContentLabelController {
      * @return
      */
     @PostMapping("/edit")
-    public Result<String> editLabel(@RequestBody FeContentLabel label){
+    public Result<String> editLabel(@RequestBody ContentLabel label){
         return contentLabelService.editLabel(label);
     }
 

@@ -8,7 +8,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class FeContentColumn {
+public class ContentColumn {
 
     //主键id
     @TableId(value = "id",type = IdType.AUTO)
@@ -33,7 +33,6 @@ public class FeContentColumn {
     //用户id
     @TableField
     private Long userId;
-
 
     //创建时间
     @TableField

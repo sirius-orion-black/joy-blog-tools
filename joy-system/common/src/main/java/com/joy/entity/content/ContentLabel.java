@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Data
 @TableName
-public class FeContentLabel {
+public class ContentLabel {
 
     //主键id
     @TableId(value = "id",type = IdType.AUTO)

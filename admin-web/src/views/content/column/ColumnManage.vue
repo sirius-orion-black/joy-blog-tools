@@ -34,9 +34,11 @@
           <template v-if="column.key === 'state'">{{ getLabelByValue(text) }}</template>
           <template v-if="column.key === 'cover'"><a-image :width="50" :src="text" /></template>
           <template v-else-if="column.key === 'operation'">
-            <a class="c9c9efe" @click="changeDrawer('review', text)"><IconFont type="icon-review" /></a>
+            <a class="c9c9efe" @click="changeDrawer('review', text)" v-if="text.state === 2">
+              <IconFont type="icon-review" />
+            </a>
             <a class="ffa1cf" @click="changeDrawer('edit', text)" v-if="userLogin.user?.id === text.userId"><IconFont type="icon-edit" /></a>
-            <a class="c9c9efe" @click="delColumn(text)"><IconFont type="icon-delete" v-if="userLogin.user?.id === text.userId" /></a>
+            <a class="c9c9efe" @click="delColumn(text)" v-if="userLogin.user?.id === text.userId"><IconFont type="icon-delete" /></a>
           </template>
         </template>
       </a-table>
@@ -55,7 +57,6 @@
             v-model:file-list="fileList"
             name="cover"
             list-type="picture-card"
-            class="avatar-uploader"
             :show-upload-list="false"
             :before-upload="beforeUpload"
             :customRequest="customRequest"
@@ -63,7 +64,7 @@
             :max-count="1"
             :disabled="drawerDisabled"
           >
-            <div class="coluumn-drawer-image" v-if="imageUrl" :style="'background-image: url(' + imageUrl + ')'"></div>
+            <div class="column-drawer-image" v-if="imageUrl" :style="'background-image: url(' + imageUrl + ')'"></div>
             <div v-else>
               <loading-outlined v-if="loading"></loading-outlined>
               <plus-outlined v-else></plus-outlined>
@@ -75,8 +76,8 @@
           <a-textarea v-model:value="columnInfo.introduction" :placeholder="$t('columns.introduction')" :rows="4" :disabled="drawerDisabled" />
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 6, span: 18 }" v-if="drawerDisabled">
-          <a-button type="primary">上架</a-button>
-          <a-button style="margin-left: 10px">退回</a-button>
+          <a-button type="primary" @click="reviewColumn(1)">上架</a-button>
+          <a-button style="margin-left: 10px" @click="reviewColumn(5)">退回</a-button>
         </a-form-item>
       </a-form>
 
@@ -177,7 +178,7 @@ const changeDrawer = (type: string, item?: ColumnState) => {
   if ((type === 'edit' || type === 'review') && item) {
     columnInfo.value = item
     drawerTitle.value = 'drawer.edit_column'
-    imageUrl.value = item.cover
+    imageUrl.value = item.cover!
     drawerDisabled.value = type === 'review' ? true : false
   } else {
     columnInfo.value = { id: null, name: '', state: 2, introduction: '', cover: '' }
@@ -307,13 +308,23 @@ const handleChange = (info: UploadChangeParam) => {
   if (info.file.status === 'done') {
     fileList.value = info.fileList
   } else if (info.file.status === 'error') {
-    message.error(`${info.file.name} file upload failed.`)
+    message.error(`${info.file.name} ${t('request.file_upload_failed')}`)
   }
+}
+
+//审核
+const reviewColumn = (state: number) => {
+  const param: ColumnState = {
+    id: columnInfo.value.id,
+    state: state,
+  }
+  contentColumn.reviewColumn(param)
+  showDrawer.value = false
 }
 </script>
 
 <style lang="scss" scoped>
-.coluumn-drawer-image {
+.column-drawer-image {
   width: 100px;
   height: 100px;
   background-size: 100px auto;

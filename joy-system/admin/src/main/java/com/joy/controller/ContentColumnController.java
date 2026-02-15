@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
 import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.FeContentColumn;
+import com.joy.entity.content.ContentColumn;
 import com.joy.service.ContentColumnService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class ContentColumnController {
      * @return
      */
     @GetMapping("/getList")
-    public Result<Page<FeContentColumn>> getColumn(SearchParamDto params){
+    public Result<Page<ContentColumn>> getColumn(SearchParamDto params){
         return  contentColumnService.getColumn(params);
     }
 
@@ -37,7 +37,7 @@ public class ContentColumnController {
      * @return
      */
     @PostMapping("/add")
-    public Result<String> addColumn(@RequestBody FeContentColumn column){
+    public Result<String> addColumn(@RequestBody ContentColumn column){
         return contentColumnService.addColumn(column);
     }
 
@@ -47,7 +47,7 @@ public class ContentColumnController {
      * @return
      */
     @PostMapping("/edit")
-    public Result<String> editColumn(@RequestBody FeContentColumn column){
+    public Result<String> editColumn(@RequestBody ContentColumn column){
         return contentColumnService.editColumn(column);
     }
 
@@ -57,8 +57,19 @@ public class ContentColumnController {
      * @return
      */
     @PostMapping("/delete")
-    public  Result<String> delColumn(@RequestBody FeContentColumn column){
+    public  Result<String> delColumn(@RequestBody ContentColumn column){
         return contentColumnService.delColumn(column);
     }
+
+    /**
+     * 预审专栏
+     * @param column
+     * @return
+     */
+    @PostMapping("/review")
+    public  Result<String> reviewColumn(@RequestBody ContentColumn column){
+        return contentColumnService.reviewColumn(column);
+    }
+
 
 }

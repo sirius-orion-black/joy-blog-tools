@@ -5,12 +5,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.FeContentBlogpostLabel;
-import com.joy.entity.content.FeContentLabel;
-import com.joy.entity.content.FeContentMomentsLabel;
-import com.joy.mapper.content.FeContentBlogpostLabelMapper;
-import com.joy.mapper.content.FeContentLabelMapper;
-import com.joy.mapper.content.FeContentMomentsLabelMapper;
+import com.joy.entity.content.ContentBlogpostLabel;
+import com.joy.entity.content.ContentLabel;
+import com.joy.entity.content.ContentMomentsLabel;
+import com.joy.mapper.content.ContentBlogpostLabelMapper;
+import com.joy.mapper.content.ContentLabelMapper;
+import com.joy.mapper.content.ContentMomentsLabelMapper;
 import com.joy.service.ContentLabelService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,12 +25,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ContentLabelServiceImpl extends ServiceImpl<FeContentLabelMapper, FeContentLabel> implements ContentLabelService {
+public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, ContentLabel> implements ContentLabelService {
 
     @Autowired
-    private FeContentBlogpostLabelMapper feContentBlogpostLabelMapper;
+    private ContentBlogpostLabelMapper contentBlogpostLabelMapper;
     @Autowired
-    private FeContentMomentsLabelMapper feContentMomentsLabelMapper;
+    private ContentMomentsLabelMapper contentMomentsLabelMapper;
 
     /**
      * 获取标签列表
@@ -39,9 +39,9 @@ public class ContentLabelServiceImpl extends ServiceImpl<FeContentLabelMapper, F
      * @return
      */
     @Override
-    public Result<Page<FeContentLabel>> getLabel(SearchParamDto params) {
-        Page<FeContentLabel> page = new Page<>(params.getPage(), params.getSize());
-        QueryWrapper<FeContentLabel> query = new QueryWrapper<>();
+    public Result<Page<ContentLabel>> getLabel(SearchParamDto params) {
+        Page<ContentLabel> page = new Page<>(params.getPage(), params.getSize());
+        QueryWrapper<ContentLabel> query = new QueryWrapper<>();
         if (!StringUtils.isEmpty(params.getName()))
             query.like("name", params.getName());
         if (params.getState() != null)
@@ -58,7 +58,7 @@ public class ContentLabelServiceImpl extends ServiceImpl<FeContentLabelMapper, F
      * @return
      */
     @Override
-    public Result<String> addLabel(FeContentLabel label) {
+    public Result<String> addLabel(ContentLabel label) {
         if (StringUtils.isEmpty(label.getName()))
             return Result.badRequest();
         return this.save(label) ? Result.success() : Result.internalServerError();
@@ -71,8 +71,8 @@ public class ContentLabelServiceImpl extends ServiceImpl<FeContentLabelMapper, F
      * @return
      */
     @Override
-    public Result<String> editLabel(FeContentLabel label) {
-        FeContentLabel oldLabel = this.getById(label.getId());
+    public Result<String> editLabel(ContentLabel label) {
+        ContentLabel oldLabel = this.getById(label.getId());
         if (oldLabel == null)
             return Result.badRequest();
         label.setType(oldLabel.getType());
@@ -89,23 +89,23 @@ public class ContentLabelServiceImpl extends ServiceImpl<FeContentLabelMapper, F
     public Result<String> delLabel(List<Long> labelIds) {
         if (labelIds.isEmpty())
             return Result.success();
-        List<FeContentLabel> list = this.listByIds(labelIds);
+        List<ContentLabel> list = this.listByIds(labelIds);
         //获取标签类型分组数据
-        Map<Integer, List<Long>> labelMap = list.stream().collect(Collectors.groupingBy(FeContentLabel::getType, Collectors.mapping(FeContentLabel::getId, Collectors.toList())));
+        Map<Integer, List<Long>> labelMap = list.stream().collect(Collectors.groupingBy(ContentLabel::getType, Collectors.mapping(ContentLabel::getId, Collectors.toList())));
 
         // 按类型删除关联数据
         List<Long> blogpostIds = labelMap.getOrDefault(1, Collections.emptyList());
         if(!CollectionUtils.isEmpty(blogpostIds)){
-            QueryWrapper<FeContentBlogpostLabel> blogpost = new QueryWrapper<>();
+            QueryWrapper<ContentBlogpostLabel> blogpost = new QueryWrapper<>();
             blogpost.in("label_id",blogpostIds);
-            feContentBlogpostLabelMapper.delete(blogpost);
+            contentBlogpostLabelMapper.delete(blogpost);
 
         }
         List<Long> momentsIds = labelMap.getOrDefault(2, Collections.emptyList());
         if(!CollectionUtils.isEmpty(momentsIds)){
-            QueryWrapper<FeContentMomentsLabel> moments = new QueryWrapper<>();
+            QueryWrapper<ContentMomentsLabel> moments = new QueryWrapper<>();
             moments.in("label_id",momentsIds);
-            feContentMomentsLabelMapper.delete(moments);
+            contentMomentsLabelMapper.delete(moments);
         }
 
         return this.removeBatchByIds(labelIds) ? Result.success() : Result.internalServerError();

@@ -4,9 +4,9 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
-import com.joy.entity.files.FeFilesRecord;
+import com.joy.entity.files.FilesRecord;
 import com.joy.entity.sysConfig.SysConfig;
-import com.joy.mapper.files.FeFilesRecordMapper;
+import com.joy.mapper.files.FilesRecordMapper;
 import com.joy.mapper.sysConfig.SysConfigMapper;
 import com.joy.service.FileService;
 import com.joy.utils.FileUtil;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class FileServiceImpl extends ServiceImpl<FeFilesRecordMapper, FeFilesRecord> implements FileService {
+public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord> implements FileService {
 
     @Autowired
     private SysConfigMapper sysConfigMapper;
@@ -86,7 +86,7 @@ public class FileServiceImpl extends ServiceImpl<FeFilesRecordMapper, FeFilesRec
             Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
             //数据保存
-            FeFilesRecord record = new FeFilesRecord();
+            FilesRecord record = new FilesRecord();
             record.setOriginalName(file.getOriginalFilename());
             record.setStoredName(storedName);
             record.setFileType(fileType);

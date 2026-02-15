@@ -8,11 +8,22 @@
         <a-textarea v-model:value="formState.introduction" :placeholder="$t('columns.article_introduction')" />
       </a-form-item>
       <a-form-item label="封面" name="">
-        <a-upload v-model:file-list="fileList" name="file" :before-upload="beforeUpload" :customRequest="customRequest" @change="handleChange">
-          <a-button>
-            <upload-outlined></upload-outlined>
-            Click to Upload
-          </a-button>
+        <a-upload
+          v-model:file-list="fileList"
+          name="cover"
+          list-type="picture-card"
+          :show-upload-list="false"
+          :before-upload="beforeUpload"
+          :customRequest="customRequest"
+          @change="handleChange"
+          :max-count="1"
+        >
+          <div class="column-drawer-image" v-if="imageUrl" :style="'background-image: url(' + imageUrl + ')'"></div>
+          <div v-else>
+            <loading-outlined v-if="loading"></loading-outlined>
+            <plus-outlined v-else></plus-outlined>
+            <div class="ant-upload-text">Upload</div>
+          </div>
         </a-upload>
       </a-form-item>
       <a-row>
@@ -53,6 +64,7 @@
 import { ref, shallowRef, onBeforeUnmount, reactive } from 'vue'
 import { message } from 'ant-design-vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+import { useI18n } from 'vue-i18n'
 
 import type { IDomEditor } from '@wangeditor/editor'
 import type { ArticleState } from '@/types/articleType'
@@ -65,6 +77,8 @@ import { filesManageStore } from '@/stores/files'
 import '@wangeditor/editor/dist/css/style.css'
 
 const filesManage = filesManageStore()
+
+const { t } = useI18n()
 
 const formState = reactive<ArticleState>({
   name: '',
@@ -160,35 +174,39 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
 // 自定义上传逻辑
 const customRequest: UploadProps['customRequest'] = async (options) => {
   const { file, onSuccess, onProgress, onError } = options
-  const formData = new FormData()
-  // 添加文件和其他参数
-  formData.append('file', file as File)
-  formData.append('type', 'avatar-images')
-  formData.append('platform', '1')
-  const res = await filesManage.singUpliad(formData, {
-    onUploadProgress: (e) => {
-      onProgress?.({ percent: Math.round((e.loaded * 100) / (e.total || 1)) })
-    },
-  } as AxiosRequestConfig)
-  // 上传成功回调
-  onSuccess?.(res, undefined)
 
   try {
+    const formData = new FormData()
+    // 添加文件和其他参数
+    formData.append('file', file as File)
+    formData.append('type', 'avatar-images')
+    formData.append('platform', '1')
+    const res = await filesManage.singUpliad(formData, {
+      onUploadProgress: (e) => {
+        onProgress?.({ percent: Math.round((e.loaded * 100) / (e.total || 1)) })
+      },
+    } as AxiosRequestConfig)
+    // 上传成功回调
+    onSuccess?.(res, undefined)
   } catch (error) {
     onError?.(error as Error)
   }
 }
 
+//封面上传参数
 const fileList = ref<unknown>([])
+const loading = ref<boolean>(false)
+const imageUrl = ref<string>('')
 
 const handleChange = (info: UploadChangeParam) => {
   if (info.file.status !== 'uploading') {
-    console.log(info.file, info.fileList)
+    const { response } = info.fileList[0]!
+    imageUrl.value = response.url
   }
   if (info.file.status === 'done') {
     fileList.value = info.fileList
   } else if (info.file.status === 'error') {
-    message.error(`${info.file.name} file upload failed.`)
+    message.error(`${info.file.name} ${t('request.file_upload_failed')}`)
   }
 }
 </script>
@@ -202,5 +220,13 @@ const handleChange = (info: UploadChangeParam) => {
   margin-top: 20px;
   padding: 15px;
   border-radius: 4px;
+}
+
+.column-drawer-image {
+  width: 100px;
+  height: 100px;
+  background-size: 100px auto;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 </style>

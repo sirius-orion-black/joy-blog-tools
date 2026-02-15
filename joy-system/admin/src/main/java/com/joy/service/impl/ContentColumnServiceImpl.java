@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.FeContentBlogpost;
-import com.joy.entity.content.FeContentColumn;
-import com.joy.mapper.content.FeContentBlogpostMapper;
-import com.joy.mapper.content.FeContentColumnMapper;
+import com.joy.entity.content.ContentBlogpost;
+import com.joy.entity.content.ContentColumn;
+import com.joy.mapper.content.ContentBlogpostMapper;
+import com.joy.mapper.content.ContentColumnMapper;
 import com.joy.service.ContentColumnService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,10 +21,10 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper, FeContentColumn> implements ContentColumnService {
+public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, ContentColumn> implements ContentColumnService {
 
     @Autowired
-    private FeContentBlogpostMapper feContentBlogpostMapper;
+    private ContentBlogpostMapper contentBlogpostMapper;
 
     /**
      * 获取专栏列表
@@ -32,10 +32,10 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
      * @return
      */
     @Override
-    public Result<Page<FeContentColumn>> getColumn(SearchParamDto params) {
-        Page<FeContentColumn> page = new Page<>(params.getPage(),params.getSize());
+    public Result<Page<ContentColumn>> getColumn(SearchParamDto params) {
+        Page<ContentColumn> page = new Page<>(params.getPage(),params.getSize());
 
-        QueryWrapper<FeContentColumn> query = new QueryWrapper<>();
+        QueryWrapper<ContentColumn> query = new QueryWrapper<>();
         if(!StringUtils.isEmpty(params.getName()))
             query.like("name",params.getName());
         if(params.getState() != null)
@@ -50,7 +50,7 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
      * @return
      */
     @Override
-    public Result<String> addColumn(FeContentColumn column) {
+    public Result<String> addColumn(ContentColumn column) {
         column.setUserId(StpUtil.getLoginIdAsLong());
         if (StringUtils.isEmpty(column.getName()) || StringUtils.isEmpty(column.getCover()) || StringUtils.isEmpty(column.getIntroduction()))
             return Result.badRequest();
@@ -63,7 +63,7 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
      * @return
      */
     @Override
-    public Result<String> editColumn(FeContentColumn column) {
+    public Result<String> editColumn(ContentColumn column) {
         //判断是否是该专栏创建者
         Long userId = StpUtil.getLoginIdAsLong();
         if(!userId.equals(column.getUserId()))
@@ -71,7 +71,7 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
 
         if (StringUtils.isEmpty(column.getName()) || StringUtils.isEmpty(column.getCover()) || StringUtils.isEmpty(column.getIntroduction()))
             return Result.badRequest();
-        FeContentColumn info = new FeContentColumn();
+        ContentColumn info = new ContentColumn();
         info.setId(column.getId());
         info.setUpdateTime(new Date());
         info.setCover(column.getCover());
@@ -86,20 +86,33 @@ public class ContentColumnServiceImpl extends ServiceImpl<FeContentColumnMapper,
      * @return
      */
     @Override
-    public Result<String> delColumn(FeContentColumn column) {
-        FeContentColumn detail = this.getById(column.getId());
+    public Result<String> delColumn(ContentColumn column) {
+        ContentColumn detail = this.getById(column.getId());
 
         //判断是否是该专栏创建者
         Long userId = StpUtil.getLoginIdAsLong();
         if(!userId.equals(column.getUserId()))
             return Result.unauthorized();
 
-        QueryWrapper<FeContentBlogpost> postQuery = new QueryWrapper<>();
+        QueryWrapper<ContentBlogpost> postQuery = new QueryWrapper<>();
         postQuery.eq("column_id",detail.getId()).ne("state",8);
-        List<FeContentBlogpost> list = feContentBlogpostMapper.selectList(postQuery);
+        List<ContentBlogpost> list = contentBlogpostMapper.selectList(postQuery);
         if(!list.isEmpty())
             return Result.internalServerError("delete_articles_column");
         detail.setState(4);
         return this.updateById(detail) ? Result.success() : Result.internalServerError();
+    }
+
+    /**
+     * 预审专栏
+     * @param column
+     * @return
+     */
+    @Override
+    public Result<String> reviewColumn(ContentColumn column) {
+        ContentColumn info = new ContentColumn();
+        info.setId(column.getId());
+        info.setState(column.getState());
+        return this.updateById(info) ? Result.success() : Result.internalServerError();
     }
 }

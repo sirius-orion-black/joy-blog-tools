@@ -37,5 +37,11 @@ export const contentColumnStore = defineStore('contentColumn', () => {
     })
   }
 
-  return { columnList, getList, addColumn, editColumn, delColumn }
+  function reviewColumn(params: ColumnState) {
+    columnApi.reviewColumn(params).then(() => {
+      getList(searchParams.value)
+    })
+  }
+
+  return { columnList, getList, addColumn, editColumn, delColumn, reviewColumn }
 })

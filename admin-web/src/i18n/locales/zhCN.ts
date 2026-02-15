@@ -147,5 +147,6 @@ export default {
     file_cannot_empty: '文件不能为空',
     please_select_file: '请选择文件',
     file_size_exceed_3MB: '文件大小不能超过3MB',
+    file_upload_failed: '文件上传失败',
   },
 }

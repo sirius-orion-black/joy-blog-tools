@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.FeContentType;
-import com.joy.mapper.content.FeContentTypeMapper;
+import com.joy.entity.content.ContentType;
+import com.joy.mapper.content.ContentTypeMapper;
 import com.joy.service.ContentTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ContentTypeServiceImpl extends ServiceImpl<FeContentTypeMapper, FeContentType> implements ContentTypeService {
+public class ContentTypeServiceImpl extends ServiceImpl<ContentTypeMapper, ContentType> implements ContentTypeService {
 
     /**
      * 获取类型列表
@@ -25,9 +25,9 @@ public class ContentTypeServiceImpl extends ServiceImpl<FeContentTypeMapper, FeC
      * @return
      */
     @Override
-    public Result<Page<FeContentType>> getType(SearchParamDto params) {
-        Page<FeContentType> page = new Page<>(params.getPage(),params.getSize());
-        QueryWrapper<FeContentType> query = new QueryWrapper<>();
+    public Result<Page<ContentType>> getType(SearchParamDto params) {
+        Page<ContentType> page = new Page<>(params.getPage(),params.getSize());
+        QueryWrapper<ContentType> query = new QueryWrapper<>();
         query.ne("state",3);
         if(!StringUtils.isEmpty(params.getName()))
             query.like("name",params.getName());
@@ -37,7 +37,7 @@ public class ContentTypeServiceImpl extends ServiceImpl<FeContentTypeMapper, FeC
     }
 
     @Override
-    public Result<String> addType(FeContentType type) {
+    public Result<String> addType(ContentType type) {
         if (StringUtils.isEmpty(type.getName()))
             return Result.badRequest();
         return this.save(type) ? Result.success() : Result.internalServerError();
@@ -49,7 +49,7 @@ public class ContentTypeServiceImpl extends ServiceImpl<FeContentTypeMapper, FeC
      * @return
      */
     @Override
-    public Result<String> editType(FeContentType type) {
+    public Result<String> editType(ContentType type) {
         return this.updateById(type) ? Result.success() : Result.badRequest();
     }
 
@@ -63,9 +63,9 @@ public class ContentTypeServiceImpl extends ServiceImpl<FeContentTypeMapper, FeC
     public Result<String> delType(List<Long> typeIds) {
         if (typeIds.isEmpty())
             return Result.success();
-        List<FeContentType> types = new ArrayList<>();
+        List<ContentType> types = new ArrayList<>();
         typeIds.forEach(m -> {
-            FeContentType type = new FeContentType();
+            ContentType type = new ContentType();
             type.setId(m);
             type.setState(3);
             types.add(type);

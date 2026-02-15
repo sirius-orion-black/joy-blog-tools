@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
 import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.FeContentType;
+import com.joy.entity.content.ContentType;
 import com.joy.service.ContentTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class ContentTypeController {
      * @return
      */
     @GetMapping("/getList")
-    public Result<Page<FeContentType>> getType(SearchParamDto params){
+    public Result<Page<ContentType>> getType(SearchParamDto params){
         return contentTypeService.getType(params);
     }
 
@@ -39,7 +39,7 @@ public class ContentTypeController {
      * @return
      */
     @PostMapping("/add")
-    public Result<String> addType(@RequestBody FeContentType type){
+    public Result<String> addType(@RequestBody ContentType type){
         return contentTypeService.addType(type);
     }
 
@@ -49,7 +49,7 @@ public class ContentTypeController {
      * @return
      */
     @PostMapping("/edit")
-    public Result<String> editType(@RequestBody FeContentType type){
+    public Result<String> editType(@RequestBody ContentType type){
         return contentTypeService.editType(type);
     }
 
