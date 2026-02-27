@@ -40,9 +40,10 @@ sa-token:
 
 #==============================mybatis-plus配置=========================
 mybatis-plus:
-  mapper-locations: classpath*:/mapper/*Mapper.xml
+  mapper-locations: classpath*:com/joy/mapper/**/xml/*.xml
   #实体扫描，多个package用逗号或者分号分隔
   typeAliasesPackage: com.joy.entity
+  type-handlers-package: com.joy.handler
   global-config:
     # 数据库相关配置
     db-config:

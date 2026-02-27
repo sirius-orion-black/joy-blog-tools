@@ -44,6 +44,33 @@ const apiThrottleTimes: Record<string, number> = {
   default: 2000, // 默认2秒
 }
 
+// 消息队列管理器（独立模块）
+const messageQueue = {
+  queue: new Map(), // 存储消息类型和计数 { message: count }
+  timer: 0,
+  delay: 500, // 500ms合并窗口
+
+  add(messaged: string) {
+    const count = this.queue.get(messaged) || 0
+    this.queue.set(messaged, count + 1)
+
+    if (!this.timer) {
+      this.timer = setTimeout(() => this.flush(), this.delay)
+    }
+  },
+
+  flush() {
+    this.queue.forEach((count, messaged) => {
+      const mes = t('request.operations')
+      const finalMsg: string = count > 1 ? `${messaged} (${count}${mes})` : messaged
+      message.success(finalMsg)
+    })
+
+    this.queue.clear()
+    this.timer = 0
+  },
+}
+
 // 添加请求拦截器
 service.interceptors.request.use(
   // 在发送请求之前做些什么
@@ -80,16 +107,22 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   function (response) {
     // 2xx 范围内的状态码都会触发该函数。
-    const { data } = response
+    const { config, data } = response
     const login = userLoginStore()
-    if (data.code >= 200 && data.code < 300) message.success(t('request.' + data.message))
-    else if (data.code === 401) {
+    const messaged = t('request.' + data.message)
+    if (data.code >= 200 && data.code < 300) {
+      if (config.method?.toLowerCase() === 'get') {
+        messageQueue.add(messaged)
+      } else {
+        message.success(messaged)
+      }
+    } else if (data.code === 401) {
       router.push('/login')
       login.cleanUserInfo()
       window.location.reload()
       console.log('请重新登录')
-    } else if (data.code >= 402 && data.code < 500) message.error(t('request.' + data.message))
-    else message.warning(t('request.' + data.message))
+    } else if (data.code >= 402 && data.code < 500) message.error(messaged)
+    else message.warning(messaged)
     return data
   },
   function (error) {

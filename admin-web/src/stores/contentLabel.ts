@@ -16,6 +16,7 @@ export const contentLabelStore = defineStore('contentLabel', () => {
   })
 
   function getList(params: LabelTypeSearchState) {
+    searchParams.value = params
     labelApi.getList(params).then((rs) => (labelList.value = rs.data))
   }
 

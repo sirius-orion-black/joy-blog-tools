@@ -86,7 +86,7 @@ const list = ref<MenuTypeState>({
 const selectMenus = ref<MenuTypeState[]>([])
 // 菜单编辑页面
 const showDrawer = (key: string = '', val: MenuTypeState = {}) => {
-  list.value = {}
+  list.value = { type: 1, state: 1, sort: 0 }
   drawTitle.value = key
   val.id = val.id ?? 0
   if (!val.parentId) val.parentId = 0

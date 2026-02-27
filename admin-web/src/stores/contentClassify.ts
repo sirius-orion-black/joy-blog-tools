@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-import typeApi from '@/apis/contentType'
+import typeApi from '@/apis/contentClassify'
 
 import type { LabelTypeSearchState, LabelTypeState } from '@/types/labelType'
 import type { PageDataState } from '@/types/resultType'
@@ -16,26 +16,27 @@ export const contentTypeStore = defineStore('contentType', () => {
   })
 
   function getList(params: LabelTypeSearchState) {
+    searchParams.value = params
     typeApi.getList(params).then((rs) => (typeList.value = rs.data))
   }
 
-  function addType(params: LabelTypeState) {
-    typeApi.addType(params).then(() => {
+  function addClassify(params: LabelTypeState) {
+    typeApi.addClassify(params).then(() => {
       getList(searchParams.value)
     })
   }
 
-  function editType(params: LabelTypeState) {
-    typeApi.editType(params).then(() => {
+  function editClassify(params: LabelTypeState) {
+    typeApi.editClassify(params).then(() => {
       getList(searchParams.value)
     })
   }
 
-  function delType(params: number[]) {
-    typeApi.delType(params).then(() => {
+  function delClassify(params: number[]) {
+    typeApi.delClassify(params).then(() => {
       getList(searchParams.value)
     })
   }
 
-  return { typeList, getList, addType, editType, delType }
+  return { typeList, getList, addClassify, editClassify, delClassify }
 })

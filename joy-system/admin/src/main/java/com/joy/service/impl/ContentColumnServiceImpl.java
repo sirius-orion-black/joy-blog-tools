@@ -24,7 +24,7 @@ import java.util.List;
 public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, ContentColumn> implements ContentColumnService {
 
     @Autowired
-    private ContentBlogpostMapper contentBlogpostMapper;
+    private ContentBlogpostMapper blogpostMapper;
 
     /**
      * 获取专栏列表
@@ -96,7 +96,7 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
 
         QueryWrapper<ContentBlogpost> postQuery = new QueryWrapper<>();
         postQuery.eq("column_id",detail.getId()).ne("state",8);
-        List<ContentBlogpost> list = contentBlogpostMapper.selectList(postQuery);
+        List<ContentBlogpost> list = blogpostMapper.selectList(postQuery);
         if(!list.isEmpty())
             return Result.internalServerError("delete_articles_column");
         detail.setState(4);

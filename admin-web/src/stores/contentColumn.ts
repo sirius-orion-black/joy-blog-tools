@@ -16,6 +16,7 @@ export const contentColumnStore = defineStore('contentColumn', () => {
   })
 
   function getList(params: LabelTypeSearchState) {
+    searchParams.value = params
     columnApi.getList(params).then((rs) => (columnList.value = rs.data))
   }
 

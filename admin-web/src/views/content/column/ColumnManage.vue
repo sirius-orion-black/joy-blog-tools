@@ -20,7 +20,7 @@
     <div class="base-container">
       <div class="base-operate">
         <div class="base-operate-label">
-          <a-button @click="changeDrawer('add')"><IconFont type="icon-add" />{{ $t('menu.add') }}</a-button>
+          <a-button @click="changeDrawer('new')"><IconFont type="icon-add" />{{ $t('menu.add') }}</a-button>
         </div>
       </div>
       <a-table
@@ -32,13 +32,15 @@
       >
         <template #bodyCell="{ column, text }">
           <template v-if="column.key === 'state'">{{ getLabelByValue(text) }}</template>
-          <template v-if="column.key === 'cover'"><a-image :width="50" :src="text" /></template>
+          <template v-else-if="column.key === 'cover'"><a-image :width="50" :src="text" /></template>
           <template v-else-if="column.key === 'operation'">
             <a class="c9c9efe" @click="changeDrawer('review', text)" v-if="text.state === 2">
               <IconFont type="icon-review" />
             </a>
-            <a class="ffa1cf" @click="changeDrawer('edit', text)" v-if="userLogin.user?.id === text.userId"><IconFont type="icon-edit" /></a>
-            <a class="c9c9efe" @click="delColumn(text)" v-if="userLogin.user?.id === text.userId"><IconFont type="icon-delete" /></a>
+            <template v-if="userLogin.user?.id === text.userId">
+              <a class="ffa1cf" @click="changeDrawer('edit', text)"><IconFont type="icon-edit" /></a>
+              <a class="c9c9efe" @click="delColumn(text)"><IconFont type="icon-delete" /></a>
+            </template>
           </template>
         </template>
       </a-table>
@@ -64,7 +66,7 @@
             :max-count="1"
             :disabled="drawerDisabled"
           >
-            <div class="column-drawer-image" v-if="imageUrl" :style="'background-image: url(' + imageUrl + ')'"></div>
+            <div class="column-drawer-image" v-if="columnInfo.cover" :style="'background-image: url(' + columnInfo.cover + ')'"></div>
             <div v-else>
               <loading-outlined v-if="loading"></loading-outlined>
               <plus-outlined v-else></plus-outlined>
@@ -76,8 +78,8 @@
           <a-textarea v-model:value="columnInfo.introduction" :placeholder="$t('columns.introduction')" :rows="4" :disabled="drawerDisabled" />
         </a-form-item>
         <a-form-item :wrapper-col="{ offset: 6, span: 18 }" v-if="drawerDisabled">
-          <a-button type="primary" @click="reviewColumn(1)">上架</a-button>
-          <a-button style="margin-left: 10px" @click="reviewColumn(5)">退回</a-button>
+          <a-button type="primary" @click="reviewColumn(1)">{{ $t('columns.shelve') }}</a-button>
+          <a-button style="margin-left: 10px" @click="reviewColumn(5)">{{ $t('columns.return') }}</a-button>
         </a-form-item>
       </a-form>
 
@@ -129,7 +131,6 @@ const drawerDisabled = ref<boolean>(false)
 //封面上传参数
 const fileList = ref<unknown>([])
 const loading = ref<boolean>(false)
-const imageUrl = ref<string>('')
 
 const { t } = useI18n()
 
@@ -145,10 +146,6 @@ const options = computed(() => [
   {
     label: t('columns.offline'),
     value: 3,
-  },
-  {
-    label: t('columns.deleted'),
-    value: 4,
   },
   {
     label: t('columns.returned'),
@@ -175,15 +172,12 @@ const resetSearch = () => {
 }
 
 const changeDrawer = (type: string, item?: ColumnState) => {
+  drawerTitle.value = 'drawer.' + type + '_column'
   if ((type === 'edit' || type === 'review') && item) {
     columnInfo.value = item
-    drawerTitle.value = 'drawer.edit_column'
-    imageUrl.value = item.cover!
     drawerDisabled.value = type === 'review' ? true : false
   } else {
     columnInfo.value = { id: null, name: '', state: 2, introduction: '', cover: '' }
-    imageUrl.value = ''
-    drawerTitle.value = 'drawer.new_column'
   }
   showDrawer.value = true
 }
@@ -302,7 +296,6 @@ const customRequest: UploadProps['customRequest'] = async (options) => {
 const handleChange = (info: UploadChangeParam) => {
   if (info.file.status !== 'uploading') {
     const { response } = info.fileList[0]!
-    imageUrl.value = response.url
     columnInfo.value.cover = response.url
   }
   if (info.file.status === 'done') {

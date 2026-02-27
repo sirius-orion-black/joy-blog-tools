@@ -204,6 +204,9 @@ const collectIds = (node: MenuTypeState): number[] => {
 const onSubmit = async () => {
   if (user.userDrawer.type === 'add') {
     const res: UserTypeState = await user.addUser(formState)
+    nextTick(() => {
+      emit('update:list')
+    })
     Modal.info({
       title: t('base.copy_initial_password'),
       content: h('div', {}, [h('p', `${t('base.user_nickname')}:${res.nickname}`), h('p', `${t('base.user_password')}:${res.password}`)]),

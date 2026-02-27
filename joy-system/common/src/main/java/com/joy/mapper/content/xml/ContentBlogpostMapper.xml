@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.joy.mapper.content.ContentBlogpostMapper">
+
+    <resultMap id="blogpostResultMap" type="com.joy.entity.content.ContentBlogpost">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="introduction" column="introduction"/>
+        <result property="cover" column="cover"/>
+        <result property="classifyId" column="classify_id"/>
+        <result property="columnId" column="column_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="readType" column="read_type"/>
+        <result property="isStick" column="is_stick"/>
+        <result property="state" column="state"/>
+        <result property="isOriginal" column="is_original"/>
+        <result property="reprintAddress" column="reprint_address"/>
+        <result property="isRecommend" column="is_recommend"/>
+        <result property="keywords" column="keywords"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+
+        <!-- 映射非表字段 -->
+        <result property="likeCount" column="like_count" jdbcType="BIGINT"/>
+        <result property="classifyName" column="classify_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="columnName" column="column_name"/>
+        <result property="labelNames" column="label_names"
+                typeHandler="com.joy.handler.StringToListTypeHandler"/>
+    </resultMap>
+
+    <select id="selectBlogpostPageWithLike" resultMap="blogpostResultMap">
+        SELECT
+        b.*,
+        c.name AS classify_name,
+        IFNULL(lk.like_count, 0) AS like_count,
+        (
+        SELECT GROUP_CONCAT(DISTINCT CONCAT(lbl.id, ':', lbl.name) SEPARATOR ';')
+        FROM content_blogpost_label bpl
+        JOIN content_label lbl ON bpl.label_id = lbl.id
+        WHERE bpl.blogpost_id = b.id
+        LIMIT 5
+        ) AS label_names,
+        (
+        SELECT cc.name FROM content_column cc WHERE cc.id = b.column_id
+        ) AS column_name
+        FROM content_blogpost b
+        LEFT JOIN content_classify c ON b.classify_id = c.id
+        LEFT JOIN (
+        SELECT blogpost_id, COUNT(*) AS like_count
+        FROM content_blogpost_like
+        GROUP BY blogpost_id
+        ) lk ON b.id = lk.blogpost_id
+        <where>
+            b.state NOT IN (3, 8)  <!-- 排除删除、草稿状态 -->
+            <if test="state != null">
+                AND b.state = #{state}
+            </if>
+            <if test="title != null and title != ''">
+                AND b.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="classifyId != null">
+                AND b.classify_id = #{classifyId}
+            </if>
+        </where>
+        ORDER BY b.create_time DESC
+    </select>
+</mapper>

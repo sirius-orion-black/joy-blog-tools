@@ -35,7 +35,7 @@
       </a-form-item>
 
       <a-form-item :label="$t('drawer.menu_icon')" v-show="menuData.type !== 3">
-        <div class="menu-draw-icon base-day">
+        <div class="menu-draw-icon">
           <a-button @click="showIcons()">
             <IconFont v-if="menuData.icon" :type="menuData.icon" />{{ $t('drawer.icon_select') }}<DownOutlined />
           </a-button>
@@ -106,12 +106,15 @@
 <script lang="ts" setup>
 import { reactive, computed, ref } from 'vue'
 import { DownOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
 
 import { menuStore } from '@/stores/menu'
 
 import type { MenuTypeState, MenuParentState, MenuIconState } from '@/types/menuType'
 
 const menu = menuStore()
+const { t } = useI18n()
 
 const props = defineProps<{
   title: string
@@ -172,6 +175,19 @@ const onClose = () => {
   showIconSelect.value = false
 }
 const onSubmit = () => {
+  if (menuData.value.type === 1 && !menuData.value.name) {
+    message.error(t('drawer.input_empty'))
+    return
+  } else if (
+    menuData.value.type === 2 &&
+    (!menuData.value.name || !menuData.value.component || !menuData.value.path || !menuData.value.router || !menuData.value.isExternal)
+  ) {
+    message.error(t('drawer.input_empty'))
+    return
+  } else if (menuData.value.type === 3 && (!menuData.value.name || !menuData.value.permission)) {
+    message.error(t('drawer.input_empty'))
+    return
+  }
   if (!menuData.value.id || menuData.value.id === 0) menu.addMenu(menuData.value)
   else menu.editMenu(menuData.value)
   menu.setMenuDraw(false)

@@ -37,7 +37,7 @@
           <template v-if="column.key === 'state'">
             {{ $t(text === 1 ? 'columns.normal' : 'columns.disabled') }}
           </template>
-          <template v-if="column.key === 'type'">
+          <template v-else-if="column.key === 'type'">
             {{ $t(text === 1 ? 'columns.blog' : 'columns.moments') }}
           </template>
           <template v-else-if="column.key === 'operation'">
@@ -50,8 +50,8 @@
 
     <a-drawer :open="showDrawer" :title="$t(drawerTitle)" @close="onClose" :closable="false">
       <a-form :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-        <a-form-item :label="$t('columns.type_name')" :rules="[{ required: true, message: '' }]">
-          <a-input v-model:value="typeInfo.name" :placeholder="$t('columns.type_name')" />
+        <a-form-item :label="$t('columns.classify_name')" :rules="[{ required: true, message: '' }]">
+          <a-input v-model:value="typeInfo.name" :placeholder="$t('columns.classify_name')" />
         </a-form-item>
 
         <a-form-item :label="$t('columns.state')" :rules="[{ required: true, message: '' }]">
@@ -83,7 +83,7 @@ import type { Ref } from 'vue'
 import type { LabelTypeSearchState, LabelTypeState } from '@/types/labelType'
 import type { PageTableState } from '@/types/resultType'
 
-import { contentTypeStore } from '@/stores/contentType'
+import { contentTypeStore } from '@/stores/contentClassify'
 
 const contentType = contentTypeStore()
 const showDrawer = ref<boolean>(false)
@@ -146,8 +146,8 @@ const onSubmit = () => {
     message.error(t('drawer.type_name_empty'))
     return
   }
-  if (!typeInfo.value.id) contentType.addType(typeInfo.value)
-  else contentType.editType(typeInfo.value)
+  if (!typeInfo.value.id) contentType.addClassify(typeInfo.value)
+  else contentType.editClassify(typeInfo.value)
   showDrawer.value = false
 }
 
@@ -205,7 +205,7 @@ const deleteLabel = (param: number[]) => {
   Modal.confirm({
     title: t('base.sure_deleted_it'),
     onOk() {
-      contentType.delType(param)
+      contentType.delClassify(param)
       nextTick(() => {
         selectLabbel.value = [] // 确保在DOM更新后执行
         tableState.selectedRowKeys = []

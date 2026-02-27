@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.ContentType;
-import com.joy.mapper.content.ContentTypeMapper;
-import com.joy.service.ContentTypeService;
+import com.joy.entity.content.ContentClassify;
+import com.joy.mapper.content.ContentClassifyMapper;
+import com.joy.service.ContentClassifyService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ContentTypeServiceImpl extends ServiceImpl<ContentTypeMapper, ContentType> implements ContentTypeService {
+public class ContentClassifyServiceImpl extends ServiceImpl<ContentClassifyMapper, ContentClassify> implements ContentClassifyService {
 
     /**
      * 获取类型列表
@@ -25,9 +25,9 @@ public class ContentTypeServiceImpl extends ServiceImpl<ContentTypeMapper, Conte
      * @return
      */
     @Override
-    public Result<Page<ContentType>> getType(SearchParamDto params) {
-        Page<ContentType> page = new Page<>(params.getPage(),params.getSize());
-        QueryWrapper<ContentType> query = new QueryWrapper<>();
+    public Result<Page<ContentClassify>> getClassify(SearchParamDto params) {
+        Page<ContentClassify> page = new Page<>(params.getPage(),params.getSize());
+        QueryWrapper<ContentClassify> query = new QueryWrapper<>();
         query.ne("state",3);
         if(!StringUtils.isEmpty(params.getName()))
             query.like("name",params.getName());
@@ -37,35 +37,35 @@ public class ContentTypeServiceImpl extends ServiceImpl<ContentTypeMapper, Conte
     }
 
     @Override
-    public Result<String> addType(ContentType type) {
-        if (StringUtils.isEmpty(type.getName()))
+    public Result<String> addClassify(ContentClassify classify) {
+        if (StringUtils.isEmpty(classify.getName()))
             return Result.badRequest();
-        return this.save(type) ? Result.success() : Result.internalServerError();
+        return this.save(classify) ? Result.success() : Result.internalServerError();
     }
 
     /**
      * 修改类型
-     * @param type
+     * @param classify
      * @return
      */
     @Override
-    public Result<String> editType(ContentType type) {
-        return this.updateById(type) ? Result.success() : Result.badRequest();
+    public Result<String> editClassify(ContentClassify classify) {
+        return this.updateById(classify) ? Result.success() : Result.badRequest();
     }
 
 
     /**
      * 删除类型
-     * @param typeIds
+     * @param classifyIds
      * @return
      */
     @Override
-    public Result<String> delType(List<Long> typeIds) {
-        if (typeIds.isEmpty())
+    public Result<String> delClassify(List<Long> classifyIds) {
+        if (classifyIds.isEmpty())
             return Result.success();
-        List<ContentType> types = new ArrayList<>();
-        typeIds.forEach(m -> {
-            ContentType type = new ContentType();
+        List<ContentClassify> types = new ArrayList<>();
+        classifyIds.forEach(m -> {
+            ContentClassify type = new ContentClassify();
             type.setId(m);
             type.setState(3);
             types.add(type);

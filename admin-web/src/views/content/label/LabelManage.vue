@@ -41,7 +41,7 @@
           <template v-if="column.key === 'state'">
             {{ $t(text === 1 ? 'columns.normal' : 'columns.disabled') }}
           </template>
-          <template v-if="column.key === 'type'">
+          <template v-else-if="column.key === 'type'">
             {{ $t(text === 1 ? 'columns.blog' : 'columns.moments') }}
           </template>
           <template v-else-if="column.key === 'operation'">

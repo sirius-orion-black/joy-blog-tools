@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, ContentLabel> implements ContentLabelService {
 
     @Autowired
-    private ContentBlogpostLabelMapper contentBlogpostLabelMapper;
+    private ContentBlogpostLabelMapper blogpostLabelMapper;
     @Autowired
-    private ContentMomentsLabelMapper contentMomentsLabelMapper;
+    private ContentMomentsLabelMapper momentsLabelMapper;
 
     /**
      * 获取标签列表
@@ -98,14 +98,13 @@ public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, Con
         if(!CollectionUtils.isEmpty(blogpostIds)){
             QueryWrapper<ContentBlogpostLabel> blogpost = new QueryWrapper<>();
             blogpost.in("label_id",blogpostIds);
-            contentBlogpostLabelMapper.delete(blogpost);
-
+            blogpostLabelMapper.delete(blogpost);
         }
         List<Long> momentsIds = labelMap.getOrDefault(2, Collections.emptyList());
         if(!CollectionUtils.isEmpty(momentsIds)){
             QueryWrapper<ContentMomentsLabel> moments = new QueryWrapper<>();
             moments.in("label_id",momentsIds);
-            contentMomentsLabelMapper.delete(moments);
+            momentsLabelMapper.delete(moments);
         }
 
         return this.removeBatchByIds(labelIds) ? Result.success() : Result.internalServerError();

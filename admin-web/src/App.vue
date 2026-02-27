@@ -10,7 +10,7 @@ const loginStore = userLoginStore()
 </script>
 
 <template>
-  <div class="app-main base-day">
+  <div class="app-main">
     <a-config-provider
       :theme="{
         token: {

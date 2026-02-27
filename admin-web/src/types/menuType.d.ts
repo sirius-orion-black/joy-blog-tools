@@ -27,25 +27,25 @@ export interface MenuParentState {
 export interface MenuIconState {
   //menu icon
   id?: number
-  name?: string
-  iconKey?: string
+  name?: string //菜单名称
+  iconKey?: string //菜单icon的key
 }
 
 export interface MenuItemState {
   //左侧菜单类型
   key: number
-  icon: () => JSX.Element
-  label: string
-  path: string
-  title?: string
-  name: string
+  icon: () => JSX.Element //icon
+  label: string //菜单多语系名称
+  path: string //菜单链接
+  title?: string //菜单标题
+  name: string //菜单名称
   children?: MenuItemState[]
 }
 
 export interface MenuStackItemState {
   //顶部菜单类型
-  path: string
-  name: string
+  path: string //链接
+  name: string //菜单名称
   key: number
 }
 export interface MenuStackState {

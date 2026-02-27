@@ -48,7 +48,7 @@
           <template v-if="column.key === 'sex'">
             {{ $t(text === 1 ? 'base.sex_m' : 'base.sex_f') }}
           </template>
-          <template v-if="column.key === 'state'">
+          <template v-else-if="column.key === 'state'">
             {{ $t(getState(text)) }}
           </template>
           <template v-else-if="column.key === 'operation'">

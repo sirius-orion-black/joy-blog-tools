@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @TableName
@@ -16,9 +17,9 @@ public class ContentBlogpost {
     @TableId(value = "id",type = IdType.AUTO)
     private Long id;
 
-    //文章名
+    //文章标题
     @TableField
-    private String name;
+    private String title;
 
     //文章简介
     @TableField
@@ -30,7 +31,7 @@ public class ContentBlogpost {
 
     //类型id
     @TableField
-    private Long typeId;
+    private Long classifyId;
 
     //专栏id
     @TableField
@@ -68,9 +69,17 @@ public class ContentBlogpost {
     @TableField
     private Integer isRecommend;
 
+    //阅读量
+    @TableField
+    private Integer readership;
+
     //关键词
     @TableField
     private String keywords;
+
+    //创建者来源 1: 前端 2：后台管理者
+    @TableField
+    private Integer userSource;
 
     //创建时间
     @TableField
@@ -79,5 +88,29 @@ public class ContentBlogpost {
     //更新时间
     @TableField
     private Date updateTime;
+
+    //点赞数
+    @TableField(exist = false)
+    private Long likeCount;
+
+    //分类名称
+    @TableField(exist = false)
+    private String classifyName;
+
+    //标签名称
+    @TableField(exist = false)
+    private List<Long> labels;
+
+    //标签名称
+    @TableField(exist = false)
+    private List<String> labelNames;
+
+    //作者名称
+    @TableField(exist = false)
+    private String userName;
+
+    //专栏名称
+    @TableField(exist = false)
+    private String columnName;
 
 }

@@ -8,6 +8,9 @@ import { IconFont } from '@/utils/iconfont'
 import App from './App.vue'
 import router from './router'
 import { i18n } from './i18n/i18n'
+
+import { localCache } from './utils/storage'
+
 import 'ant-design-vue/dist/reset.css'
 
 const app = createApp(App)
@@ -22,6 +25,40 @@ pinia.use(({ store }) => {
 // 全站禁用右键菜单
 // document.addEventListener('contextmenu', (event) => {
 //   event.preventDefault()
+// })
+
+// 定义主题类型
+type ThemeType = 'light' | 'dark'
+
+// 初始化主题配置
+const initTheme = (): ThemeType => {
+  // 优先读取用户本地存储的主题偏好
+  const theme = localCache.getCache('theme') as ThemeType
+  if (theme) {
+    return theme
+  }
+  // 无存储则根据系统偏好自动判断
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+// 应用主题并设置body class
+const applyTheme = (theme: ThemeType) => {
+  // 移除主题类名
+  document.body.classList.remove('theme-light', 'theme-dark')
+  // 添加对应主题类名
+  document.body.classList.add(`theme-${theme}`)
+  // 保存主题到本地存储
+  localCache.setCache('theme', theme)
+}
+// 初始化并应用主题
+applyTheme(initTheme())
+
+// 监听系统主题变化（可选）
+// window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+//   const newTheme = e.matches ? 'dark' : 'light'
+//   // 仅在用户未手动设置主题时，跟随系统变化
+//   if (!localStorage.getItem('user-theme')) {
+//     applyTheme(newTheme)
+//   }
 // })
 
 app.use(pinia)

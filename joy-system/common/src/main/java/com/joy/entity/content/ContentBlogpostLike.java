@@ -6,17 +6,14 @@ import lombok.Data;
 
 @Data
 @TableName
-public class ContentBlogpostLabel {
-    //文章id
+public class ContentBlogpostLike {
+
+    //博客文章id
     @TableField
     private Long blogpostId;
 
-    //标签id
+    //用户id
     @TableField
-    private Long labelId;
+    private Long userId;
 
-    public ContentBlogpostLabel(Long blogpostId, Long labelId) {
-        this.blogpostId = blogpostId;
-        this.labelId = labelId;
-    }
 }
