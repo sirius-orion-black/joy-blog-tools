@@ -1,5 +1,5 @@
 import service from '../utils/request'
-import type { UserTypeState, UserMenuState, UserSearchTypeState } from '@/types/userType'
+import type { UserTypeState, UserMenuState, UserSearchTypeState, UserPwdState } from '@/types/userType'
 
 export default {
   getList: (data: UserSearchTypeState) => service.get('/admin/user/getList', { params: data }),
@@ -10,4 +10,5 @@ export default {
   getPermission: (data: UserMenuState) => service.get('/admin/user/getPermission', { params: data }),
   editPermission: (data: UserMenuState) => service.post('/admin/user/editPermission', data),
   getMenuList: () => service.get('/admin/user/menuList'),
+  changePassword: (data: UserPwdState) => service.post('/admin/user/changePassword', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
 }

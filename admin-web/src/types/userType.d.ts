@@ -32,3 +32,10 @@ export interface UserMenuState {
   userId: number
   menuId?: number[]
 }
+
+export interface UserPwdState {
+  //修改密码
+  oldPassword: string
+  password: string
+  confirmPassword?: string
+}

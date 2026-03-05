@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
+import com.joy.dto.sysUser.ChangePasswordDto;
+import com.joy.dto.sysUser.SysLoginDto;
 import com.joy.dto.sysUser.SysUserDto;
 import com.joy.dto.sysUser.UserMenuDto;
 import com.joy.entity.sysConfig.SysMenu;
@@ -266,6 +268,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                         .collect(Collectors.toList())
         );
 
+    }
+
+    /**
+     * 修改密码
+     * @param user
+     * @return
+     */
+    @Override
+    public Result<String> changePassword(ChangePasswordDto user) {
+        if(!UserVerifyUtil.passwordFormat(user.getPassword()))
+            Result.badRequest("password_number_incorrect");
+        long userId = StpUtil.getLoginIdAsLong();
+        SysUser info = this.getById(userId);
+        if(!BCrypt.checkpw(user.getOldPassword(), info.getPassword()))
+            return Result.badRequest("username_password_incorrect");
+        info.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+        info.setUpdateTime(new Date());
+        this.updateById(info);
+        return Result.success();
     }
 
 }

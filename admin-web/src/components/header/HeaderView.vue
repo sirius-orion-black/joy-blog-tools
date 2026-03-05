@@ -14,7 +14,7 @@
           <template #overlay>
             <a-menu>
               <a-menu-item>
-                <a href="javascript:;">修改密码</a>
+                <a href="javascript:;" @click="changePwdShow">修改密码</a>
               </a-menu-item>
               <a-menu-item>
                 <a href="javascript:;">个人资料</a>
@@ -37,13 +37,47 @@
         <CloseOutlined v-if="menu.menuStack.current?.key !== item.key" @click="delMenuItem(item)" />
       </div>
     </div>
+
+    <a-modal v-model:open="pwdShow" title="修改密码" :footer="null">
+      <a-form :model="formState" name="basic" :label-col="{ span: 8 }" :wrapper-col="{ span: 16 }" autocomplete="off" @finish="onFinish">
+        <a-form-item
+          a-form-item
+          label="旧密码"
+          name="oldPassword"
+          :rules="[{ required: true, message: '请输入旧密码!', pattern: /^(?=.*[A - Z])(?=.*[a - z])(?=.*\d)(?=.*[?@#]).{8,16}$/ }]"
+        >
+          <a-input-password v-model:value="formState.oldPassword" />
+        </a-form-item>
+
+        <a-form-item
+          label="新密码"
+          name="password"
+          :rules="[{ required: true, message: '请输入新密码!', pattern: /^(?=.*[A - Z])(?=.*[a - z])(?=.*\d)(?=.*[?@#]).{8,16}$/ }]"
+        >
+          <a-input-password v-model:value="formState.password" />
+        </a-form-item>
+
+        <a-form-item
+          label="确认密码"
+          name="confirmPassword"
+          :rules="[{ required: true, message: '请确认新密码!', pattern: /^(?=.*[A - Z])(?=.*[a - z])(?=.*\d)(?=.*[?@#]).{8,16}$/ }]"
+        >
+          <a-input-password v-model:value="formState.confirmPassword" />
+        </a-form-item>
+
+        <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
+          <a-button type="primary" html-type="submit">提交</a-button>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { message } from 'ant-design-vue'
 
 import { userLoginStore } from '@/stores/login'
 import { menuStore } from '@/stores/menu'
@@ -53,6 +87,7 @@ import { setLocale } from '@/i18n/i18n'
 import { CloseOutlined } from '@ant-design/icons-vue'
 
 import type { MenuStackItemState } from '@/types/menuType'
+import type { UserPwdState } from '@/types/userType'
 
 const router = useRouter()
 
@@ -86,6 +121,30 @@ const logout = async () => {
 }
 const delMenuItem = (item: MenuStackItemState) => {
   menu.delMenuStack(item)
+}
+
+const pwdShow = ref<true | false>(false)
+const changePwdShow = () => {
+  pwdShow.value = true
+}
+
+const formState = reactive<UserPwdState>({
+  oldPassword: 'Aa123123?',
+  password: '',
+  confirmPassword: '',
+})
+const onFinish = async (values: UserPwdState) => {
+  // if (values.oldPassword === values.password) {
+  //   message.error('新密码不能和旧密码相同！')
+  //   return
+  // }
+  if (values.confirmPassword !== values.password) {
+    message.error('新密码和确认密码不相同！')
+    return
+  }
+  delete values.confirmPassword
+  const res = await user.changePassword(values)
+  console.log(res, formState, 3312)
 }
 </script>
 

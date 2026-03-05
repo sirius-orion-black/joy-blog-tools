@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 import userApi from '@/apis/user'
-import type { UserSearchTypeState, UserTypeState, UserDrawerState, UserMenuState } from '@/types/userType'
+import type { UserSearchTypeState, UserTypeState, UserDrawerState, UserMenuState, UserPwdState } from '@/types/userType'
 import type { PageDataState } from '@/types/resultType'
 import type { MenuTypeState } from '@/types/menuType'
 
@@ -104,6 +104,11 @@ export const userStore = defineStore('user', () => {
     // }
   }
 
+  async function changePassword(params: UserPwdState) {
+    const res = await userApi.changePassword(params)
+    return res
+  }
+
   return {
     list,
     permission,
@@ -119,5 +124,6 @@ export const userStore = defineStore('user', () => {
     editPermission,
     getMenuList,
     getCacheMenu,
+    changePassword,
   }
 })
