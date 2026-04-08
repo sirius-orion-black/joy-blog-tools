@@ -95,18 +95,19 @@ export const userStore = defineStore('user', () => {
   function getCacheMenu() {
     const cached = localCache.getCache<Record<string, string>>('menuList') ?? sessionCache.getCache<Record<string, string>>('menuList')
     const menus = Array.isArray(cached) ? cached : []
-    if (menus.length < 1) {
+    if (menus.length > 0) {
+      menuList.value = menus
+    } else {
       // const remember = localCache.getCache<boolean>('remember')
       // getMenuList(remember)
-    } else menuList.value = menus
+    }
     // if (menus.length > 0) {
     //   addDynamicRoutes(menus)
     // }
   }
 
-  async function changePassword(params: UserPwdState) {
-    const res = await userApi.changePassword(params)
-    return res
+  function changePassword(params: UserPwdState) {
+    userApi.changePassword(params)
   }
 
   return {

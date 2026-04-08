@@ -8,7 +8,7 @@
           <IconFont type="icon-message" class="cursor-pointer header-margin-right font-size-24" />
         </a-badge>
         <IconFont type="icon-language" class="cursor-pointer header-margin-right font-size-24" @click="changeLanguage" />
-        <IconFont type="icon-moon" class="cursor-pointer header-margin-right font-size-24" />
+        <IconFont type="icon-moon" class="cursor-pointer header-margin-right font-size-24" @click="changeTheme" />
         <a-dropdown class="header-personal">
           <img class="header-avatar" src="https://joyimg.lexujia.com/joy/assets/logo.jpg" @click.prevent />
           <template #overlay>
@@ -129,23 +129,26 @@ const changePwdShow = () => {
 }
 
 const formState = reactive<UserPwdState>({
-  oldPassword: 'Aa123123?',
+  oldPassword: '',
   password: '',
   confirmPassword: '',
 })
-const onFinish = async (values: UserPwdState) => {
-  // if (values.oldPassword === values.password) {
-  //   message.error('新密码不能和旧密码相同！')
-  //   return
-  // }
+const onFinish = (values: UserPwdState) => {
+  console.log(values, 3123123)
+  if (values.oldPassword === values.password) {
+    message.error('新密码不能和旧密码相同！')
+    return
+  }
   if (values.confirmPassword !== values.password) {
     message.error('新密码和确认密码不相同！')
     return
   }
   delete values.confirmPassword
-  const res = await user.changePassword(values)
-  console.log(res, formState, 3312)
+  user.changePassword(values)
+  pwdShow.value = false
 }
+
+const changeTheme = () => {}
 </script>
 
 <style lang="scss" scoped>

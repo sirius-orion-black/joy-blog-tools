@@ -78,8 +78,8 @@ const menu = menuStore()
 const router = useRouter()
 
 const formState = reactive<LoginState>({
-  username: 'admin',
-  password: 'Aa123123?',
+  username: '',
+  password: '',
   remember: true,
   move: 0,
   loginType: 1,
