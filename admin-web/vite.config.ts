@@ -38,9 +38,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8081/',
+        target: 'http://127.0.0.1:8081/',
         changeOrigin: true,
       },
     },
+  },
+  optimizeDeps: {
+    include: ['vue-i18n'], // 根据需要包含其他依赖项或翻译文件路径
   },
 })

@@ -41,3 +41,5 @@ coverage
 
 # Vitest
 __screenshots__/
+
+joy-system/server/src/main/resources/application-sit.yml

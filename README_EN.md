@@ -1,5 +1,7 @@
 # Joy Blog & Tools
 
+\*\*Other language versions: [中文](README.md) | [English](README_EN.md)\*\*
+
 ### Introduction
 
 #### **The Birth of My Blog: One Line of Code, A Decade of Persistence**
@@ -44,6 +46,7 @@ No need for flowers or applause. Just a tap of your finger, lighting up the tech
 ### Software Architecture
 
 #### Tech Stack
+
 
 | Client (Mini-program, App) | Client (PC)     | Admin Panel    | Server       |
 | :------------------------- | :-------------- | :------------- | :----------- |

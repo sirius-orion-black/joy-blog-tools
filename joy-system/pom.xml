@@ -95,7 +95,7 @@
                 <!-- 作用:项目打成jar，同时把本地jar包也引入进去 -->
                 <configuration>
                     <includeSystemScope>true</includeSystemScope>
-                    <mainClass>com.joy.NeatAdminApplication</mainClass>
+                    <mainClass>com.joy.Application</mainClass>
                 </configuration>
             </plugin>
             <!--添加配置跳过测试-->

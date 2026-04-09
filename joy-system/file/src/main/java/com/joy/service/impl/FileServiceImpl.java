@@ -20,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -75,8 +77,12 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
         String fileExt = FileUtil.extractExtension(originalName);
         long fileSize = file.getSize();  // 获取文件大小（字节）
 
+        // 获取年月
+        YearMonth currentYearMonth = YearMonth.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
+        String dateStr = currentYearMonth.format(formatter);
         // 生成存储路径
-        String fileTypeDir = map.get("file_type").get(fileType).getConfigValue();
+        String fileTypeDir = map.get("file_type").get(fileType).getConfigValue()+dateStr+"/";
         Path targetDir = Paths.get(storageMap.get("file_storage_path").getConfigValue() + fileTypeDir);
         String storedName = FileUtil.generateUniqueName(Objects.requireNonNull(originalName));
         Path targetPath = targetDir.resolve(storedName);
