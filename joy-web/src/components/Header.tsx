@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useIcon } from "@/utils/iconfont";
 import { webConfigStore } from "@/store/webConfigStore";
-import { useEffect } from "react";
 
 import { NavLink } from "react-router-dom";
+
+import { getCurrentTheme, changeTheme } from "@/utils/theme";
+import type { ThemeType } from "@/utils/theme";
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -25,13 +27,28 @@ const Header: React.FC = () => {
     cursor: "pointer",
   };
 
+  const [theme, setTheme] = useState<ThemeType>(() => {
+    // 在初始渲染时获取当前主题
+    return getCurrentTheme();
+  });
+
+  const handChangeTheme = () => {
+    changeTheme();
+    const newTheme = getCurrentTheme();
+    setTheme(newTheme);
+  };
+
   return (
     <header className="header">
       <nav className="header-main">
         <div className="header-top">
           <IconFont style={iconStyle} type="icon-run" />
-          {webConfig.webName}
-          <IconFont style={modelStyle} type="icon-sun" />
+          <span>{webConfig.webName}</span>
+          <IconFont
+            style={modelStyle}
+            type={theme === "light" ? "icon-sun" : "icon-moon"}
+            onClick={handChangeTheme}
+          />
         </div>
         <div className="header-nav">
           <NavLink className="nav-link" to="/">
