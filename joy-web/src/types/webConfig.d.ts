@@ -6,6 +6,7 @@ export interface WebConfig {
   webName: string;
   webSummary: string;
   webRegistration: string;
+  headPortrait: string;
 }
 
 export interface ConfigStore {

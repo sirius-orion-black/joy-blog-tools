@@ -1,4 +1,3 @@
-// src/routes/index.tsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import Moments from "@/pages/Moments";
 import Article from "@/pages/Article";

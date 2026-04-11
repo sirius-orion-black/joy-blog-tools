@@ -1,17 +1,21 @@
-import { useTranslation } from "react-i18next";
-
 import { webConfigStore } from "@/store/webConfigStore";
 
+import "./index.scss";
+
 const Moments = () => {
-  const { t } = useTranslation();
   const { webConfig } = webConfigStore();
 
   return (
     <div className="page">
-      <h1>
-        {t("welcome")}
-        {webConfig.webName}
-      </h1>
+      <div className="page-top moments-top">
+        <div className="top-info">
+          <span>
+            <p>{webConfig.webAuthor}</p>
+            <p>{webConfig.authorSignature}</p>
+          </span>
+          <img className="avatar" src={webConfig.headPortrait} />
+        </div>
+      </div>
     </div>
   );
 };
