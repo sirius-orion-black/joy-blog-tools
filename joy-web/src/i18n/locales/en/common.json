@@ -1,0 +1,10 @@
+{
+  "welcome": "Welcome to React",
+  "nav": {
+    "home": "Home",
+    "about": "About"
+  },
+  "footer": {
+    "text": "© 2025 My Website. All rights reserved."
+  }
+}

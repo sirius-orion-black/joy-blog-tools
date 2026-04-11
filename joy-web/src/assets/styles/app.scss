@@ -1,0 +1,156 @@
+.app {
+  min-height: 100vh;
+  background-image: url('../img/boat.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  .content {
+    min-height: calc(100vh - 50px);
+    padding: 35px;
+    padding-bottom: 0;
+    display: flex;
+  }
+
+  .header {
+    width: 280px;
+
+    .header-main {
+      padding: 0 0 20px;
+
+      .header-top {
+        padding: 20px 20px;
+        height: 80px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        align-items: center;
+      }
+
+      .header-nav {
+        padding: 0 20px 10px;
+
+        .nav-link {
+          display: block;
+          line-height: 36px;
+          padding: 3px 15px;
+          border-radius: 5px;
+          margin: 5px 0;
+
+          .nav-link-title {
+            margin-left: 8px;
+          }
+        }
+      }
+
+      .header-info {
+        padding: 30px 20px 20px;
+
+        .info-list {
+          display: block;
+          line-height: 36px;
+
+          .info-val {
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+
+  }
+
+  .main {
+    flex: 1;
+  }
+
+  .footer {
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+  }
+}
+
+.theme-light {
+  color: #000000;
+
+  a {
+    color: #a66cff;
+  }
+
+  * {
+    &.a66cff {
+      color: #a66cff;
+    }
+
+    &.f9a11b {
+      color: #f9a11b;
+    }
+
+    &.ffa1cf {
+      color: #ffa1cf;
+    }
+
+    &.c8aabcc {
+      color: #8aabcc;
+    }
+
+    &.c9c9efe {
+      color: #9c9efe;
+    }
+
+    &.c662b2f {
+      color: #662b2f;
+    }
+  }
+
+  @media (hover: hover) {
+    a:hover {
+      color: rgba(167, 108, 255, 0.7);
+    }
+  }
+
+  .content {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .header {
+
+    .header-main {
+      background-color: rgba(255, 255, 255, 0.3);
+
+      .header-nav {
+        .nav-link {
+          color: #000000;
+
+          &:hover,
+          &.active {
+            background-color: #ffa1cf;
+            color: #ffffff;
+          }
+        }
+      }
+
+      .header-info {
+        border-top: 1px solid rgba(255, 255, 255, 0.5);
+      }
+
+    }
+  }
+
+  .main {
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+
+  .footer {
+    background-color: rgba(255, 161, 206, 0.8);
+    color: #ffffff;
+
+    a {
+      color: #ffffff;
+    }
+  }
+
+
+
+
+}

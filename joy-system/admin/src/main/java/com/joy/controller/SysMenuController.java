@@ -36,7 +36,6 @@ public class SysMenuController {
      */
     @PostMapping("/add")
     public Result<String> addMenu(@RequestBody SysMenu menu){
-        log.info("======add menu======>"+menu.toString());
         return sysMenuService.addMenu(menu);
     }
 
@@ -56,7 +55,6 @@ public class SysMenuController {
      */
     @PostMapping("/delete")
     public Result<String> delMenu(@RequestBody List<Long> menuIds){
-        log.info(menuIds.toString()+"=======>>>>");
         return sysMenuService.delMenu(menuIds);
     }
 

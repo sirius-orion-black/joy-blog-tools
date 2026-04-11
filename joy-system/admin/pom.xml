@@ -18,6 +18,12 @@
             <artifactId>common</artifactId>
             <version>${package.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.joy</groupId>
+            <artifactId>file</artifactId>
+            <version>${package.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

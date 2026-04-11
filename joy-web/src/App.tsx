@@ -1,37 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { useTranslation } from 'react-i18next'
+import AppRoutes from "@/routes";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import "@/assets/styles/app.scss";
 
-function App() {
-  const [count, setCount] = useState(0)
-  const { t } = useTranslation('common')
+import { IconProvider } from "@/utils/iconfont";
 
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <IconProvider>
+      <div className="app">
+        <div className="content">
+          <Header />
+          <main className="main">
+            <AppRoutes />
+          </main>
+        </div>
+        <Footer />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        {t('welcome')}
-      </p>
-    </>
-  )
+    </IconProvider>
+  );
 }
-
-export default App

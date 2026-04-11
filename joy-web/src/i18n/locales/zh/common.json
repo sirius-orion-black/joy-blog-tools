@@ -1,0 +1,14 @@
+{
+  "welcome": "欢迎光临",
+  "nav": {
+    "moments": "朋友圈",
+    "article": "技术文章",
+    "column": "平台专栏",
+    "message": "留言",
+    "about": "关于我",
+    "author": "关于"
+  },
+  "footer": {
+    "text": "© 2025 我的网站。保留所有权利。"
+  }
+}

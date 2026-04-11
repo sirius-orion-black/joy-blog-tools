@@ -30,8 +30,6 @@ const loginStore = userLoginStore()
 
 <style scoped>
 .app-main {
-  width: 100vw;
-  height: 100vh;
   position: relative;
 }
 </style>

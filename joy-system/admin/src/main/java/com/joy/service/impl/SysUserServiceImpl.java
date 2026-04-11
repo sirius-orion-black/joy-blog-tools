@@ -155,13 +155,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public Result<String> bannedUser(List<SysUserDto> users) {
-        log.info("banned user==========>" + JSON.toJSONString(users));
+        log.info("banned user==========>{}", JSON.toJSONString(users));
         //获取所有id放进集合
         List<Long> ids = users.stream()
                 .map(SysUserDto::getId)
                 .collect(Collectors.toList());
         List<SysUser> userList = this.listByIds(ids);
-        log.info("user list==========>" + JSON.toJSONString(userList));
+        log.info("user list==========>{}" , JSON.toJSONString(userList));
         //将List dto转换为map，，通过id可以快速查找，提高效率
         Map<Long, SysUserDto> userMap = users.stream().collect(Collectors.toMap(SysUserDto::getId, m -> m));
         //遍历数据并进行更新
@@ -210,7 +210,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         List<Long> menuIds = users.getMenuId();
         if (userId == null || menuIds.isEmpty())
             return Result.badRequest();
-        log.info("user menu==========>" + JSON.toJSONString(users));
+        log.info("user menu==========>{}" , JSON.toJSONString(users));
         // 删除用户原有权限
         QueryWrapper<SysUserMenu> query = new QueryWrapper<>();
         query.eq("user_id", users.getUserId());

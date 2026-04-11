@@ -9,5 +9,11 @@
     "source.fixAll": "explicit"
   },
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // 在 Prettier 中设置使用双引号
+  "prettier.singleQuote": false,
+  // 或者更明确地设置使用双引号
+  "prettier.quoteProps": "as-needed"
+  // 如果使用 ESLint，也可以通过此设置确保双引号
 }

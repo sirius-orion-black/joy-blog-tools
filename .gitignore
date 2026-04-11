@@ -43,3 +43,5 @@ coverage
 __screenshots__/
 
 joy-system/server/src/main/resources/application-sit.yml
+joy-system/server/src/main/resources/application-dev.yml
+joy-web/public/json/

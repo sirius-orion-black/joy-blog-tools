@@ -65,7 +65,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
             return Result.badRequest("account_email_incorrect");
         }
         SysUser user = userList.get(0);
-        log.info("user=>>>>>>>>>" + JSON.toJSONString(user));
+        log.info("user=>>>>>>>>>{}", JSON.toJSONString(user));
         //获取配置邮箱
         QueryWrapper<SysConfigMail> mailQuery = new QueryWrapper<>();
         mailQuery.eq("state", 1);
@@ -75,7 +75,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
             return Result.internalServerError();
         }
         SysConfigMail mail = mailList.get(0);
-        log.info("=======mail=>>>>" + JSON.toJSONString(mail));
+        log.info("=======mail=>>>>{}", JSON.toJSONString(mail));
         //获取验证码有效期
         QueryWrapper<SysConfig> config = new QueryWrapper<>();
         config.eq("config_key", "email_auth_valid_time");
@@ -164,7 +164,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
 
         SysUserInfoDto sysUser = getUserInfoDto(user);
 
-        log.info("=======登录来了=======>>>>>>>>>>" + user.toString());
+        log.info("=======登录来了=======>>>>>>>>>>{}", user.toString());
         return Result.success(sysUser);
     }
 

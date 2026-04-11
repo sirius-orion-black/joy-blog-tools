@@ -133,7 +133,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 queue.addAll(parentChildMap.get(id));
             }
         }
-        log.info(JSON.toJSONString(menuIds) + "menu=============>" + JSON.toJSONString(allIds));
+        log.info("{}menu=============>{}",JSON.toJSONString(menuIds) , JSON.toJSONString(allIds));
         return this.removeBatchByIds(new ArrayList<>(allIds)) ? Result.success() : Result.internalServerError();
     }
 

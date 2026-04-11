@@ -16,7 +16,7 @@ public class HeadInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 获取请求头时间戳
         String timestampStr = request.getHeader("X-Timestamp");
-        log.info("======X-Timestamp>>>>"+timestampStr);
+        log.info("======X-Timestamp>>>>{}",timestampStr);
 
         if (StringUtils.isEmpty(timestampStr)) {
             throw new RuntimeException("缺少时间戳");
