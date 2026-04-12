@@ -35,7 +35,7 @@
         <!--文件管理-->
         <dependency>
             <groupId>com.joy</groupId>
-            <artifactId>file</artifactId>
+            <artifactId>infra</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 

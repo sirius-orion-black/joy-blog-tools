@@ -9,8 +9,8 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>file</artifactId>
-    <description>文件处理模块</description>
+    <artifactId>infra</artifactId>
+    <description>基础设施层（包含文件、日志、缓存等）</description>
 
     <dependencies>
         <dependency>

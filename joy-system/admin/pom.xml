@@ -21,7 +21,7 @@
 
         <dependency>
             <groupId>com.joy</groupId>
-            <artifactId>file</artifactId>
+            <artifactId>infra</artifactId>
             <version>${package.version}</version>
         </dependency>
     </dependencies>
