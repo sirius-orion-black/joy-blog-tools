@@ -87,6 +87,7 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
   logback:
-    rollingpolicy:
-      max-file-size: 12KB
-      max-history: 30
+    rolling-policy:
+      max-file-size: 6MB
+      max-history: 365
+      total-size-cap: 10GB
