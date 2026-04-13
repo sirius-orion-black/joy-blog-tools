@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @RestController
-public @interface ApiPrefixFileRestController {
+public @interface ApiPrefixInfraRestController {
     @AliasFor(annotation = RestController.class)
     String value() default "";
 }

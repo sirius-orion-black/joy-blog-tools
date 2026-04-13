@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "api.prefix")
 public class ApiPrefixProperties {
     private String blog = "/blog";
-    private String file = "/file";
+    private String file = "/infra";
     private String admin = "/admin";
 }
