@@ -3,12 +3,13 @@ package com.joy.utils;
 import com.joy.dto.utils.IpLocationDto;
 import com.joy.dto.utils.IpSummaryDto;
 import org.lionsoul.ip2region.xdb.Searcher;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -48,10 +49,20 @@ public class IpRegionUtil {
      */
     @PostConstruct
     public void init() throws IOException {
-        // 从 classpath 加载 ip2region.xdb 文件
-        ClassPathResource resource = new ClassPathResource("ip2region.xdb");
-        byte[] cBuff = Searcher.loadContentFromFile(resource.getFile().getAbsolutePath());
-        searcher = Searcher.newWithBuffer(cBuff);
+        // 使用 InputStream Commons IO 读取资源
+        InputStream inputStream = getClass().getClassLoader()
+                .getResourceAsStream("ip2region.xdb");
+
+        if (inputStream == null) {
+            throw new FileNotFoundException("Cannot find ip2region.xdb in classpath");
+        }
+
+        try {
+            byte[] bytes = org.apache.commons.io.IOUtils.toByteArray(inputStream);
+            searcher = Searcher.newWithBuffer(bytes);
+        } finally {
+            inputStream.close();
+        }
     }
 
     /**
