@@ -1,14 +1,14 @@
 <template>
-  <a-drawer :open="blogpost.drawInfo?.show" :title="$t(blogpost.drawInfo?.title! + '')" :width="820" :closable="false" @close="onClose">
+  <a-drawer :open="blogpost.drawInfo?.show" :title="$t(blogpost.drawInfo?.title! + '')" :width="860" :closable="false" @close="onClose">
     <template v-if="blogpost.drawInfo?.type !== 'review'">
-      <a-form :model="formState" name="basic" :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" autocomplete="off" @finish="onSubmit">
+      <a-form :model="formState" name="basic" :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" autocomplete="off" @finish="onSubmit">
         <a-form-item :label="$t('columns.article_title')" name="title" :rules="[{ required: true }]">
           <a-input v-model:value="formState.title" :placeholder="$t('columns.article_title')" />
         </a-form-item>
         <a-form-item :label="$t('columns.article_introduction')" name="introduction" :rules="[{ required: true }]">
           <a-textarea v-model:value="formState.introduction" :placeholder="$t('columns.article_introduction')" />
         </a-form-item>
-        <a-form-item label="封面" name="" :rules="[{ required: true }]">
+        <a-form-item :label="$t('columns.cover')" name="" :rules="[{ required: true }]">
           <a-upload
             v-model:file-list="fileList"
             name="cover"
@@ -27,34 +27,48 @@
             </div>
           </a-upload>
         </a-form-item>
-        <a-form-item :label-col="{ span: 3 }" :wrapper-col="{ span: 21 }" label="标签" name="" :rules="[{ required: true }]">
-          <a-select
-            v-model:value="formState.labels"
-            mode="multiple"
-            style="width: 100%"
-            placeholder="标签"
-            :options="blogpost.label"
-            :field-names="{ label: 'name', value: 'id' }"
-          ></a-select>
+        <a-form-item :label-col="{ span: 5 }" :wrapper-col="{ span: 19 }" :label="$t('columns.label_name')" name="" :rules="[{ required: true }]">
+          <a-select v-model:value="formState.labels" mode="multiple" style="width: 100%" :placeholder="$t('columns.label_name')">
+            <a-select-option
+              v-for="item in blogpost.label"
+              :key="item.id"
+              :value="item.id"
+              :disabled="formState.labels!.length >= 5 && formState.labels!.findIndex((o) => Number(o) === item.id) === -1"
+            >
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
         </a-form-item>
         <a-row>
           <a-col :span="12">
-            <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="分类" name="" :rules="[{ required: true }]">
+            <a-form-item
+              :label-col="{ span: 10 }"
+              :wrapper-col="{ span: 14 }"
+              :label="$t('columns.classify_name')"
+              name=""
+              :rules="[{ required: true }]"
+            >
               <a-select
                 v-model:value="formState.classifyId"
                 style="width: 100%"
-                placeholder="分类"
+                :placeholder="$t('columns.classify_name')"
                 :options="blogpost.classify"
                 :field-names="{ label: 'name', value: 'id' }"
               ></a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="专栏" name="" :rules="[{ required: false }]">
+            <a-form-item
+              :label-col="{ span: 10 }"
+              :wrapper-col="{ span: 14 }"
+              :label="$t('columns.column_name')"
+              name=""
+              :rules="[{ required: false }]"
+            >
               <a-select
                 v-model:value="formState.columnId"
                 style="width: 100%"
-                placeholder="专栏"
+                :placeholder="$t('columns.column_name')"
                 :options="blogpost.column"
                 :field-names="{ label: 'name', value: 'id' }"
                 :allowClear="true"
@@ -64,36 +78,47 @@
         </a-row>
         <a-row>
           <a-col :span="12">
-            <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="关键词" name="" :rules="[{ required: true }]">
-              <a-input v-model:value="formState.keywords" placeholder="关键词" />
+            <a-form-item :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }" :label="$t('columns.keywords')" name="" :rules="[{ required: true }]">
+              <a-input v-model:value="formState.keywords" :placeholder="$t('columns.keywords')" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="状态" name="" :rules="[{ required: true }]">
+            <a-form-item :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }" :label="$t('columns.state')" name="" :rules="[{ required: true }]">
               <a-radio-group v-model:value="formState.state">
-                <a-radio-button :value="3">草稿</a-radio-button>
-                <a-radio-button :value="4">发布</a-radio-button>
+                <a-radio-button :value="3">{{ $t('columns.draft') }}</a-radio-button>
+                <a-radio-button :value="4">{{ $t('columns.publish') }}</a-radio-button>
               </a-radio-group>
             </a-form-item>
           </a-col>
         </a-row>
         <a-row>
           <a-col :span="12">
-            <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="阅读方式" name="" :rules="[{ required: true }]">
-              <a-select v-model:value="formState.readType" style="width: 100%" placeholder="阅读方式" :options="readTypeOptions"></a-select>
+            <a-form-item :label-col="{ span: 10 }" :wrapper-col="{ span: 14 }" :label="$t('columns.read_type')" name="" :rules="[{ required: true }]">
+              <a-select
+                v-model:value="formState.readType"
+                style="width: 100%"
+                :placeholder="$t('columns.read_type')"
+                :options="readTypeOptions"
+              ></a-select>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" label="是否原创" name="" :rules="[{ required: true }]">
+            <a-form-item
+              :label-col="{ span: 10 }"
+              :wrapper-col="{ span: 14 }"
+              :label="$t('columns.originality')"
+              name=""
+              :rules="[{ required: true }]"
+            >
               <a-radio-group v-model:value="formState.isOriginal">
-                <a-radio-button :value="1">转载</a-radio-button>
-                <a-radio-button :value="2">原创</a-radio-button>
+                <a-radio-button :value="1">{{ $t('columns.is_reprint') }}</a-radio-button>
+                <a-radio-button :value="2">{{ $t('columns.is_original') }}</a-radio-button>
               </a-radio-group>
             </a-form-item>
           </a-col>
         </a-row>
-        <a-form-item label="转载地址" name="reprintAddress" :rules="[{ required: true }]" v-if="formState.isOriginal === 1">
-          <a-input v-model:value="formState.reprintAddress" placeholder="转载地址" />
+        <a-form-item :label="$t('columns.reprint_address')" name="reprintAddress" :rules="[{ required: true }]" v-if="formState.isOriginal === 1">
+          <a-input v-model:value="formState.reprintAddress" :placeholder="$t('columns.is_reprint')" />
         </a-form-item>
       </a-form>
       <div class="editor-wrapper">
@@ -102,7 +127,7 @@
 
         <!-- 编辑器 -->
         <Editor
-          v-model="formState.content"
+          v-model="formState.content!"
           :defaultConfig="editorConfig"
           :bundle="false"
           :mode="mode"
@@ -111,7 +136,7 @@
         />
       </div>
       <div class="preview base-border">
-        <h3>实时预览：</h3>
+        <h3>{{ $t('columns.real_time_preview') }}：</h3>
         <CodeBlock :content="formState.content" />
       </div>
     </template>
@@ -218,7 +243,7 @@
 
 <script lang="ts" setup>
 import { ref, shallowRef, onBeforeUnmount, computed, reactive } from 'vue'
-import { message } from 'ant-design-vue'
+import { message, Upload } from 'ant-design-vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { useI18n } from 'vue-i18n'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue'
@@ -322,19 +347,6 @@ const editorConfig = {
 // 编辑器创建回调
 const handleCreated = (editor: IDomEditor) => {
   editorRef.value = editor
-  // watch(
-  //   () => blogpost.drawInfo?.show,
-  //   () => {
-  //     const content = blogpost.drawInfo?.show ? formState.value.content : ''
-  //     if (!blogpost.drawInfo?.show) {
-  //       nextTick(() => {
-  //         editorRef.value?.setHtml(content)
-  //       })
-  //     } else {
-  //       editorRef.value?.setHtml(content)
-  //     }
-  //   },
-  // )
 }
 
 const onSubmit = () => {
@@ -364,15 +376,15 @@ const beforeUpload: UploadProps['beforeUpload'] = (file) => {
   // 文件类型验证
   const isValidType = ['image/jpeg', 'image/png'].includes(file.type)
   if (!isValidType) {
-    console.error('仅支持 JPG/PNG 格式')
-    return false
+    message.error('仅支持 JPG/PNG 格式')
+    return Upload.LIST_IGNORE
   }
 
-  // 文件大小验证 (5MB)
+  // 文件大小验证 (3MB)
   const isLt5M = file.size / 1024 / 1024 < 3
   if (!isLt5M) {
-    console.error('文件大小不能超过3MB')
-    return false
+    message.error('文件大小不能超过3MB')
+    return Upload.LIST_IGNORE
   }
 
   return true
@@ -415,8 +427,6 @@ const handleChange = (info: UploadChangeParam) => {
     message.error(`${info.file.name} ${t('request.file_upload_failed')}`)
   }
 }
-//
-//
 </script>
 <style scoped>
 .editor-wrapper {

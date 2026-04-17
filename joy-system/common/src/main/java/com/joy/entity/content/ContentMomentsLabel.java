@@ -14,4 +14,9 @@ public class ContentMomentsLabel {
     //标签id
     @TableField
     private Long labelId;
+
+    public ContentMomentsLabel(Long momentsId, Long labelId) {
+        this.momentsId = momentsId;
+        this.labelId = labelId;
+    }
 }

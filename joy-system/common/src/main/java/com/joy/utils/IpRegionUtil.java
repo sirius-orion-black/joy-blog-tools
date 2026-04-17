@@ -86,6 +86,10 @@ public class IpRegionUtil {
      * @throws Exception 查询失败时抛出异常
      */
     public static IpLocationDto getLocationInfo(String ip) throws Exception {
+        // 检查是否为本地回环地址，如果是则直接返回"内网ip"
+        if (isLoopBackIp(ip)) {
+            return new IpLocationDto("内网ip", "内网ip", "内网ip", "内网ip", "内网ip");
+        }
         String region = getRegion(ip);
         if ("未知".equals(region)) {
             return new IpLocationDto("未知", "未知", "未知", "未知", "未知");
@@ -324,10 +328,10 @@ public class IpRegionUtil {
     /**
      * IP是否为本地回环地址
      *
-     * @param ip IP地址
+     * @param ip IP地B
      * @return 是否为回环地址
      */
-    public static boolean isLoopbackIp(String ip) {
+    public static boolean isLoopBackIp(String ip) {
         if (!isValidIp(ip)) {
             return false;
         }
@@ -479,11 +483,15 @@ public class IpRegionUtil {
      * IP位置信息的完整方法（包含代理IP处理）
      *
      * @param request HttpServletRequest
-     * @return IP地理位置信息
+     * @return IP位置信息
      */
     public static IpLocationDto getLocationFromRequest(HttpServletRequest request) {
         try {
             String clientIp = getClientIpAddress(request);
+            // 检查是否为本地回环地址
+            if (isLoopBackIp(clientIp)) {
+                return new IpLocationDto("内网ip", "内网ip", "内网ip", "内网ip", "内网ip");
+            }
             return getLocationInfo(clientIp);
         } catch (Exception e) {
             // 返回默认的未知位置
@@ -505,7 +513,7 @@ public class IpRegionUtil {
                 isValidIp(ip),
                 isPublicIp(ip),
                 isPrivateIp(ip),
-                isLoopbackIp(ip),
+                isLoopBackIp(ip),
                 isLinkLocalIp(ip),
                 isMulticastIp(ip),
                 getIpClass(ip),

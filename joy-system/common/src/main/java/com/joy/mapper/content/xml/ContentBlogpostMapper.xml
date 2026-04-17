@@ -28,7 +28,7 @@
         <result property="userName" column="user_name"/>
         <result property="columnName" column="column_name"/>
         <result property="labelNames" column="label_names"
-                typeHandler="com.joy.handler.StringToListTypeHandler"/>
+                typeHandler="com.joy.handler.StringMixNumberToListTypeHandler"/>
     </resultMap>
 
     <select id="selectBlogpostPageWithLike" resultMap="blogpostResultMap">
@@ -64,6 +64,35 @@
             <if test="classifyId != null">
                 AND b.classify_id = #{classifyId}
             </if>
+        </where>
+        ORDER BY b.create_time DESC
+    </select>
+
+    <select id="selectBlogpostTransformJson" resultMap="blogpostResultMap">
+        SELECT
+        b.*,
+        c.name AS classify_name,
+        IFNULL(lk.like_count, 0) AS like_count,
+        (
+        SELECT GROUP_CONCAT(DISTINCT CONCAT(lbl.id, ':', lbl.name) SEPARATOR ';')
+        FROM content_blogpost_label bpl
+        JOIN content_label lbl ON bpl.label_id = lbl.id
+        WHERE bpl.blogpost_id = b.id
+        LIMIT 5
+        ) AS label_names,
+        (
+        SELECT cc.name FROM content_column cc WHERE cc.id = b.column_id
+        ) AS column_name
+        FROM content_blogpost b
+        LEFT JOIN content_classify c ON b.classify_id = c.id
+        LEFT JOIN (
+        SELECT blogpost_id, COUNT(*) AS like_count
+        FROM content_blogpost_like
+        GROUP BY blogpost_id
+        ) lk ON b.id = lk.blogpost_id
+        <where>
+            b.state = 1
+            AND b.read_type = 1
         </where>
         ORDER BY b.create_time DESC
     </select>

@@ -6,6 +6,8 @@ import com.joy.entity.content.ContentBlogpost;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 public interface ContentBlogpostMapper extends BaseMapper<ContentBlogpost> {
 
 //    @Select("<script>" +
@@ -37,5 +39,9 @@ Page<ContentBlogpost> selectBlogpostPageWithLike(
         @Param("title") String title,
         @Param("classifyId") Long classifyId,
         @Param("state") Integer state);
+
+
+    List<ContentBlogpost> selectBlogpostTransformJson();
+
 
 }

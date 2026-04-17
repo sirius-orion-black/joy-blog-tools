@@ -24,6 +24,10 @@ public class SysUser {
     @TableField
     private String username;
 
+    //真实姓名
+    @TableField
+    private String realName;
+
     //密码：由8-16个大写字母、小写字母、数字和符号(? @ #) 组成
     @TableField
     private String password;

@@ -17,7 +17,7 @@ export const blogpostStore = defineStore('blogpost', () => {
     size: 10,
   })
   const classify = ref<LabelTypeState>()
-  const label = ref<LabelTypeState>()
+  const label = ref<LabelTypeState[]>()
   const column = ref<ColumnState>()
   const drawInfo = ref<ArticleDrawerState>()
 

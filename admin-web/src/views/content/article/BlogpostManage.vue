@@ -143,7 +143,7 @@ const delArticle = (param: ArticleState) => {
   Modal.confirm({
     title: t('base.sure_deleted_it'),
     onOk() {
-      blogpost.delArticle(param)
+      blogpost.delArticle({ id: param.id, userId: param.userId })
     },
   })
 }

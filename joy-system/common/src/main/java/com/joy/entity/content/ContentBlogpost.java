@@ -97,7 +97,7 @@ public class ContentBlogpost {
     @TableField(exist = false)
     private String classifyName;
 
-    //标签名称
+    //标签ID list
     @TableField(exist = false)
     private List<Long> labels;
 

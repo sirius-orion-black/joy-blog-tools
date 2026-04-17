@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @TableName
@@ -35,7 +36,7 @@ public class ContentMoments {
     @TableField
     private Integer privacy;
 
-    //状态: 1 上架 2 删除 3 草稿
+    //状态: 1 上架 2 删除 3 草稿 4 违规
     @TableField
     private Integer state;
 
@@ -54,5 +55,17 @@ public class ContentMoments {
     //更新时间
     @TableField
     private Date updateTime;
+
+    //标签ID list
+    @TableField(exist = false)
+    private List<Long> labels;
+
+    //标签名称
+    @TableField(exist = false)
+    private List<String> labelNames;
+
+    //作者名称
+    @TableField(exist = false)
+    private String userName;
 
 }

@@ -1,7 +1,6 @@
 package com.joy.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,14 +15,15 @@ import com.joy.mapper.content.*;
 import com.joy.mapper.sysUser.SysUserMapper;
 import com.joy.mapper.user.UserMapper;
 import com.joy.service.ContentBlogpostService;
+import com.joy.service.GenerateJsonService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +50,9 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private GenerateJsonService generateJsonService;
 
     /**
      * 获取文章列表
@@ -116,12 +119,12 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
 
     // 1. 定义校验规则（扩展性强）
     public boolean validateArticle(ContentBlogpost article) {
-        return article != null &&
-                StringUtils.isNotBlank(article.getTitle()) &&
-                StringUtils.isNotBlank(article.getIntroduction()) &&
-                StringUtils.isNotBlank(article.getCover()) &&
-                StringUtils.isNotBlank(article.getContent()) &&
-                article.getClassifyId() != null;
+        return article == null ||
+                StringUtils.isBlank(article.getTitle()) ||
+                StringUtils.isBlank(article.getIntroduction()) ||
+                StringUtils.isBlank(article.getCover()) ||
+                StringUtils.isBlank(article.getContent()) ||
+                article.getClassifyId() == null;
     }
 
     /**
@@ -131,14 +134,13 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
      * @return
      */
     @Override
-    public Result<String> createBlogpost(ContentBlogpost blogpost) {
+    public Result<String> createBlogpost(ContentBlogpost blogpost) throws IOException {
         // 1. 保存主文章
         ContentBlogpost article = new ContentBlogpost();
         BeanUtils.copyProperties(blogpost, article);
-        Long userId = StpUtil.getLoginIdAsLong();
-        article.setUserId(userId);
-        article.setId(null);
-        if (!validateArticle(article)) {
+        if(article.getId() != null)
+            return Result.badRequest();
+        if (validateArticle(article)) {
             return Result.badRequest("information_incomplete");
         }
         if (article.getState() == null)
@@ -146,15 +148,19 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         if (article.getIsOriginal() == 2)
             article.setReprintAddress(null);
         article.setUserSource(2);
+        Long userId = StpUtil.getLoginIdAsLong();
+        article.setUserId(userId);
         this.save(article);
         // 2. 保存标签关联
         List<ContentBlogpostLabel> labels = blogpost.getLabels().stream()
+                .limit(5) // 限制只处理前5个元素
                 .map(labelId -> new ContentBlogpostLabel(article.getId(), labelId))
                 .collect(Collectors.toList());
 
         if (!labels.isEmpty()) {
             blogpostLabelMapper.batchInsert(labels);
         }
+        generateJsonService.blogpost();
         return Result.success();
 
     }
@@ -166,12 +172,12 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
      * @return
      */
     @Override
-    public Result<String> editBlogpost(ContentBlogpost blogpost) {
+    public Result<String> editBlogpost(ContentBlogpost blogpost) throws IOException {
         //判断是否是该文章创建者
         Long userId = StpUtil.getLoginIdAsLong();
         if (!userId.equals(blogpost.getUserId()))
             return Result.unauthorized();
-        if (!validateArticle(blogpost)) {
+        if (validateArticle(blogpost)) {
             return Result.badRequest("information_incomplete");
         }
         if (blogpost.getIsOriginal() == 2)
@@ -200,7 +206,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         if (!labels.isEmpty()) {
             blogpostLabelMapper.batchInsert(labels);
         }
-
+        generateJsonService.blogpost();
         return Result.success();
     }
 
@@ -211,7 +217,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
      * @return
      */
     @Override
-    public Result<String> delBlogpost(ContentBlogpost blogpost) {
+    public Result<String> delBlogpost(ContentBlogpost blogpost) throws IOException {
         //判断是否是该文章创建者
         Long userId = StpUtil.getLoginIdAsLong();
         if (!userId.equals(blogpost.getUserId()))
@@ -230,7 +236,9 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         ContentBlogpost article = new ContentBlogpost();
         article.setId(blogpost.getId());
         article.setState(8);
-        return this.updateById(article) ? Result.success() : Result.internalServerError();
+        this.updateById(article);
+        generateJsonService.blogpost();
+        return Result.success();
     }
 
     /**
@@ -240,7 +248,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
      * @return
      */
     @Override
-    public Result<String> updateBlogpost(BlogpostUpdateDto blogpost) {
+    public Result<String> updateBlogpost(BlogpostUpdateDto blogpost) throws IOException {
         ContentBlogpost blog = this.getById(blogpost.getId());
         if (blog == null)
             return Result.badRequest("文章不存在");
@@ -263,7 +271,9 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
             default:
                 return Result.badRequest("无效操作: " + blogpost.getAction());
         }
-        return this.update(wrapper) ? Result.success() : Result.internalServerError();
+        this.update(wrapper);
+        generateJsonService.blogpost();
+        return Result.success();
     }
 
     /**

@@ -66,7 +66,7 @@
         </a-form-item>
 
         <a-form-item :label="$t('columns.type')" :rules="[{ required: true, message: '' }]">
-          <a-radio-group v-model:value="labelInfo.type">
+          <a-radio-group v-model:value="labelInfo.type" :disabled="labelInfo.id !== null">
             <a-radio-button :value="1">{{ $t('columns.blog') }}</a-radio-button>
             <a-radio-button :value="2">{{ $t('columns.moments') }}</a-radio-button>
           </a-radio-group>

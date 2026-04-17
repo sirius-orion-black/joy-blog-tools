@@ -24,7 +24,7 @@ public class IpLocationDto {
     }
 
     /**
-     * 获取完整的地理位置描述
+     * 获取完整的位置描述
      */
     public String getFullLocation() {
         StringBuilder sb = new StringBuilder();
@@ -42,6 +42,25 @@ public class IpLocationDto {
         if (!"未知".equals(isp) && !"0".equals(isp)) {
             if (sb.length() > 0) sb.append(" ");
             sb.append("[").append(isp).append("]");
+        }
+        return sb.length() > 0 ? sb.toString() : "未知位置";
+    }
+
+    /**
+     * 获取完整的位置
+     */
+    public String getFullAdr() {
+        StringBuilder sb = new StringBuilder();
+        if (!"未知".equals(country) && !"0".equals(country)) {
+            sb.append(country);
+        }
+        if (!"未知".equals(province) && !"0".equals(province) && !"内网IP".equals(province)) {
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(province);
+        }
+        if (!"未知".equals(city) && !"0".equals(city) && !"内网IP".equals(city)) {
+            if (sb.length() > 0) sb.append(" ");
+            sb.append(city);
         }
         return sb.length() > 0 ? sb.toString() : "未知位置";
     }

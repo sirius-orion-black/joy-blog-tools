@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
 import java.util.List;
 
 @ApiPrefixAdminRestController
@@ -43,7 +44,7 @@ public class ContentBlogpostController {
      * @return
      */
     @PostMapping("/add")
-    public Result<String> createBlogpost(@RequestBody ContentBlogpost blogpost){
+    public Result<String> createBlogpost(@RequestBody ContentBlogpost blogpost) throws IOException {
         return contentBlogpostService.createBlogpost(blogpost);
     }
 
@@ -53,7 +54,7 @@ public class ContentBlogpostController {
      * @return
      */
     @PostMapping("/edit")
-    public Result<String> editBlogpost(@RequestBody ContentBlogpost blogpost){
+    public Result<String> editBlogpost(@RequestBody ContentBlogpost blogpost) throws IOException {
         return contentBlogpostService.editBlogpost(blogpost);
     }
 
@@ -63,7 +64,7 @@ public class ContentBlogpostController {
      * @return
      */
     @PostMapping("/delete")
-    public  Result<String> delBlogpost(@RequestBody ContentBlogpost blogpost){
+    public  Result<String> delBlogpost(@RequestBody ContentBlogpost blogpost) throws IOException {
         return contentBlogpostService.delBlogpost(blogpost);
     }
 
@@ -73,7 +74,7 @@ public class ContentBlogpostController {
      * @return
      */
     @PostMapping("/update")
-    public  Result<String> updateBlogpost(@RequestBody BlogpostUpdateDto blogpost){
+    public  Result<String> updateBlogpost(@RequestBody BlogpostUpdateDto blogpost) throws IOException {
         return contentBlogpostService.updateBlogpost(blogpost);
     }
 
