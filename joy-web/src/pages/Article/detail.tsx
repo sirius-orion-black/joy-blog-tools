@@ -39,7 +39,8 @@ const ArticleDetail = () => {
             <span className="ffa1cf">关键词: {details.keywords}</span>
             <span className="a66cff">分类: {details.classifyName}</span>
             <span className="c9c9efe">
-              标签: {details.labelNames.join(",")}
+              标签:{" "}
+              {details.labelNames?.length ? details.labelNames.join(",") : ""}
             </span>
             <span className="a5f5f5f">
               发布日期: {formatTime(details.createTime ?? "")}
