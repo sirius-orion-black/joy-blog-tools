@@ -109,8 +109,10 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
             tag.setLabels(labelIds);
             if (tag.getUserSource() == 1) {
                 tag.setUserName(userMap.get(tag.getUserId()).getNickname());
+                tag.setUserAvatar(userMap.get(tag.getUserId()).getAvatar());
             } else {
                 tag.setUserName(sysUserMap.get(tag.getUserId()).getNickname());
+                tag.setUserAvatar(sysUserMap.get(tag.getUserId()).getAvatar());
             }
         });
         return Result.success(result);

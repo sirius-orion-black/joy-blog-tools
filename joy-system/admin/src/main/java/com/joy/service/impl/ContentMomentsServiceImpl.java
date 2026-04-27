@@ -101,8 +101,10 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
             //存储用户名
             if (tag.getUserSource() == 1) {
                 tag.setUserName(userMap.get(tag.getUserId()).getNickname());
+                tag.setUserAvatar(userMap.get(tag.getUserId()).getAvatar());
             } else {
                 tag.setUserName(sysUserMap.get(tag.getUserId()).getNickname());
+                tag.setUserAvatar(sysUserMap.get(tag.getUserId()).getAvatar());
             }
         });
 

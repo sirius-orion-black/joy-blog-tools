@@ -68,4 +68,8 @@ public class ContentMoments {
     @TableField(exist = false)
     private String userName;
 
+    //作者头像
+    @TableField(exist = false)
+    private String userAvatar;
+
 }

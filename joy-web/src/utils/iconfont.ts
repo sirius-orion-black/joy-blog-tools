@@ -15,7 +15,7 @@ type IconContextType = {
 const iconContext = createContext<IconContextType | undefined>(undefined);
 
 const iconFontUrl = createFromIconfontCN({
-  scriptUrl: "//at.alicdn.com/t/c/font_4798384_y8p85u889g.js",
+  scriptUrl: "http://localhost:8000/js/font_4798384_y8p85u889g.js",
 });
 
 interface IconProviderProps {

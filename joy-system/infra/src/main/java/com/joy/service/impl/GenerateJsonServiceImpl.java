@@ -160,8 +160,10 @@ public class GenerateJsonServiceImpl implements GenerateJsonService {
             //存储用户名
             if (tag.getUserSource() == 1) {
                 tag.setUserName(userMap.get(tag.getUserId()).getNickname());
+                tag.setUserAvatar(userMap.get(tag.getUserId()).getAvatar());
             } else {
                 tag.setUserName(sysUserMap.get(tag.getUserId()).getNickname());
+                tag.setUserAvatar(sysUserMap.get(tag.getUserId()).getAvatar());
             }
         });
 
@@ -247,8 +249,10 @@ public class GenerateJsonServiceImpl implements GenerateJsonService {
             tag.setLabels(labelIds);
             if (tag.getUserSource() == 1) {
                 tag.setUserName(userMap.get(tag.getUserId()).getNickname());
+                tag.setUserAvatar(userMap.get(tag.getUserId()).getAvatar());
             } else {
                 tag.setUserName(sysUserMap.get(tag.getUserId()).getNickname());
+                tag.setUserAvatar(sysUserMap.get(tag.getUserId()).getAvatar());
             }
             Map<String, Object> article = new HashMap<>();
             article.put("title", tag.getTitle());
@@ -257,7 +261,9 @@ public class GenerateJsonServiceImpl implements GenerateJsonService {
             article.put("labelNames", tag.getLabelNames());
             article.put("userName", tag.getUserName());
             article.put("columnName", tag.getColumnName());
+            article.put("userAvatar", tag.getUserAvatar());
             article.put("createTime", tag.getCreateTime());
+            article.put("id", tag.getId());
             articleList.add(article);
             if (urlMap.get("article-details").getConfigState().equals(2) && StringUtils.isEmpty(urlMap.get("article-details").getConfigValue()))
                 return;

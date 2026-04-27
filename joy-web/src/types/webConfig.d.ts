@@ -1,4 +1,4 @@
-export interface WebConfig {
+export interface WebConfigState {
   githubUrl: string;
   webAuthor: string;
   authorSignature: string;
@@ -9,7 +9,7 @@ export interface WebConfig {
   headPortrait: string;
 }
 
-export interface ConfigStore {
+export interface webConfigResultState {
   webConfig: WebConfig;
   error: string | null;
   fetchConfig: () => Promise<void>;

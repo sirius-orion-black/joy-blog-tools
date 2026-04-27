@@ -48,7 +48,6 @@ No need for flowers or applause. Just a tap of your finger, lighting up the tech
 
 #### Tech Stack
 
-
 | Client (Mini-program, App) | Client (PC)     | Admin Panel    | Server       |
 | :------------------------- | :-------------- | :------------- | :----------- |
 | Uni-app x                  | React           | Vue3           | Spring boot  |
@@ -86,6 +85,7 @@ No need for flowers or applause. Just a tap of your finger, lighting up the tech
 > 1. In the frontend, class names were changed to `exp:test-main` to synchronize with other third-party plugin naming conventions.
 > 2. Due to low platform permission requirements, I wrote a very simple permission control from scratch. Without a role table, it is simply formed by a user, menu, and user-menu association table.
 > 3. Regarding why the Client (PC) uses React instead of unifying with Vue: Since the Admin Panel uses Vue, I chose React to utilize as many different framework technologies as possible.
+> 4. Originally, the client (joy-web) was intended to interact with the server. However, now it is adopted that when certain actions (such as publishing blogs, sharing on the朋友圈， leaving comments, etc.) are triggered， the server will build a JSON file. Then， joy-web will read this JSON file to enhance the performance of the website.
 
 ### Project Screenshots
 

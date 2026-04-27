@@ -14,7 +14,6 @@
     .main {
       .page {
         margin-bottom: 20px;
-        padding-bottom: 20px;
 
         .page-top {
           width: 100%;
@@ -58,6 +57,10 @@
               width: 60px;
             }
           }
+        }
+
+        .page-main {
+          padding: 20px;
         }
       }
     }
@@ -129,6 +132,10 @@
   }
 
   * {
+    &.a5f5f5f {
+      color: #5f5f5f;
+    }
+
     &.a66cff {
       color: #a66cff;
     }
@@ -151,6 +158,10 @@
 
     &.c662b2f {
       color: #662b2f;
+    }
+
+    &.bgd0ddef {
+      background-color: #d0ddef;
     }
   }
 
@@ -208,7 +219,95 @@
     }
   }
 
+  .code-block {
+    .text-content {
+      color: #555555;
+    }
 
+    .code-container {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      .code-header {
+        background-color: #2d3748;
+        color: #e2e8f0;
+      }
+
+      .copy-button {
+        background-color: #4a5568;
+        color: white;
+      }
+
+
+      .copy-button:hover {
+        background-color: #718096;
+      }
+
+      /* Prism.js 主题定制 */
+      code[class*="language-"],
+      pre[class*="language-"] {
+        color: #555555;
+      }
+
+      .token.comment,
+      .token.prolog,
+      .token.doctype,
+      .token.cdata {
+        color: #a0aec0;
+      }
+
+      .token.punctuation {
+        color: #e2e8f0;
+      }
+
+      .namespace {
+        opacity: 0.7;
+      }
+
+      .token.property,
+      .token.tag,
+      .token.boolean,
+      .token.number,
+      .token.constant,
+      .token.symbol,
+      .token.deleted {
+        color: #fc8d59;
+      }
+
+      .token.selector,
+      .token.attr-name,
+      .token.string,
+      .token.char,
+      .token.builtin,
+      .token.inserted {
+        color: #91d054;
+      }
+
+      .token.operator,
+      .token.entity,
+      .token.url,
+      .language-css .token.string,
+      .style .token.string {
+        color: #b3b3b3;
+      }
+
+      .token.atrule,
+      .token.attr-value,
+      .token.keyword {
+        color: #63b3ed;
+      }
+
+      .token.function,
+      .token.class-name {
+        color: #f6ad55;
+      }
+
+      .token.regex,
+      .token.important,
+      .token.variable {
+        color: #fc8d59;
+      }
+    }
+  }
 
 
 }
@@ -221,6 +320,10 @@
   }
 
   * {
+    &.a5f5f5f {
+      color: #cfcfcf;
+    }
+
     &.a66cff {
       color: #a66cff;
     }
@@ -243,6 +346,10 @@
 
     &.c662b2f {
       color: #662b2f;
+    }
+
+    &.bgd0ddef {
+      background-color: #475d7d;
     }
   }
 
@@ -300,7 +407,95 @@
     }
   }
 
+  .code-block {
+    .text-content {
+      color: #cfcfcf;
+    }
 
+    .code-container {
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+
+      .code-header {
+        background-color: #2d3748;
+        color: #e2e8f0;
+      }
+
+      .copy-button {
+        background-color: #4a5568;
+        color: white;
+      }
+
+
+      .copy-button:hover {
+        background-color: #718096;
+      }
+
+      /* Prism.js 主题定制 */
+      code[class*="language-"],
+      pre[class*="language-"] {
+        color: #dbdbdb;
+      }
+
+      .token.comment,
+      .token.prolog,
+      .token.doctype,
+      .token.cdata {
+        color: #a0aec0;
+      }
+
+      .token.punctuation {
+        color: #e2e8f0;
+      }
+
+      .namespace {
+        opacity: 0.7;
+      }
+
+      .token.property,
+      .token.tag,
+      .token.boolean,
+      .token.number,
+      .token.constant,
+      .token.symbol,
+      .token.deleted {
+        color: #fc8d59;
+      }
+
+      .token.selector,
+      .token.attr-name,
+      .token.string,
+      .token.char,
+      .token.builtin,
+      .token.inserted {
+        color: #91d054;
+      }
+
+      .token.operator,
+      .token.entity,
+      .token.url,
+      .language-css .token.string,
+      .style .token.string {
+        color: #b3b3b3;
+      }
+
+      .token.atrule,
+      .token.attr-value,
+      .token.keyword {
+        color: #63b3ed;
+      }
+
+      .token.function,
+      .token.class-name {
+        color: #f6ad55;
+      }
+
+      .token.regex,
+      .token.important,
+      .token.variable {
+        color: #fc8d59;
+      }
+    }
+  }
 
 
 }

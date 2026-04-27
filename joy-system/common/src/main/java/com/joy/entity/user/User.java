@@ -30,4 +30,8 @@ public class User {
     @TableField
     private String nickname;
 
+    //头像URL
+    @TableField
+    private String avatar;
+
 }

@@ -109,6 +109,10 @@ public class ContentBlogpost {
     @TableField(exist = false)
     private String userName;
 
+    //作者头像
+    @TableField(exist = false)
+    private String userAvatar;
+
     //专栏名称
     @TableField(exist = false)
     private String columnName;
