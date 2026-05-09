@@ -47,13 +47,11 @@
         justify-content: flex-start;
         flex-wrap: wrap;
 
-        div {
+        .detail-img-content {
           margin: 10px;
           width: 280px;
           height: 280px;
-          background-size: 280px auto;
-          background-repeat: no-repeat;
-          background-position: center;
+          text-align: center;
         }
       }
 

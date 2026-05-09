@@ -14,6 +14,7 @@ const Message = () => {
           <img className="avatar" src={webConfig.headPortrait} />
         </div>
       </div>
+      <div className="page-main message-main"></div>
     </div>
   );
 };

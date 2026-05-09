@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import Prism from "prismjs";
 import "prismjs/components/prism-bash";
 import "prismjs/components/prism-sql";
@@ -7,24 +7,15 @@ import "prismjs/themes/prism-tomorrow.css";
 
 import "@/assets/styles/codeblock.scss";
 
-interface CodeBlockProps {
-  content: string;
-  showLineNumbers?: boolean;
-  copyable?: boolean;
-}
+// 1. 引入类型接口
+import type { CodeBlockProps, ContentElement } from "@/types/code";
 
-interface ContentElement {
-  type: "text" | "code";
-  content: string;
-  language?: string;
-  key: string;
-}
-
-const CodeBlock: React.FC<CodeBlockProps> = ({
+// 2. 定义函数组件
+const CodeBlock = ({
   content,
   showLineNumbers = false,
   copyable = true,
-}) => {
+}: CodeBlockProps) => {
   const codeRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   // 解析 HTML 内容，分离文本和代码块

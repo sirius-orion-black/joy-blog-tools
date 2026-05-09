@@ -8,6 +8,8 @@ import { useIcon } from "@/utils/iconfont";
 
 import { formatTime, isEmpty, domClass } from "@/utils/favourUtil";
 
+import AlbumImage from "@/components/AlbumImage";
+
 import "./index.scss";
 
 const Moments = () => {
@@ -70,10 +72,9 @@ const Moments = () => {
                 {!isEmpty(imageUrls) && (
                   <div className="detail-list detail-img">
                     {imageUrls.split(",").map((url, index) => (
-                      <div
-                        key={index}
-                        style={{ backgroundImage: `url(${url})` }}
-                      ></div>
+                      <div className="detail-img-content" key={index}>
+                        <AlbumImage src={url} size={280} />
+                      </div>
                     ))}
                   </div>
                 )}

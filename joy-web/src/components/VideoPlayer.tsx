@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 
 import type { VideoPlayerProps } from "@/types/video";
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({
+const VideoPlayer = ({
   src,
   poster = "",
   width = "100%",
@@ -14,7 +14,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   className = "",
   onError,
   onPlayStatusChange,
-}) => {
+}: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useIcon } from "@/utils/iconfont";
@@ -9,11 +9,12 @@ import { NavLink } from "react-router-dom";
 import { getCurrentTheme, changeTheme } from "@/utils/theme";
 import type { ThemeType } from "@/utils/theme";
 
-const Header: React.FC = () => {
+const Header = () => {
   const { t } = useTranslation();
 
   const { IconFont } = useIcon();
   const { webConfig, fetchConfig } = webConfigStore();
+
   useEffect(() => {
     fetchConfig();
   }, [fetchConfig]);
@@ -59,18 +60,18 @@ const Header: React.FC = () => {
             <IconFont type="icon-article" />
             <span className="nav-link-title">{t("nav.article")}</span>
           </NavLink>
-          <NavLink className="nav-link" to="/column">
+          {/* <NavLink className="nav-link" to="/column">
             <IconFont type="icon-column" />
             <span className="nav-link-title">{t("nav.column")}</span>
-          </NavLink>
+          </NavLink> */}
           <NavLink className="nav-link" to="/message">
             <IconFont type="icon-message" />
             <span className="nav-link-title">{t("nav.message")}</span>
           </NavLink>
-          <NavLink className="nav-link" to="/about">
+          {/* <NavLink className="nav-link" to="/about">
             <IconFont type="icon-about" />
             <span className="nav-link-title">{t("nav.about")}</span>
-          </NavLink>
+          </NavLink> */}
         </div>
         <div className="header-info">
           <div className="info-list">
