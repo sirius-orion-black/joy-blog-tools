@@ -28,7 +28,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
         registry.addInterceptor(new SaInterceptor(handler -> {
             // 使用SaRouter定义路由规则
             SaRouter.match("/**") // 拦截所有路径
-                    .notMatch("/**/blog/**", "/**/admin/auth/**", "/error") // 排除认证接口、公开接口和错误页面
+                    .notMatch("/**/blog/**", "/**/admin/auth/**","/**/infra/stat/track", "/error") // 排除认证接口、公开接口和错误页面
                     .check(r -> StpUtil.checkLogin()); // 执行登录校验
         })).addPathPatterns("/**"); // 拦截所有请求
 

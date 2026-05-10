@@ -153,6 +153,14 @@
             <version>2.7.0</version>
         </dependency>
 
+        <!--UAParse 获取设备信息-->
+<!--        <dependency>-->
+<!--            <groupId>com.github.ua-parser</groupId>-->
+<!--            <artifactId>uap-java</artifactId>-->
+<!--            <version>1.6.1</version>-->
+<!--        </dependency>-->
+
+
 
 
     </dependencies>

@@ -124,7 +124,7 @@ public class GenerateJsonServiceImpl implements GenerateJsonService {
     /**
      * 输出朋友圈json
      *
-     * @throws IOException
+     * @throws IOException 异常处理
      */
     @Override
     @Async
@@ -191,7 +191,7 @@ public class GenerateJsonServiceImpl implements GenerateJsonService {
     /**
      * 输出文章json
      *
-     * @throws IOException
+     * @throws IOException 异常处理
      */
     @Override
     @Async

@@ -1,14 +1,15 @@
-import axios from 'axios'
+import axios from "axios";
 
-export const service = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+const service = axios.create({
+  baseURL: window.location.origin + "/api/",
   timeout: 10000,
-  headers: { 'Content-Type': 'application/json' }
-})
+});
 
 // 拦截器示例
-service.interceptors.request.use(config => {
-  const token = localStorage.getItem('token')
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
+service.interceptors.request.use((config) => {
+  const now = Date.now();
+  config.headers["X-Timestamp"] = now;
+  return config;
+});
+
+export default service;

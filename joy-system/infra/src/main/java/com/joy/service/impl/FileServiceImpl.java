@@ -37,7 +37,7 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
     /**
      * 获取数据库配置
      *
-     * @return
+     * @return 返回config 中file信息
      */
     private Map<String, Map<String, SysConfig>> getFileConfig() {
         QueryWrapper<SysConfig> query = new QueryWrapper<>();
@@ -57,10 +57,10 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
     /**
      * 单文件类型
      *
-     * @param file
-     * @param fileType
-     * @param map
-     * @return
+     * @param file 文件
+     * @param fileType 文件类型
+     * @param map config file 配置
+     * @return 给前端返回结果
      */
     private Map<String, String> handleFileUpload(MultipartFile file, String fileType, String platform, Map<String, Map<String, SysConfig>> map) {
         Map<String, String> result = new HashMap<>();
@@ -120,10 +120,10 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
     /**
      * 单文件上传
      *
-     * @param file
-     * @param fileType
-     * @param platform
-     * @return
+     * @param file 文件
+     * @param fileType 文件类型
+     * @param platform 平台
+     * @return 给前端返回结果
      */
     @Override
     public Result<Map<String, String>> uploadFile(MultipartFile file, String fileType, String platform) {
@@ -138,10 +138,10 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
     /**
      * 多文件上传
      *
-     * @param files
-     * @param fileType
-     * @param platform
-     * @return
+     * @param files 多个文件
+     * @param fileType 文件类型
+     * @param platform config file 配置
+     * @return 给前端返回结果
      */
     @Override
     public Result<Map<String, Object>> uploadMultiple(MultipartFile[] files, String fileType, String platform) {

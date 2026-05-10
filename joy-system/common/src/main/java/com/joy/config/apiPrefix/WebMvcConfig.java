@@ -1,7 +1,6 @@
 package com.joy.config.apiPrefix;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +9,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.text.SimpleDateFormat;
 
 
 @Configuration
@@ -20,15 +18,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private ObjectMapper objectMapper;
 
     @Override
-    public void configurePathMatch(PathMatchConfigurer configurer) {
+    public void configurePathMatch(PathMatchConfigurer configure) {
         // 为博客模块Controller添加 /blog 前缀
-        configurer.addPathPrefix("/blog",
+        configure.addPathPrefix("/blog",
                 c -> c.isAnnotationPresent(ApiPrefixBlogRestController.class));
         // 为用户模块Controller添加 /file 前缀
-        configurer.addPathPrefix("/infra",
+        configure.addPathPrefix("/infra",
                 c -> c.isAnnotationPresent(ApiPrefixInfraRestController.class));
         // 为后台模块Controller添加 /admin 前缀
-        configurer.addPathPrefix("/admin",
+        configure.addPathPrefix("/admin",
                 c -> c.isAnnotationPresent(ApiPrefixAdminRestController.class));
     }
 
