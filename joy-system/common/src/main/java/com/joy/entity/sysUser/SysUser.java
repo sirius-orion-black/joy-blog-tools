@@ -48,7 +48,7 @@ public class SysUser {
     @TableField
     private String phone;
 
-    //状态：1 正常，2 禁用，3 邮箱或手机号未验证
+    //状态：1 正常，2 禁用，3  邮箱或手机号未验证，4 演示账号 5 账户删除 6 账号未激活 7 账号冻结
     @TableField
     private Integer state;
 

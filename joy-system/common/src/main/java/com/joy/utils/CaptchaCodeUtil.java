@@ -241,7 +241,7 @@ public class CaptchaCodeUtil {
             return "verification_code_expired";
         // 根据移动距离判断验证是否成功
         if (Math.abs(Integer.parseInt(text.toString()) - blockMove) > ALLOWABLE_DEVIATION)
-            return "verification_failed__puzzle_gap";
+            return "verification_failed_puzzle_gap";
         return null;
     }
 

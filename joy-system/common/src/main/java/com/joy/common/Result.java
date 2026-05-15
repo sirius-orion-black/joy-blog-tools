@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Result<T> {
 
-    @ApiModelProperty(value="状态码")
+    @ApiModelProperty(value = "状态码")
     private Integer code;
 
     @ApiModelProperty(value = "状态")
@@ -23,10 +23,12 @@ public class Result<T> {
     @ApiModelProperty(value = "数据")
     private T data;
 
-    public Result() {}
+    public Result() {
+    }
 
     /**
      * 抽取公共方法，统一处理
+     *
      * @param status
      * @param data
      */
@@ -43,7 +45,7 @@ public class Result<T> {
 
 
     public void setMessage(String message) {
-        if(message != null && !message.isEmpty())
+        if (message != null && !message.isEmpty())
             this.message = message;
     }
 
@@ -70,8 +72,9 @@ public class Result<T> {
 
     /**
      * 请求成功 啥也没
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> Result<T> success() {
         return of(HttpStatusCode.Success);
@@ -79,9 +82,10 @@ public class Result<T> {
 
     /**
      * 请求成功
+     *
      * @param data
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> Result<T> success(T data) {
         return of(HttpStatusCode.Success, data);
@@ -89,9 +93,10 @@ public class Result<T> {
 
     /**
      * 请求成功 只传消息
+     *
      * @param message
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> Result<T> success(String message) {
         return of(HttpStatusCode.Success, message);
@@ -99,10 +104,11 @@ public class Result<T> {
 
     /**
      * 请求成功 传数据和消息
+     *
      * @param data
      * @param message
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> Result<T> success(T data, String message) {
         return of(HttpStatusCode.Success, data, message);
@@ -110,8 +116,9 @@ public class Result<T> {
 
     /**
      * 请求成功并创建了新资源
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> Result<T> created() {
         return of(HttpStatusCode.Created);
@@ -119,8 +126,9 @@ public class Result<T> {
 
     /**
      * 服务器无法理解请求格式
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> Result<T> badRequest() {
         return of(HttpStatusCode.BadRequest);
@@ -128,25 +136,29 @@ public class Result<T> {
 
     /**
      * 服务器无法理解请求格式 只传消息
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> Result<T> badRequest(String message) {
-        return of(HttpStatusCode.BadRequest,message);
+        return of(HttpStatusCode.BadRequest, message);
     }
+
     /**
      * 服务器无法理解请求格式 传数据和消息
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> Result<T> badRequest(T data, String message) {
-        return of(HttpStatusCode.BadRequest,data, message);
+        return of(HttpStatusCode.BadRequest, data, message);
     }
 
     /**
      * 请求需要用户验证
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> Result<T> unauthorized() {
         return of(HttpStatusCode.Unauthorized);
@@ -154,9 +166,10 @@ public class Result<T> {
 
     /**
      * 请求需要用户验证 只传消息
+     *
      * @param message
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> Result<T> unauthorized(String message) {
         return of(HttpStatusCode.Unauthorized, message);
@@ -164,8 +177,9 @@ public class Result<T> {
 
     /**
      * 服务器拒绝请求
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> Result<T> forbidden() {
         return of(HttpStatusCode.Forbidden);
@@ -173,9 +187,10 @@ public class Result<T> {
 
     /**
      * 服务器拒绝请求 只传消息
+     *
      * @param message
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> Result<T> forbidden(String message) {
         return of(HttpStatusCode.Forbidden, message);
@@ -183,8 +198,9 @@ public class Result<T> {
 
     /**
      * 请求的资源不存在
-     * @return
+     *
      * @param <T>
+     * @return
      */
     public static <T> Result<T> notFound() {
         return of(HttpStatusCode.NotFound);
@@ -192,8 +208,9 @@ public class Result<T> {
 
     /**
      * 服务器异常
-     * @return
+     *
      * @param <T>
+     * @return
      */
 
     public static <T> Result<T> internalServerError() {
@@ -202,9 +219,10 @@ public class Result<T> {
 
     /**
      * 服务器异常 只传消息
+     *
      * @param message
-     * @return
      * @param <T>
+     * @return
      */
     public static <T> Result<T> internalServerError(String message) {
         return of(HttpStatusCode.InternalServerError, message);

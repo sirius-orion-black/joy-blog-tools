@@ -34,4 +34,10 @@ public class SysLoginDto {
 
     //记住我
     private Boolean remember;
+
+    //邮箱验证码
+    private String code;
+
+    //有效时间
+    private Integer validTime;
 }

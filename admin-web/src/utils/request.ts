@@ -7,6 +7,15 @@ import router from '@/router'
 import { userLoginStore } from '@/stores/login'
 import { localCache, sessionCache } from './storage'
 
+const getDeviceId = (): string => {
+  let id: string | undefined = localCache.getCache('device_id')
+  if (!id) {
+    id = crypto.randomUUID()
+    localCache.setCache('device_id', id)
+  }
+  return id
+}
+
 const service = axios.create({
   baseURL: window.location.origin + '/api/',
   timeout: 9000,
@@ -77,6 +86,7 @@ service.interceptors.request.use(
   function (config) {
     const now = Date.now()
     config.headers['X-Timestamp'] = now
+    config.headers['X-Device-Id'] = getDeviceId()
     if (!config.url?.includes('/admin/auth/')) {
       const user = localCache.getCache<Record<string, string>>('user') ?? sessionCache.getCache<Record<string, string>>('user')
       const token = user?.token ?? undefined
@@ -137,6 +147,11 @@ service.interceptors.response.use(
     // 超出 2xx 范围的状态码都会触发该函数。
     if (error.message.includes('timeout')) message.error(t('request.system_timed_out'))
     if (error.status === 404 || error.status === 400 || error.status === 500) message.error(t('request.server_issue_again'))
+    if (error.status === 403 || error.status === 429) {
+      const { data } = error.response
+      const messaged = t('request.' + data.message)
+      message.error(messaged)
+    }
     console.log(33332123123123, error)
     return Promise.reject(error)
   },

@@ -68,6 +68,18 @@ public class SysConfigMail {
     @TableField
     private Integer state;
 
+    //有效时间，单位秒
+    @TableField
+    private Integer validTime;
+
+    //邮件HTML模板，支持 {code} {time} 等占位符
+    @TableField
+    private String template;
+
+    //邮件HTML模板，支持 {code} {time} 等占位符
+    @TableField
+    private String subject;
+
     //创建时间
     @TableField
     private Date createTime;

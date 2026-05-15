@@ -36,4 +36,8 @@ export interface EmailState {
   //邮箱
   username: string
   email: string
+  code?: string
+  remember?: boolean
+  loginType?: number
+  validTime?: number
 }

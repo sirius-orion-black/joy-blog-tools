@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import loginApi from '@/apis/login'
 
 import { localCache, sessionCache } from '@/utils/storage'
-import type { LoginState } from '@/types/loginType'
+import type { LoginState, EmailState } from '@/types/loginType'
 
 export const userLoginStore = defineStore('userLogin', () => {
   const user = ref<Record<string, string>>()
@@ -33,7 +33,7 @@ export const userLoginStore = defineStore('userLogin', () => {
     isCaptchaState.value = value
   }
 
-  async function signin(formState: LoginState): Promise<Record<string, string>> {
+  async function signin(formState: LoginState | EmailState): Promise<Record<string, string>> {
     //登录
     showCaptcha.value = false
     const res = await loginApi.login(formState)
@@ -63,6 +63,10 @@ export const userLoginStore = defineStore('userLogin', () => {
     await loginApi.logout()
     cleanUserInfo()
   }
+  async function sendCode(params: EmailState) {
+    const res = await loginApi.sendEmailCode(params)
+    return res.data
+  }
 
   return {
     user,
@@ -78,5 +82,6 @@ export const userLoginStore = defineStore('userLogin', () => {
     getUser,
     signout,
     cleanUserInfo,
+    sendCode,
   }
 })

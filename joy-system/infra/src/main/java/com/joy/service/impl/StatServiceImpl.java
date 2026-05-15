@@ -183,19 +183,19 @@ public class StatServiceImpl implements StatService {
                     String ipKey = KEY_PREFIX_IP + today + ":" + dimension;
                     Long ipCount = redisTemplate.opsForSet().size(ipKey);
 
-                    StatDailyTraffic entity = new StatDailyTraffic();
-                    entity.setStatDate(LocalDate.now());
-                    entity.setPagePath(dimension); // 存储维度标识
-                    entity.setPv(pv);
-                    entity.setUv(uv);
+                    StatDailyTraffic daily = new StatDailyTraffic();
+                    daily.setStatDate(LocalDate.now());
+                    daily.setPagePath(dimension); // 存储维度标识
+                    daily.setPv(pv);
+                    daily.setUv(uv);
                     // assert ipCount != null;
                     // 记录日志或给个默认值
                     if (ipCount == null) {
                         ipCount = 0L;
                     }
-                    entity.setIpCount(ipCount.intValue());
+                    daily.setIpCount(ipCount.intValue());
 
-                    saveOrUpdate(entity);
+                    statSave(daily);
                 } catch (Exception e) {
                     log.error("同步汇总数据失败, key: {}", pvKey, e);
                 }
@@ -244,7 +244,7 @@ public class StatServiceImpl implements StatService {
     /**
      * 保存或更新每日流量统计
      */
-    private void saveOrUpdate(StatDailyTraffic entity) {
+    private void statSave(StatDailyTraffic entity) {
         LambdaQueryWrapper<StatDailyTraffic> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(StatDailyTraffic::getStatDate, entity.getStatDate())
                 .eq(StatDailyTraffic::getPagePath, entity.getPagePath());

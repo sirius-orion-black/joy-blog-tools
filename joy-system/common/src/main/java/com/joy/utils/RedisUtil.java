@@ -300,4 +300,33 @@ public class RedisUtil {
             return 0;
         }
     }
+
+    /**
+     * 递增（计数器）
+     */
+    public long increment(String key, long delta) {
+        try {
+            return REDIS_TEMPLATE.opsForValue().increment(key, delta);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    /**
+     * 递增并设置过期时间（首次调用时）
+     */
+    public long incrementWithExpire(String key, long delta, long time, TimeUnit timeUnit) {
+        try {
+            Long count = REDIS_TEMPLATE.opsForValue().increment(key, delta);
+            if (count != null && count == delta) {
+                REDIS_TEMPLATE.expire(key, time, timeUnit);
+            }
+            return count != null ? count : 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
 }

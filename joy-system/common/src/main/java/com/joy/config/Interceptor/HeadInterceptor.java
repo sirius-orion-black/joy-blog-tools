@@ -1,7 +1,12 @@
 package com.joy.config.Interceptor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joy.common.Result;
+import com.joy.utils.IpRegionUtil;
+import com.joy.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -12,24 +17,62 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class HeadInterceptor implements HandlerInterceptor {
 
+    private final RedisUtil redisUtil;
+    public HeadInterceptor(RedisUtil redisUtil) {
+        this.redisUtil = redisUtil;
+    }
+
+    private static final String PREFIX = "global:rate_limit:";
+    private static final long WINDOW_SECONDS = 10;   // 时间 10秒
+    private static final long MAX_REQUESTS = 3;      // 最大请求次数
+
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
         // 获取请求头时间戳
         String timestampStr = request.getHeader("X-Timestamp");
-        log.info("======X-Timestamp>>>>{}",timestampStr);
-
         if (StringUtils.isEmpty(timestampStr)) {
-            throw new RuntimeException("缺少时间戳");
+            log.info("缺少时间戳");
+            response.setStatus(403);
+            response.getWriter().write(
+                    new ObjectMapper().writeValueAsString(
+                            Result.forbidden("lack_of_timestamp")
+                    )
+            );
+            return false;
         }
         long timestamp = Long.parseLong(timestampStr);
+        // 获取当前时间戳
+        long now = System.currentTimeMillis();
+        // 验证时间戳有效性（允许1分钟误差）
+        if (Math.abs(now - timestamp) > 60000) {
+            log.info("时间戳无效");
+            response.setStatus(403);
+            response.getWriter().write(
+                    new ObjectMapper().writeValueAsString(
+                            Result.forbidden("invalid_timestamp")
+                    )
+            );
+            return false;
+        }
+        // 全局 API 限流，同一 IP + 同一接口 10秒内最多请求 3 次
+        String ip = IpRegionUtil.getClientIpAddress(request);
+        String uri = request.getRequestURI();  // 拿到请求路径
+        String key = PREFIX + ip + ":" + uri;  // 按 IP + 接口 独立限流
+        long count = redisUtil.increment(key, 1);
+        if (count == 1) {
+            redisUtil.expire(key, WINDOW_SECONDS);
+        }
+        if (count > MAX_REQUESTS) {
+            log.warn("触发全局限流，key:{}, IP: {}, URI: {}, 当前次数: {}", key, ip, uri, count);
+            response.setStatus(429);
+            response.getWriter().write(
+                    new ObjectMapper().writeValueAsString(
+                            Result.forbidden("too_many_requests")
+                    )
+            );
+            return false;
+        }
 
-        // 获取当前时间戳（秒级）
-        long now = System.currentTimeMillis() / 1000;
-
-        // 验证时间戳有效性（允许5分钟误差）
-//        if (Math.abs(now - timestamp) > 300) {
-//            throw new RuntimeException("时间戳无效");
-//        }
 
         return true; // 放行请求
     }

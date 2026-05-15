@@ -19,7 +19,7 @@
 
       <a-form-item>
         <div class="forgot-language">
-          <span class="forgot-password" @click="forgotPassword()">{{ $t('base.forgot_password') }}</span>
+          <span class="email-siginin" @click="emailSiginIn()">{{ $t('base.email_login_in') }}</span>
           <span class="login-language" @click="changeLanguage()">
             <IconFont type="icon-language" class="font-size-16" />
           </span>
@@ -28,9 +28,9 @@
 
       <a-form-item>
         <a-form-item name="remember" no-style>
-          <a-checkbox v-model:checked="formState.remember"
-            ><span class="rember-me">{{ $t('base.remember_me') }}</span></a-checkbox
-          >
+          <a-checkbox v-model:checked="formState.remember">
+            <span class="rember-me">{{ $t('base.remember_me') }}</span>
+          </a-checkbox>
         </a-form-item>
       </a-form-item>
 
@@ -55,15 +55,17 @@ import { menuStore } from '@/stores/menu'
 import { setLocale } from '@/i18n/i18n'
 
 import type { LoginState } from '@/types/loginType'
-import type { MenuTypeState, MenuStackItemState } from '@/types/menuType'
+import type { MenuStackItemState } from '@/types/menuType'
 
 import ShowCaptcha from './ShowCaptcha.vue'
+import { isNotEmptyObject } from '@/utils/objectCheck'
+import { findFirstMenu } from '@/utils/menu'
 
 // 跳转到忘记密码页面
 const emit = defineEmits<{
   'update:page': [value: string]
 }>()
-const forgotPassword = () => emit('update:page', 'email')
+const emailSiginIn = () => emit('update:page', 'email')
 // 多语系处理
 const { locale } = useI18n()
 const changeLanguage = () => {
@@ -76,7 +78,7 @@ const user = userStore()
 const menu = menuStore()
 
 const router = useRouter()
-
+//登录表单
 const formState = reactive<LoginState>({
   username: '',
   password: '',
@@ -85,44 +87,37 @@ const formState = reactive<LoginState>({
   loginType: 1,
   nonceStr: '',
 })
+//获取图形验证
 const onFinish = () => {
   login.getCaptcha()
 }
+//登录按钮控制
 const disabled = computed(() => {
   return !(formState.username && formState.password)
 })
 
-// 递归查找首个 type=2 的菜单项
-function findFirstMenu(menuList: MenuTypeState[]): MenuTypeState | null {
-  for (const item of menuList) {
-    if (item.type === 2) return item // 找到目标菜单项
-
-    if (item.children?.length) {
-      const result = findFirstMenu(item.children)
-      if (result) return result // 在子菜单中找到目标
-    }
-  }
-  return null
-}
+//账号登录
 const handleMoveUpdate = async (value: number) => {
   formState.move = value
   formState.nonceStr = login.captcha!.nonceStr + ''
   const res = await login.signin(formState) // 使用 await 等待 Promise 完成
-  login.setUser(formState.remember, res)
-  const menus = await user.getMenuList(formState.remember)
-  const firstMenu = findFirstMenu(menus)
-  const item: MenuStackItemState = {
-    path: firstMenu?.path + '',
-    name: firstMenu?.name + '',
-    key: firstMenu?.id as number,
+  if (isNotEmptyObject(res)) {
+    login.setUser(formState.remember, res)
+    const menus = await user.getMenuList(formState.remember)
+    const firstMenu = findFirstMenu(menus)
+    const item: MenuStackItemState = {
+      path: firstMenu?.path + '',
+      name: firstMenu?.name + '',
+      key: firstMenu?.id as number,
+    }
+    menu.setMenuStack(item)
+    router.push(firstMenu?.path + '')
   }
-  menu.setMenuStack(item)
-  router.push(firstMenu?.path + '')
 }
 </script>
 <style lang="scss" scoped>
 .sign-in {
-  width: 360px;
+  width: 390px;
   height: 360px;
   padding: 30px;
   box-shadow: 0px -6px 10px #ffffff;
@@ -186,7 +181,7 @@ const handleMoveUpdate = async (value: number) => {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    .forgot-password {
+    .email-siginin {
       color: #000000;
       cursor: pointer;
     }

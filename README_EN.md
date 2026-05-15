@@ -23,7 +23,7 @@ Finally condensed into a line of `git push -u origin main` in 2025.
 Welcome to my code universe——
 The starlight here shines for you ✨
 
-[[Experience Blog](https://www.lexujia.com/)] | [Admin Panel] | [[View Source Code Repository](https://github.com/sirius-orion-black/joy-blog-tools)]
+[[Experience Blog](https://www.lexujia.com/)] | [[Admin Panel](https://joyadmin.lexujia.com/)] | [[View Source Code Repository](https://github.com/sirius-orion-black/joy-blog-tools)]
 
 _——Every Star is the ink to continue the story_
 
@@ -47,6 +47,7 @@ No need for flowers or applause. Just a tap of your finger, lighting up the tech
 ### Software Architecture
 
 #### Tech Stack
+
 
 | Client (Mini-program, App) | Client (PC)     | Admin Panel    | Server       |
 | :------------------------- | :-------------- | :------------- | :----------- |
