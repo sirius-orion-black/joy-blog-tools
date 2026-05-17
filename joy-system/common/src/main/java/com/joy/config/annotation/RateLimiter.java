@@ -20,6 +20,6 @@ public @interface RateLimiter {
     /** 时间单位 */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
-    /** 限流提示信息 */
-    String message() default "操作过于频繁，请稍后再试";
+    /** 限流提示信息 请求过于频繁，请稍后再试 */
+    String message() default "too_many_requests";
 }

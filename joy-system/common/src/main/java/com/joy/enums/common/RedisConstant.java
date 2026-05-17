@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum RedisConstant {
 
-    SliderVerificationCode("slider_verification_code"),
+    SliderVerificationCode("slider:verification:code"),
     OneMinute(100),
     FiveMinutes(300);
 

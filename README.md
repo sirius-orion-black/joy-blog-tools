@@ -74,11 +74,10 @@ _——毕竟这个用头发换代码的地方，该有它的星图_
 
 ##### 服务端
 
-> 1. 导入 SQL 文件到数据库
-> 2. 配置数据库连接（application-环境.yml）
-> 3. maven 构建
-> 4. 启动（Application）
-> 5. 配置 nginx
+> 1. 导入 [SQL(请参阅README_SQL.md)](README_SQL.md) 文件到数据库配置数据库连接（application-环境.yml）
+> 2. maven 构建
+> 3. 启动（Application）
+> 4. 配置 nginx
 
 #### 其它
 

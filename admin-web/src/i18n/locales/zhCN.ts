@@ -176,7 +176,7 @@ export default {
     not_found: '请求的资源不存在',
     internal_server_error: '服务器异常',
     unauthorized_access: '无权限访问',
-    no_role_permissions: '无角色权限',
+    unauthorized_role_access: '无角色权限',
     system_timed_out: '系统超时，请重试',
     server_issue_again: '服务器异常，请重试',
     email_cannot_empty: '邮箱不能为空',
