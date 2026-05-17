@@ -8,6 +8,7 @@ import com.joy.common.Result;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysMenu;
 import com.joy.entity.sysConfig.SysMenuIcon;
+import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.sysConfig.SysConfigMapper;
 import com.joy.mapper.sysConfig.SysMenuIconMapper;
 import com.joy.mapper.sysConfig.SysMenuMapper;
@@ -72,10 +73,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 menu.setPath("");
                 menu.setRouter("");
             }
-            return this.save(menu) ? Result.success() : Result.internalServerError();
+            return this.save(menu) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
         } else
-            return Result.badRequest();
-
+            CommonCodeMessage.BAD_REQUEST.throwIt();
+        return null;
     }
 
     /**
@@ -96,9 +97,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 menu.setRouter("");
             }
             this.updateById(menu);
-            return this.updateById(menu) ? Result.success() : Result.internalServerError();
+            return this.updateById(menu) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
         } else
-            return Result.badRequest();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
+        return null;
     }
 
     /**
@@ -134,7 +136,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             }
         }
         log.info("{}menu=============>{}",JSON.toJSONString(menuIds) , JSON.toJSONString(allIds));
-        return this.removeBatchByIds(new ArrayList<>(allIds)) ? Result.success() : Result.internalServerError();
+        return this.removeBatchByIds(new ArrayList<>(allIds)) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**

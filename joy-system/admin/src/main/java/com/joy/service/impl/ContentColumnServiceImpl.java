@@ -8,6 +8,8 @@ import com.joy.common.Result;
 import com.joy.dto.content.SearchParamDto;
 import com.joy.entity.content.ContentBlogpost;
 import com.joy.entity.content.ContentColumn;
+import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.content.ContentBlogpostMapper;
 import com.joy.mapper.content.ContentColumnMapper;
 import com.joy.service.ContentColumnService;
@@ -53,8 +55,8 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
     public Result<String> addColumn(ContentColumn column) {
         column.setUserId(StpUtil.getLoginIdAsLong());
         if (StringUtils.isEmpty(column.getName()) || StringUtils.isEmpty(column.getCover()) || StringUtils.isEmpty(column.getIntroduction()))
-            return Result.badRequest();
-        return this.save(column) ? Result.success() : Result.internalServerError();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
+        return this.save(column) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -67,17 +69,17 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
         //判断是否是该专栏创建者
         Long userId = StpUtil.getLoginIdAsLong();
         if(!userId.equals(column.getUserId()))
-            return Result.unauthorized();
+            CommonCodeMessage.UNAUTHORIZED.throwIt();
 
         if (StringUtils.isEmpty(column.getName()) || StringUtils.isEmpty(column.getCover()) || StringUtils.isEmpty(column.getIntroduction()))
-            return Result.badRequest();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
         ContentColumn info = new ContentColumn();
         info.setId(column.getId());
         info.setUpdateTime(new Date());
         info.setCover(column.getCover());
         info.setName(column.getName());
         info.setIntroduction(column.getIntroduction());
-        return this.updateById(info) ? Result.success() : Result.internalServerError();
+        return this.updateById(info) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -92,15 +94,15 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
         //判断是否是该专栏创建者
         Long userId = StpUtil.getLoginIdAsLong();
         if(!userId.equals(column.getUserId()))
-            return Result.unauthorized();
+            CommonCodeMessage.UNAUTHORIZED.throwIt();
 
         QueryWrapper<ContentBlogpost> postQuery = new QueryWrapper<>();
         postQuery.eq("column_id",detail.getId()).ne("state",8);
         List<ContentBlogpost> list = blogpostMapper.selectList(postQuery);
         if(!list.isEmpty())
-            return Result.internalServerError("delete_articles_column");
+            AdminCodeMessage.ARTICLES_COLUMN_NOTHING.throwIt();
         detail.setState(4);
-        return this.updateById(detail) ? Result.success() : Result.internalServerError();
+        return this.updateById(detail) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -113,6 +115,6 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
         ContentColumn info = new ContentColumn();
         info.setId(column.getId());
         info.setState(column.getState());
-        return this.updateById(info) ? Result.success() : Result.internalServerError();
+        return this.updateById(info) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 }

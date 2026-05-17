@@ -2,6 +2,7 @@ package com.joy.config.aop;
 
 import com.joy.common.Result;
 import com.joy.config.annotation.RateLimiter;
+import com.joy.enums.http.GatewayCodeMessage;
 import com.joy.utils.IpRegionUtil;
 import com.joy.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +43,9 @@ public class RateLimiterAspect {
         }
 
         if (currentCount > rateLimiter.maxCount()) {
-            log.warn("触发接口限流，key: {}, 当前次数: {}", key, currentCount);
-            return Result.forbidden(rateLimiter.message());
+            log.warn("触发接口限流，key: {}, 当前次数: {}, {}", key, currentCount,rateLimiter.message());
+            GatewayCodeMessage.MANY_REQUESTS.throwIt();
+//            return Result.forbidden(rateLimiter.message());
         }
 
         return joinPoint.proceed();

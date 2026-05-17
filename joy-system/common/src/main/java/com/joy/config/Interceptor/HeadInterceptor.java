@@ -2,6 +2,7 @@ package com.joy.config.Interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joy.common.Result;
+import com.joy.enums.http.GatewayCodeMessage;
 import com.joy.utils.IpRegionUtil;
 import com.joy.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -32,26 +33,16 @@ public class HeadInterceptor implements HandlerInterceptor {
         String timestampStr = request.getHeader("X-Timestamp");
         if (StringUtils.isEmpty(timestampStr)) {
             log.info("缺少时间戳");
-            response.setStatus(403);
-            response.getWriter().write(
-                    new ObjectMapper().writeValueAsString(
-                            Result.forbidden("lack_of_timestamp")
-                    )
-            );
-            return false;
+            GatewayCodeMessage.LACK_TIMESTAMP.throwIt();
+            return false;// 拦截请求
         }
         long timestamp = Long.parseLong(timestampStr);
-        // 获取当前时间戳
+        // 获取当前时间戳，其实用不上，有点不干人事
         long now = System.currentTimeMillis();
         // 验证时间戳有效性（允许1分钟误差）
         if (Math.abs(now - timestamp) > 60000) {
             log.info("时间戳无效");
-            response.setStatus(403);
-            response.getWriter().write(
-                    new ObjectMapper().writeValueAsString(
-                            Result.forbidden("invalid_timestamp")
-                    )
-            );
+            GatewayCodeMessage.INVALID_TIMESTAMP.throwIt();
             return false;
         }
         // 全局 API 限流，同一 IP + 同一接口 10秒内最多请求 3 次
@@ -64,12 +55,7 @@ public class HeadInterceptor implements HandlerInterceptor {
         }
         if (count > MAX_REQUESTS) {
             log.warn("触发全局限流，key:{}, IP: {}, URI: {}, 当前次数: {}", key, ip, uri, count);
-            response.setStatus(429);
-            response.getWriter().write(
-                    new ObjectMapper().writeValueAsString(
-                            Result.forbidden("too_many_requests")
-                    )
-            );
+            GatewayCodeMessage.MANY_REQUESTS.throwIt();
             return false;
         }
 

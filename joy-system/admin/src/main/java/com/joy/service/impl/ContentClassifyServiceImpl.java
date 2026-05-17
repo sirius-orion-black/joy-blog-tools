@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.content.SearchParamDto;
 import com.joy.entity.content.ContentClassify;
+import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.content.ContentClassifyMapper;
 import com.joy.service.ContentClassifyService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +40,8 @@ public class ContentClassifyServiceImpl extends ServiceImpl<ContentClassifyMappe
     @Override
     public Result<String> addClassify(ContentClassify classify) {
         if (StringUtils.isEmpty(classify.getName()))
-            return Result.badRequest();
-        return this.save(classify) ? Result.success() : Result.internalServerError();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
+        return this.save(classify) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -50,7 +51,7 @@ public class ContentClassifyServiceImpl extends ServiceImpl<ContentClassifyMappe
      */
     @Override
     public Result<String> editClassify(ContentClassify classify) {
-        return this.updateById(classify) ? Result.success() : Result.badRequest();
+        return this.updateById(classify) ? Result.success() : Result.fail(CommonCodeMessage.BAD_REQUEST.getHttpStatus());
     }
 
 
@@ -70,6 +71,6 @@ public class ContentClassifyServiceImpl extends ServiceImpl<ContentClassifyMappe
             type.setState(3);
             types.add(type);
         });
-        return this.updateBatchById(types) ? Result.success() : Result.internalServerError();
+        return this.updateBatchById(types) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 }

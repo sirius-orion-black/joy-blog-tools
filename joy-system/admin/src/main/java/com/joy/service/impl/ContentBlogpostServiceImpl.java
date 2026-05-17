@@ -11,6 +11,8 @@ import com.joy.dto.content.BlogpostUpdateDto;
 import com.joy.entity.content.*;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.entity.user.User;
+import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.content.*;
 import com.joy.mapper.sysUser.SysUserMapper;
 import com.joy.mapper.user.UserMapper;
@@ -141,9 +143,9 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         ContentBlogpost article = new ContentBlogpost();
         BeanUtils.copyProperties(blogpost, article);
         if(article.getId() != null)
-            return Result.badRequest();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
         if (validateArticle(article)) {
-            return Result.badRequest("information_incomplete");
+            AdminCodeMessage.INFORMATION_INCOMPLETE.throwIt();
         }
         if (article.getState() == null)
             article.setState(4); // 初始状态：预审
@@ -178,9 +180,10 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         //判断是否是该文章创建者
         Long userId = StpUtil.getLoginIdAsLong();
         if (!userId.equals(blogpost.getUserId()))
-            return Result.unauthorized();
+            CommonCodeMessage.UNAUTHORIZED.throwIt();
+
         if (validateArticle(blogpost)) {
-            return Result.badRequest("information_incomplete");
+            AdminCodeMessage.INFORMATION_INCOMPLETE.throwIt();
         }
         if (blogpost.getIsOriginal() == 2)
             blogpost.setReprintAddress(null);
@@ -223,9 +226,9 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         //判断是否是该文章创建者
         Long userId = StpUtil.getLoginIdAsLong();
         if (!userId.equals(blogpost.getUserId()))
-            return Result.unauthorized();
+            CommonCodeMessage.UNAUTHORIZED.throwIt();
         if (blogpost.getId() == null)
-            return Result.badRequest();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
         // 删除主记录
 //        this.removeById(blogpost.getId());
 //        // 删除关联数据
@@ -253,7 +256,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
     public Result<String> updateBlogpost(BlogpostUpdateDto blogpost) throws IOException {
         ContentBlogpost blog = this.getById(blogpost.getId());
         if (blog == null)
-            return Result.badRequest("文章不存在");
+            AdminCodeMessage.ARTICLE_NOT_EXIST.throwIt();
         UpdateWrapper<ContentBlogpost> wrapper = new UpdateWrapper<>();
         wrapper.eq("id", blogpost.getId())
                 .set("update_time", new Date());
@@ -271,7 +274,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
                 wrapper.set("state", 5); // 退回
                 break;
             default:
-                return Result.badRequest("无效操作: " + blogpost.getAction());
+                AdminCodeMessage.INVALID_OPERATION.throwIt();
         }
         this.update(wrapper);
         generateJsonService.blogpost();

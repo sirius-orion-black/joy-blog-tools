@@ -12,6 +12,8 @@ import com.joy.entity.content.ContentMoments;
 import com.joy.entity.content.ContentMomentsLabel;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.entity.user.User;
+import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.content.ContentLabelMapper;
 import com.joy.mapper.content.ContentMomentsLabelMapper;
 import com.joy.mapper.content.ContentMomentsMapper;
@@ -132,9 +134,9 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
         ContentMoments content = new ContentMoments();
         BeanUtils.copyProperties(moments, content);
         if (content.getId() != null)
-            return Result.badRequest();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
         if (validateMoments(content)) {
-            return Result.badRequest("information_incomplete");
+            AdminCodeMessage.INFORMATION_INCOMPLETE.throwIt();
         }
         Long userId = StpUtil.getLoginIdAsLong();
         content.setUserId(userId);
@@ -170,9 +172,9 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
         if (action.equals("del")) {
             Long userId = StpUtil.getLoginIdAsLong();
             if (!userId.equals(moments.getUserId()))
-                return Result.unauthorized();
+                CommonCodeMessage.UNAUTHORIZED.throwIt();
             if (moments.getId() == null)
-                return Result.badRequest();
+                CommonCodeMessage.BAD_REQUEST.throwIt();
         }
         ContentMoments mts = new ContentMoments();
         mts.setId(moments.getId());

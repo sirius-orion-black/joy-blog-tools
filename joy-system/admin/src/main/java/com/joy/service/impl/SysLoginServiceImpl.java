@@ -12,6 +12,7 @@ import com.joy.dto.sysUser.SysUserInfoDto;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysConfigMail;
 import com.joy.entity.sysUser.SysUser;
+import com.joy.enums.http.AdminCodeMessage;
 import com.joy.mapper.sysConfig.SysConfigMailMapper;
 import com.joy.mapper.sysConfig.SysConfigMapper;
 import com.joy.mapper.sysUser.SysUserMapper;
@@ -61,12 +62,13 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
      * @param user
      * @return
      */
-    private String loginVerify(SysLoginDto loginInfo, SysUser user) {
-        if (user == null || !BCrypt.checkpw(loginInfo.getPassword(), user.getPassword()))
-            return "username_password_incorrect";
+    private void loginVerify(SysLoginDto loginInfo, SysUser user) {
+        if (user == null || !BCrypt.checkpw(loginInfo.getPassword(), user.getPassword())){
+            AdminCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
+            return;
+        }
         if (user.getState().equals(2))
-            return "account_banned";
-        return null;
+            AdminCodeMessage.ACCOUNT_BANNED.throwIt();
     }
 
     /**
@@ -104,33 +106,27 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
         String mes = "";
         if (loginInfo.getLoginType() == 1) {//账号密码登录
             if (StringUtils.isBlank(loginInfo.getUsername()) || StringUtils.isEmpty(loginInfo.getPassword())) {//判断用户名密码不为空
-                return Result.badRequest("username_password_incorrect");
+                AdminCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
             }
-            String message = CaptchaCodeUtil.checkImageCode(loginInfo.getNonceStr(), loginInfo.getMove());
-            if (!StringUtils.isEmpty(message))
-                return Result.badRequest(message);
+            CaptchaCodeUtil.checkImageCode(loginInfo.getNonceStr(), loginInfo.getMove());
             query.eq("username", loginInfo.getUsername());
             user = this.getOne(query);
-            mes = loginVerify(loginInfo, user);
-            if (!StringUtils.isEmpty(mes))
-                return Result.badRequest(mes);
+            loginVerify(loginInfo, user);
         } else {//邮箱登录loginInfo.getLoginType() == 2，现在还没有第三种登录，所以这里直接else了
             if (StringUtils.isBlank(loginInfo.getUsername()) || StringUtils.isEmpty(loginInfo.getEmail())) {//判断用户名邮箱不为空
-                return Result.badRequest("account_email_incorrect");
+                AdminCodeMessage.ACCOUNT_EMAIL_INCORRECT.throwIt();
             }
-            String verifyMsg = VerifyCodeUtil.verifyCode(
+            VerifyCodeUtil.verifyCode(
                     loginInfo.getEmail(),
                     "vc:vf:login:code:",
                     loginInfo.getCode(),
                     loginInfo.getValidTime());
-            if (verifyMsg != null) {
-                return Result.forbidden(verifyMsg);
-            }
             query.eq("email", loginInfo.getEmail()).eq("username", loginInfo.getUsername());
             user = this.getOne(query);
         }
         if(user == null){
-            return Result.badRequest("user_info_correct");
+            AdminCodeMessage.USER_INFO_CORRECT.throwIt();
+            return null;
         }
         StpUtil.login(user.getId(), loginInfo.getRemember());
 
@@ -150,23 +146,20 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     @Override
     public Result<Map<String,Integer>> emailVerify(SysLoginDto loginInfo, HttpServletRequest request) {
         if (StringUtils.isBlank(loginInfo.getUsername())) {//判断用户名
-            return Result.badRequest("username_cannot_empty");
+            AdminCodeMessage.USERNAME_CANNOT_EMPTY.throwIt();
         }
         if (StringUtils.isBlank(loginInfo.getEmail()) || !UserVerifyUtil.emailFormat(loginInfo.getEmail())) {//判断邮箱
-            return Result.badRequest("email_format_incorrect");
+            AdminCodeMessage.EMAIL_FORMAT_INCORRECT.throwIt();
         }
         String ip = IpRegionUtil.getClientIpAddress(request);
 
-        String limitMsg = VerifyCodeUtil.checkSendAllowed(loginInfo.getEmail(), ip);
-        if (limitMsg != null) {
-            return Result.forbidden(limitMsg);
-        }
+        VerifyCodeUtil.checkSendAllowed(loginInfo.getEmail(), ip);
         //校验邮箱或者账户是否存在
         QueryWrapper<SysUser> query = new QueryWrapper<>();
         query.eq("email", loginInfo.getEmail()).eq("username", loginInfo.getUsername());
         SysUser user = this.getOne(query);
         if (user == null) {
-            return Result.badRequest("account_email_incorrect");
+            AdminCodeMessage.ACCOUNT_EMAIL_INCORRECT.throwIt();
         }
         log.info("user=>>>>>>>>>{}", JSON.toJSONString(user));
         //获取是否启用云邮箱配置
@@ -175,7 +168,8 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
         SysConfig cloudEmail = sysConfigMapper.selectOne(config);
         if (cloudEmail == null) {
             log.info("============>>>>>>>>>是否启用云邮箱未配置");
-            return Result.internalServerError("enable_cloud_email_config");
+            AdminCodeMessage.ENABLE_CLOUD_EMAIL_CONFIG.throwIt();
+            return null;
         }
         // 生成验证码
         String verificationCode = RandomStringUtils.randomAlphanumeric(6);
@@ -188,7 +182,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
             List<SysConfigMail> mailList = sysConfigMailMapper.selectList(mailQuery);
             if (mailList.isEmpty()) {
                 log.info("============>>>>>>>>>邮箱未配");
-                return Result.internalServerError("email_not_config");
+                AdminCodeMessage.EMAIL_NOT_CONFIG.throwIt();
             }
             SysConfigMail mail = mailList.get(0);
             //发送邮件
@@ -197,9 +191,9 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
                     VerifyCodeUtil.buildEmailVerifyContent(mail, verificationCode),
                     loginInfo.getEmail(),
                     mail);
-            String message = "verification_code_sent_again";
+            String message = AdminCodeMessage.VERIFICATION_CODE_SENT_AGAIN.getMessage();
             if (bl) {
-                message = "verification_code_sent";
+                message = AdminCodeMessage.VERIFICATION_CODE_SENT.getMessage();
                 VerifyCodeUtil.markSent(loginInfo.getEmail());
                 VerifyCodeUtil.saveCodeAsync(loginInfo.getEmail(), "vc:vf:login:code:", verificationCode, mail.getValidTime());
             }

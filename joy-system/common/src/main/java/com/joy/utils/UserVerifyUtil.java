@@ -1,6 +1,7 @@
 package com.joy.utils;
 
 import com.joy.entity.sysUser.SysUser;
+import com.joy.enums.http.AdminCodeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -56,27 +57,26 @@ public class UserVerifyUtil {
      * @param sysUser
      * @return
      */
-    public static String sysUserVerify(SysUser sysUser) {
+    public static void sysUserVerify(SysUser sysUser) {
         String str = "success";
         if (StringUtils.isEmpty(sysUser.getUsername())) {
-            return "username_cannot_empty";//用户名不能为空
+            AdminCodeMessage.USERNAME_CANNOT_EMPTY.throwIt();//用户名不能为空
         }
         if (!usernameFormat(sysUser.getUsername())) {
-            return "username_between_5_16";//用户名为5-16个大小写字母
+            AdminCodeMessage.USERNAME_BETWEEN.throwIt();//用户名为5-16个大小写字母
         }
         if (StringUtils.isEmpty(sysUser.getEmail())) {
-            return "email_cannot_empty";//邮箱不能为空
+            AdminCodeMessage.EMAIL_CANNOT_EMPTY.throwIt();//邮箱不能为空
         }
         if (!emailFormat(sysUser.getEmail())) {
-            return "email_format_incorrect";//邮箱格式不正确
+            AdminCodeMessage.EMAIL_FORMAT_INCORRECT.throwIt();//邮箱格式不正确
         }
         if (StringUtils.isEmpty(sysUser.getPhone())) {
-            return "phone_cannot_empty";//手机号不能为空
+            AdminCodeMessage.PHONE_CANNOT_EMPTY.throwIt();//手机号不能为空
         }
         if (!phoneFormat(sysUser.getPhone())) {
-            return "phone_number_incorrect";//手机号格式不正确
+            AdminCodeMessage.PHONE_NUMBER_INCORRECT.throwIt();//手机号格式不正确
         }
-        return str;
     }
 
     public static String generatePassword(){

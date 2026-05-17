@@ -2,6 +2,8 @@ package com.joy.utils;
 
 import com.joy.dto.auth.CaptchaDto;
 import com.joy.enums.common.RedisConstant;
+import com.joy.enums.http.AdminCodeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 
 import javax.imageio.ImageIO;
@@ -16,6 +18,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
+@Slf4j
 public class CaptchaCodeUtil {
 
     //网络图片地址
@@ -84,7 +87,8 @@ public class CaptchaCodeUtil {
                 return ImageIO.read(file);
             }
         } catch (Exception e) {
-            System.out.println("获取拼图资源失败");
+            log.info("获取拼图资源失败");
+            AdminCodeMessage.FAILED_OBTAIN_PUZZLE_RESOURCES.throwIt();
             //异常处理
             return null;
         }
@@ -221,7 +225,8 @@ public class CaptchaCodeUtil {
             String base64 = Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
             return String.format("data:image/%s;base64,%s", type, base64);
         } catch (IOException e) {
-            System.out.println("图片资源转换BASE64失败");
+            log.info("图片资源转换BASE64失败");
+            AdminCodeMessage.IMAGE_CONVERSION_BASE64_FAILED.throwIt();
             //异常处理
             return null;
         }
@@ -234,15 +239,14 @@ public class CaptchaCodeUtil {
      * @param blockMove
      * @return boolean
      **/
-    public static String checkImageCode(String imageKey, Integer blockMove) {
-        RedisUtil redisUtil = BeanUtil.getBean(RedisUtil.class);
-        Object text = redisUtil.get(RedisConstant.SliderVerificationCode.getValue() + "_" + imageKey);
+    public static void checkImageCode(String imageKey, Integer blockMove) {
+        RedisUtil redis = BeanUtil.getBean(RedisUtil.class);
+        Object text = redis.get(RedisConstant.SliderVerificationCode.getValue() + "_" + imageKey);
         if(Objects.isNull(text))
-            return "verification_code_expired";
+            AdminCodeMessage.VERIFICATION_CODE_EXPIRED.throwIt();
         // 根据移动距离判断验证是否成功
         if (Math.abs(Integer.parseInt(text.toString()) - blockMove) > ALLOWABLE_DEVIATION)
-            return "verification_failed_puzzle_gap";
-        return null;
+            AdminCodeMessage.VERIFICATION_FAILED_PUZZLE_GAP.throwIt();
     }
 
     /**
@@ -252,8 +256,8 @@ public class CaptchaCodeUtil {
      * @param code
      **/
     public static void saveImageCode(String key, String code) {
-        RedisUtil redisUtil = BeanUtil.getBean(RedisUtil.class);
-        redisUtil.setex(RedisConstant.SliderVerificationCode.getValue() + "_" + key, code, Long.parseLong(RedisConstant.FiveMinutes.getValue().toString()));
+        RedisUtil redis = BeanUtil.getBean(RedisUtil.class);
+        redis.setex(RedisConstant.SliderVerificationCode.getValue() + "_" + key, code, Long.parseLong(RedisConstant.FiveMinutes.getValue().toString()));
     }
 
     /**

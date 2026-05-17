@@ -8,6 +8,7 @@ import com.joy.dto.content.SearchParamDto;
 import com.joy.entity.content.ContentBlogpostLabel;
 import com.joy.entity.content.ContentLabel;
 import com.joy.entity.content.ContentMomentsLabel;
+import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.content.ContentBlogpostLabelMapper;
 import com.joy.mapper.content.ContentLabelMapper;
 import com.joy.mapper.content.ContentMomentsLabelMapper;
@@ -60,8 +61,8 @@ public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, Con
     @Override
     public Result<String> addLabel(ContentLabel label) {
         if (StringUtils.isEmpty(label.getName()))
-            return Result.badRequest();
-        return this.save(label) ? Result.success() : Result.internalServerError();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
+        return this.save(label) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -74,9 +75,9 @@ public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, Con
     public Result<String> editLabel(ContentLabel label) {
         ContentLabel oldLabel = this.getById(label.getId());
         if (oldLabel == null)
-            return Result.badRequest();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
         label.setType(oldLabel.getType());
-        return this.updateById(label) ? Result.success() : Result.internalServerError();
+        return this.updateById(label) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -107,6 +108,6 @@ public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, Con
             momentsLabelMapper.delete(moments);
         }
 
-        return this.removeBatchByIds(labelIds) ? Result.success() : Result.internalServerError();
+        return this.removeBatchByIds(labelIds) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 }

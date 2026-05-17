@@ -9,12 +9,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.sysUser.ChangePasswordDto;
-import com.joy.dto.sysUser.SysLoginDto;
 import com.joy.dto.sysUser.SysUserDto;
 import com.joy.dto.sysUser.UserMenuDto;
 import com.joy.entity.sysConfig.SysMenu;
 import com.joy.entity.sysConfig.SysUserMenu;
 import com.joy.entity.sysUser.SysUser;
+import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.sysConfig.SysMenuMapper;
 import com.joy.mapper.sysConfig.SysUserMenuMapper;
 import com.joy.mapper.sysUser.SysUserMapper;
@@ -82,24 +83,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     @Override
     public Result<Map<String, String>> addUser(SysUser sysUser) {
-        String strVerify = UserVerifyUtil.sysUserVerify(sysUser);
-        if (strVerify.equals("success")) {//用户信息校验
-            if (sysUserMapper.countByUsername(sysUser.getUsername()) > 0) {
-                strVerify = "username_already_exists";//用户名已经存在
-            }
-            if (sysUserMapper.countByEmail(sysUser.getEmail()) > 0) {
-                strVerify = "email_already_exists";//邮箱已经存在
-            }
-            sysUser.setState(6);
-
-            String passwordStr = UserVerifyUtil.generatePassword();
-            sysUser.setPassword(BCrypt.hashpw(passwordStr, BCrypt.gensalt()));
-            Map<String, String> map = new HashMap<>();
-            map.put("password", passwordStr);
-            map.put("nickname", sysUser.getNickname());
-            return this.save(sysUser) ? Result.success(map) : Result.badRequest(strVerify);
+        UserVerifyUtil.sysUserVerify(sysUser);//用户信息校验
+        if (sysUserMapper.countByUsername(sysUser.getUsername()) > 0) {
+            AdminCodeMessage.USERNAME_ALREADY_EXISTS.throwIt();//用户名已经存在
         }
-        return Result.badRequest(strVerify);
+        if (sysUserMapper.countByEmail(sysUser.getEmail()) > 0) {
+            AdminCodeMessage.EMAIL_ALREADY_EXISTS.throwIt();//邮箱已经存在
+        }
+        sysUser.setState(6);
+
+        String passwordStr = UserVerifyUtil.generatePassword();
+        sysUser.setPassword(BCrypt.hashpw(passwordStr, BCrypt.gensalt()));
+        Map<String, String> map = new HashMap<>();
+        map.put("password", passwordStr);
+        map.put("nickname", sysUser.getNickname());
+        return this.save(sysUser) ? Result.success(map) : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -112,14 +110,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public Result<String> editUser(SysUser sysUser) {
         //格式校验
         if (!UserVerifyUtil.emailFormat(sysUser.getEmail()) || StringUtils.isEmpty(sysUser.getEmail()))
-            return Result.badRequest("email_format_incorrect");
+            AdminCodeMessage.EMAIL_FORMAT_INCORRECT.throwIt();
         else if (!UserVerifyUtil.phoneFormat(sysUser.getPhone()) || StringUtils.isEmpty(sysUser.getPhone()))
-            return Result.badRequest("phone_number_incorrect");
+            AdminCodeMessage.PHONE_NUMBER_INCORRECT.throwIt();
         SysUser user = new SysUser();
         user.setId(sysUser.getId());
         user.setEmail(sysUser.getEmail());
         user.setPhone(sysUser.getPhone());
-        return this.updateById(user) ? Result.success() : Result.internalServerError();
+        return this.updateById(user) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
 
     }
 
@@ -144,7 +142,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         QueryWrapper<SysUserMenu> query = new QueryWrapper<>();
         query.in("user_id", userIds);
         sysUserMenuMapper.delete(query);
-        return this.updateBatchById(users) ? Result.success() : Result.internalServerError();
+        return this.updateBatchById(users) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -161,7 +159,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .map(SysUserDto::getId)
                 .collect(Collectors.toList());
         List<SysUser> userList = this.listByIds(ids);
-        log.info("user list==========>{}" , JSON.toJSONString(userList));
+        log.info("user list==========>{}", JSON.toJSONString(userList));
         //将List dto转换为map，，通过id可以快速查找，提高效率
         Map<Long, SysUserDto> userMap = users.stream().collect(Collectors.toMap(SysUserDto::getId, m -> m));
         //遍历数据并进行更新
@@ -177,7 +175,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             }
         }
 
-        return this.updateBatchById(userList) ? Result.success() : Result.internalServerError();
+        return this.updateBatchById(userList) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }
 
     /**
@@ -209,8 +207,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         Long userId = users.getUserId();
         List<Long> menuIds = users.getMenuId();
         if (userId == null || menuIds.isEmpty())
-            return Result.badRequest();
-        log.info("user menu==========>{}" , JSON.toJSONString(users));
+            CommonCodeMessage.BAD_REQUEST.throwIt();
+        log.info("user menu==========>{}", JSON.toJSONString(users));
         // 删除用户原有权限
         QueryWrapper<SysUserMenu> query = new QueryWrapper<>();
         query.eq("user_id", users.getUserId());
@@ -272,17 +270,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     /**
      * 修改密码
+     *
      * @param user
      * @return
      */
     @Override
     public Result<String> changePassword(ChangePasswordDto user) {
-        if(!UserVerifyUtil.passwordFormat(user.getPassword()))
-            Result.badRequest("password_number_incorrect");
+        if (!UserVerifyUtil.passwordFormat(user.getPassword()))
+            AdminCodeMessage.PASSWORD_NUMBER_INCORRECT.throwIt();
         long userId = StpUtil.getLoginIdAsLong();
         SysUser info = this.getById(userId);
-        if(!BCrypt.checkpw(user.getOldPassword(), info.getPassword()))
-            return Result.badRequest("username_password_incorrect");
+        if (!BCrypt.checkpw(user.getOldPassword(), info.getPassword()))
+            AdminCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
         info.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
         info.setUpdateTime(new Date());
         this.updateById(info);

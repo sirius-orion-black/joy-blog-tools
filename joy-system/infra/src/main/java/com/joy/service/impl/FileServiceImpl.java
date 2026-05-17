@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.entity.files.FilesRecord;
 import com.joy.entity.sysConfig.SysConfig;
+import com.joy.enums.http.InfraCodeMessage;
 import com.joy.mapper.files.FilesRecordMapper;
 import com.joy.mapper.sysConfig.SysConfigMapper;
 import com.joy.service.FileService;
@@ -127,12 +128,16 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
      */
     @Override
     public Result<Map<String, String>> uploadFile(MultipartFile file, String fileType, String platform) {
-        if (file.isEmpty()) return Result.badRequest("file_cannot_empty");
+        if (file.isEmpty()) {
+            InfraCodeMessage.FILE_EMPTY.throwIt();
+            return null;//永远也用不上，流氓点，去除黄标而已
+        }
         Map<String, Map<String, SysConfig>> map = getFileConfig();
         Map<String, String> result = handleFileUpload(file, fileType, platform, map);
-        return result.containsKey("url") ?
-                Result.success(result) :
-                Result.badRequest(result.get("error"));
+        if(!result.containsKey("url"))
+            InfraCodeMessage.FILE_SAVING_FAILED.throwIt();
+        return Result.success(result);
+
     }
 
     /**
@@ -145,7 +150,10 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
      */
     @Override
     public Result<Map<String, Object>> uploadMultiple(MultipartFile[] files, String fileType, String platform) {
-        if (files == null || files.length == 0) return Result.badRequest("please_select_file");
+        if (files == null || files.length == 0){
+            InfraCodeMessage.NO_FILE.throwIt();
+            return null;//永远也用不上，流氓点，去除黄标而已
+        }
         Map<String, Map<String, SysConfig>> map = getFileConfig();
         List<Map<String, String>> results = Arrays.stream(files)
                 .map(file -> handleFileUpload(file, fileType, platform, map))

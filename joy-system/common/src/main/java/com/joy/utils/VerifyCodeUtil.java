@@ -1,6 +1,7 @@
 package com.joy.utils;
 
 import com.joy.entity.sysConfig.SysConfigMail;
+import com.joy.enums.http.AdminCodeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -47,9 +48,9 @@ public class VerifyCodeUtil {
      *
      * @param email 目标邮箱
      * @param ip    客户端IP
-     * @return null 表示允许发送，否则返回错误提示
+     *  表示允许发送，否则返回错误提示
      */
-    public static String checkSendAllowed(String email, String ip) {
+    public static void checkSendAllowed(String email, String ip) {
         RedisUtil redis = redis();
 
         // ---- 邮箱维度 ----
@@ -57,7 +58,7 @@ public class VerifyCodeUtil {
         String intervalKey = PREFIX_EMAIL_INTERVAL + email;
         if (redis.hasKey(intervalKey)) {
             long ttl = redis.getExpire(intervalKey);
-            return "请" + ttl + "秒后再获取验证码";
+            AdminCodeMessage.VERIFICATION_CODE_SECONDS.throwIt(ttl);
         }
 
         // 2. 邮箱每小时上限
@@ -66,8 +67,8 @@ public class VerifyCodeUtil {
         if (emailHourCount == 1) {
             redis.expire(emailHourKey, 3600);
         }
-        if (emailHourCount > EMAIL_HOUR_MAX) {
-            return "该邮箱获取验证码过于频繁，请1小时后再试";
+        if (emailHourCount > EMAIL_HOUR_MAX) {//该邮箱获取验证码过于频繁，请1小时后再试
+            AdminCodeMessage.VERIFICATION_CODES_FREQUENTLY.throwIt();
         }
 
         // 3. 邮箱每天上限
@@ -76,8 +77,8 @@ public class VerifyCodeUtil {
         if (emailDayCount == 1) {
             redis.expire(emailDayKey, 86400);
         }
-        if (emailDayCount > EMAIL_DAY_MAX) {
-            return "该邮箱今日获取验证码次数已达上限，请明天再试";
+        if (emailDayCount > EMAIL_DAY_MAX) {//该邮箱今日获取验证码次数已达上限，请明天再试
+            AdminCodeMessage.MAXIMUM_VERIFICATION_CODES_TODAY.throwIt();
         }
 
         // ---- IP 维度 ----
@@ -87,8 +88,8 @@ public class VerifyCodeUtil {
         if (ipMinuteCount == 1) {
             redis.expire(ipMinuteKey, 60);
         }
-        if (ipMinuteCount > IP_MINUTE_MAX) {
-            return "当前网络请求过于频繁，请稍后再试";
+        if (ipMinuteCount > IP_MINUTE_MAX) {//当前网络请求过于频繁，请稍后再试
+            AdminCodeMessage.NETWORK_REQUESTS_FREQUENT.throwIt();
         }
 
         // 5. IP每小时上限
@@ -97,8 +98,8 @@ public class VerifyCodeUtil {
         if (ipHourCount == 1) {
             redis.expire(ipHourKey, 3600);
         }
-        if (ipHourCount > IP_HOUR_MAX) {
-            return "当前网络请求过于频繁，请1小时后再试";
+        if (ipHourCount > IP_HOUR_MAX) {//当前网络请求过于频繁，请1小时后再试
+            AdminCodeMessage.NETWORK_REQUESTS_FREQUENT_HOUR.throwIt();
         }
 
         // 6. IP每天上限
@@ -107,11 +108,10 @@ public class VerifyCodeUtil {
         if (ipDayCount == 1) {
             redis.expire(ipDayKey, 86400);
         }
-        if (ipDayCount > IP_DAY_MAX) {
-            return "当前网络今日请求次数已达上限，请明天再试";
+        if (ipDayCount > IP_DAY_MAX) {// 当前网络今日请求次数已达上限，请明天再试
+            AdminCodeMessage.NETWORK_REQUESTS_FREQUENT_TODAY.throwIt();
         }
 
-        return null;
     }
 
     /**
@@ -140,7 +140,7 @@ public class VerifyCodeUtil {
         } catch (Exception e) {
             // 万一拿不到线程池，降级为同步保存
             log.warn("获取线程池失败，降级为同步保存验证码", e);
-            saveCode(email, prefixCode, code,validTime);
+            saveCode(email, prefixCode, code, validTime);
             return;
         }
         executor.execute(() -> {
@@ -162,7 +162,7 @@ public class VerifyCodeUtil {
      * @param code  用户输入的验证码
      * @return null 表示验证通过，否则返回错误提示
      */
-    public static String verifyCode(String email, String prefixCode, String code, Integer validTime) {
+    public static void verifyCode(String email, String prefixCode, String code, Integer validTime) {
         RedisUtil redis = redis();
 
         // 1. 检查错误次数
@@ -172,26 +172,26 @@ public class VerifyCodeUtil {
             redis.expire(errorKey, validTime);
         }
         if (errorCount > MAX_ERROR_COUNT) {
-            return "验证码错误次数过多，请重新获取";
+            AdminCodeMessage.MANY_VERIFICATION_ERRORS.throwIt();
         }
 
         // 2. 检查验证码是否存在
         Object savedObj = redis.get(prefixCode + email);
         if (savedObj == null) {
-            return "验证码已过期，请重新获取";
+            AdminCodeMessage.VERIFICATION_CODE_EXPIRED.throwIt();
+            return;
         }
         String savedCode = savedObj.toString();
 
         // 3. 比对验证码
         if (!savedCode.equals(code)) {
             long remaining = MAX_ERROR_COUNT - errorCount;
-            return "验证码错误，剩余尝试次数：" + remaining;
+            AdminCodeMessage.VERIFICATION_CODE_ATTEMPTS.throwIt(remaining);
         }
 
         // 4. 验证成功，清除验证码和错误计数
         redis.del(prefixCode + email);
         redis.del(PREFIX_ERROR + email);
-        return null;
     }
 
     /**
@@ -311,7 +311,6 @@ public class VerifyCodeUtil {
     }
 
     /**
-     *
      * @param mail 发送邮箱
      * @param code 验证码
      * @return 替换后的模板

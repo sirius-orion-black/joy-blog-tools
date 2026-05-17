@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.entity.sysConfig.SysConfig;
+import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.sysConfig.SysConfigMapper;
 import com.joy.service.GenerateJsonService;
 import com.joy.service.SysWebConfigService;
@@ -46,7 +47,7 @@ public class SysWebConfigServiceImpl extends ServiceImpl<SysConfigMapper,SysConf
     @Override
     public Result<String> editConfig(SysConfig config) throws IOException {
         if (config.getId() == null)
-            return Result.badRequest();
+            CommonCodeMessage.BAD_REQUEST.throwIt();
         SysConfig cfg = new SysConfig();
         cfg.setId(config.getId());
         cfg.setConfigName(config.getConfigName());

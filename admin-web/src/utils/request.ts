@@ -80,6 +80,10 @@ const messageQueue = {
   },
 }
 
+const replaceMessage = (str: string, data: unknown) => {
+  return str.replace(/\[\]/g, String(data))
+}
+
 // 添加请求拦截器
 service.interceptors.request.use(
   // 在发送请求之前做些什么
@@ -119,7 +123,8 @@ service.interceptors.response.use(
     // 2xx 范围内的状态码都会触发该函数。
     const { config, data } = response
     const login = userLoginStore()
-    const messaged = t('request.' + data.message)
+
+    const messaged = replaceMessage(t('request.' + data.message), data.data)
     if (data.code >= 200 && data.code < 300) {
       if (config.method?.toLowerCase() === 'get') {
         messageQueue.add(messaged)
@@ -149,7 +154,7 @@ service.interceptors.response.use(
     if (error.status === 404 || error.status === 400 || error.status === 500) message.error(t('request.server_issue_again'))
     if (error.status === 403 || error.status === 429) {
       const { data } = error.response
-      const messaged = t('request.' + data.message)
+      const messaged = replaceMessage(t('request.' + data.message), data.data)
       message.error(messaged)
     }
     console.log(33332123123123, error)
