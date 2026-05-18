@@ -1,6 +1,5 @@
 package com.joy.config.aop;
 
-import com.joy.common.Result;
 import com.joy.config.annotation.RateLimiter;
 import com.joy.enums.http.GatewayCodeMessage;
 import com.joy.utils.IpRegionUtil;

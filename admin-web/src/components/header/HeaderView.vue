@@ -10,7 +10,7 @@
         <IconFont type="icon-language" class="cursor-pointer header-margin-right font-size-24" @click="changeLanguage" />
         <IconFont type="icon-moon" class="cursor-pointer header-margin-right font-size-24" @click="changeTheme" />
         <a-dropdown class="header-personal">
-          <img class="header-avatar" src="https://joyimg.lexujia.com/joy/assets/logo.jpg" @click.prevent />
+          <img class="header-avatar" src="https://joyimg.lexujia.com/assets/logo.jpg" @click.prevent />
           <template #overlay>
             <a-menu>
               <a-menu-item>

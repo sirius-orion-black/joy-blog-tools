@@ -225,5 +225,6 @@ export default {
     network_requests_frequent_hour: '当前网络请求过于频繁，请1小时后再试',
     network_requests_frequent_today: '当前网络今日请求次数已达上限，请明天再试',
     verification_code_attempts: '验证码错误，剩余尝试次数：[]',
+    device_id_empty: '设备异常',
   },
 }

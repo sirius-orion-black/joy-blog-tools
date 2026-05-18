@@ -157,7 +157,6 @@ service.interceptors.response.use(
       const messaged = replaceMessage(t('request.' + data.message), data.data)
       message.error(messaged)
     }
-    console.log(33332123123123, error)
     return Promise.reject(error)
   },
 )

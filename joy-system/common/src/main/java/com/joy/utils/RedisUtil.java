@@ -105,7 +105,7 @@ public class RedisUtil {
      */
     public boolean hasKey(String key) {
         try {
-            return REDIS_TEMPLATE.hasKey(key);
+            return Boolean.TRUE.equals(REDIS_TEMPLATE.hasKey(key));
         } catch (Exception e) {
             e.printStackTrace();
             return false;

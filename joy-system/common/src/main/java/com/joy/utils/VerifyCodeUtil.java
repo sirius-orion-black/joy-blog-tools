@@ -27,7 +27,7 @@ public class VerifyCodeUtil {
     private static final long IP_MINUTE_MAX = 3;    // 同一IP每分钟上限
     private static final long IP_HOUR_MAX = 5;    // 同一IP每小时上限
     private static final long IP_DAY_MAX = 20;   // 同一IP每天上限
-    private static final long MAX_ERROR_COUNT = 5;    // 验证码最大错误次数
+    private static final long MAX_ERROR_COUNT = 3;    // 验证码最大错误次数
 
     // ==================== Redis Key 前缀 ====================
     private static final String PREFIX_EMAIL_INTERVAL = "vc:vf:email:interval:";

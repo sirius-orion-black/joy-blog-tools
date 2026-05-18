@@ -1,7 +1,5 @@
 package com.joy.config.Interceptor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.joy.common.Result;
 import com.joy.enums.http.GatewayCodeMessage;
 import com.joy.utils.IpRegionUtil;
 import com.joy.utils.RedisUtil;
@@ -18,12 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class HeadInterceptor implements HandlerInterceptor {
 
-    private final RedisUtil redisUtil;
+    private final RedisUtil redis;
     public HeadInterceptor(RedisUtil redisUtil) {
-        this.redisUtil = redisUtil;
+        this.redis = redisUtil;
     }
 
-    private static final String PREFIX = "global:rate_limit:";
+    private static final String PREFIX_IP = "global:rate:ip:";
+    private static final String PREFIX_DEV = "global:rate:dev:";
     private static final long WINDOW_SECONDS = 10;   // 时间 10秒
     private static final long MAX_REQUESTS = 3;      // 最大请求次数
 
@@ -45,16 +44,33 @@ public class HeadInterceptor implements HandlerInterceptor {
             GatewayCodeMessage.INVALID_TIMESTAMP.throwIt();
             return false;
         }
-        // 全局 API 限流，同一 IP + 同一接口 10秒内最多请求 3 次
-        String ip = IpRegionUtil.getClientIpAddress(request);
+
         String uri = request.getRequestURI();  // 拿到请求路径
-        String key = PREFIX + ip + ":" + uri;  // 按 IP + 接口 独立限流
-        long count = redisUtil.increment(key, 1);
+        // 全局 API 限流，IP 维度限流
+        String ip = IpRegionUtil.getClientIpAddress(request);
+        String ipKey = PREFIX_IP + ip + ":" + uri;  // 按 IP + 接口 独立限流
+        long count = redis.increment(ipKey, 1);
         if (count == 1) {
-            redisUtil.expire(key, WINDOW_SECONDS);
+            redis.expire(ipKey, WINDOW_SECONDS);
         }
         if (count > MAX_REQUESTS) {
-            log.warn("触发全局限流，key:{}, IP: {}, URI: {}, 当前次数: {}", key, ip, uri, count);
+            log.warn("触发全局限流，ipKey:{}, IP: {}, URI: {}, 当前次数: {}", ipKey, ip, uri, count);
+            GatewayCodeMessage.MANY_REQUESTS.throwIt();
+            return false;
+        }
+
+        // 全局 API 限流，设备 ID 维度限流
+        String deviceId = request.getHeader("X-Device-Id");
+        if (StringUtils.isBlank(deviceId)) {
+            GatewayCodeMessage.DEVICE_ID_EMPTY.throwIt();
+        }
+        String devKey = PREFIX_DEV + deviceId + ":" + uri;
+        long devCount = redis.increment(devKey, 1);
+        if (devCount == 1) {
+            redis.expire(devKey, WINDOW_SECONDS);
+        }
+        if (devCount > MAX_REQUESTS) {
+            log.warn("设备限流触发，deviceId:{}, URI:{}, 次数:{}", deviceId, uri, devCount);
             GatewayCodeMessage.MANY_REQUESTS.throwIt();
             return false;
         }
