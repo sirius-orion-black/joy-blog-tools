@@ -9,11 +9,7 @@
 Do you remember that old laptop in the dorm room, humming louder than a fan? While my roommates were battling in the Rift, I was typing my first `console.log("Hello Blog!")` in front of a black terminal. The dream of a student blog was like a stubborn seed—but server costs were a high wall. Free hosting was as slow as a snail crawling through a Git repository. Graduation projects, job hunting, and overtime followed one after another... Time became the most luxurious variable.
 
 Until one night in 2025, when I looked up from a pile of code and suddenly realized that obsession was fresher than ever\*\*——this time, I would forge every pixel with my own hands.
-Thus, this site moved from imagination to reality:
-
-- **🔨 The Keyboard as Hammer**: Rejecting templates, refining interaction details endlessly.
-- **🌙 The Night as Crucible**: Debugging a falling flower animation until the first light of dawn.
-- **🔥 Faith as Fire**: When the dark mode glows and navigates, I know the ten-year wait was worth it.
+Thus, this site moved from imagination to reality.
 
 This is not a perfect work, but a love letter from a programmer to himself:
 
@@ -75,7 +71,7 @@ No need for flowers or applause. Just a tap of your finger, lighting up the tech
 
 ##### Server
 
-> 1. Import the SQL file into the database.
+> 1. Import the [SQL (see README_SQL. md)](README_SQL.md) file to the database to configure the database connection (application environment. yml)
 > 2. Configure the database connection (`application-environment.yml`).
 > 3. Maven build.
 > 4. Start (`Application`).
@@ -88,6 +84,36 @@ No need for flowers or applause. Just a tap of your finger, lighting up the tech
 > 3. Regarding why the Client (PC) uses React instead of unifying with Vue: Since the Admin Panel uses Vue, I chose React to utilize as many different framework technologies as possible.
 > 4. Originally, the client (joy-web) was intended to interact with the server. However, now it is adopted that when certain actions (such as publishing blogs, sharing on the朋友圈， leaving comments, etc.) are triggered， the server will build a JSON file. Then， joy-web will read this JSON file to enhance the performance of the website.
 
-### Project Screenshots
+### Project screenshot
+
+#### Backend management
+
+##### Account login
+
+![1779076797793](images/README/1779076797793.png)
+
+##### Email login
+
+![1779076823805](images/README/1779076823805.png)
+
+##### Type management
+
+![1779076946054](images/README/1779076946054.png)
+
+##### Column management
 
 ![1768641603613](images/README/1768641603613.png)
+
+##### System menu
+
+![1779076965971](images/README/1779076965971.png)
+
+#### Front end blog
+
+##### Article List
+
+![1779077175340](images/README/1779077175340.png)
+
+##### Article Details
+
+![1779077193741](images/README/1779077193741.png)
