@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,8 +40,8 @@ public class StatController {
      * @param request http request
      * @return 给前端返回的数据
      */
-    @PostMapping("/track")
-    public ResponseEntity<Void> track(@RequestBody StatTrackDTO stat, HttpServletRequest request) {
+    @GetMapping("/track")
+    public ResponseEntity<Void> track(StatTrackDTO stat, HttpServletRequest request) {
         // 1. 获取真实 IP
         String ip = getClientIpAddress(request);
 
@@ -59,6 +60,7 @@ public class StatController {
         // 3. 异步处理，立即返回，不阻塞用户
         statExecutor.execute(() -> {
             try {
+                stat.setDeviceId(request.getHeader("X-Device-Id"));
                 statService.recordAccess(ip, stat, extra);
             } catch (Exception e) {
                 log.error("统计上报异步处理异常", e);
