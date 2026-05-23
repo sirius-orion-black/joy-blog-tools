@@ -21,6 +21,6 @@ public interface ContentMomentsMapper extends BaseMapper<ContentMoments> {
             "SELECT id FROM sys_user WHERE nickname = #{nickname}")
     List<Long> findAllUserIdsByNickname(@Param("nickname") String nickname);
 
-    List<ContentMoments> selectMomentsTransformJson();
+    List<ContentMoments> selectMomentsPublishPublicly();
 
 }

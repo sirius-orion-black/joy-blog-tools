@@ -1,0 +1,24 @@
+{
+  "common":{
+    "no_data":"暂无数据"
+  },
+  "moments": {
+    "welcome": "欢迎光临徐徐乐之博客"
+  },
+  "nav": {
+    "moments": "朋友圈",
+    "article": "技术文章",
+    "column": "平台专栏",
+    "message": "留言",
+    "about": "关于我",
+    "author": "作者"
+  },
+  "footer": {
+    "text": "© 2025 我的网站。保留所有权利。"
+  },
+  "LocaleSwitcher": {
+    "label": "语言",
+    "en": "English",
+    "zh": "中文"
+  }
+}

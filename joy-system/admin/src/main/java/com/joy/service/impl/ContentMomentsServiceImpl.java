@@ -155,7 +155,6 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
         if (!labels.isEmpty()) {
             momentsLabelMapper.batchInsert(labels);
         }
-        generateJsonService.moments();
         return Result.success();
     }
 
@@ -180,7 +179,6 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
         mts.setId(moments.getId());
         mts.setState(action.equals("del") ? 2 : 4);
         this.updateById(mts);
-        generateJsonService.moments();
         return Result.success();
     }
 

@@ -57,10 +57,6 @@ public class SysWebConfigServiceImpl extends ServiceImpl<SysConfigMapper,SysConf
         cfg.setConfigRestrict(config.getConfigRestrict());
         cfg.setUpdateTime(new Date());
         this.updateById(cfg);
-        if(config.getConfigType().equals("web_config")){
-            generateJsonService.webConfig();
-            log.info("让我看看{}", config.getConfigType());
-        }
 
         return Result.success();
     }

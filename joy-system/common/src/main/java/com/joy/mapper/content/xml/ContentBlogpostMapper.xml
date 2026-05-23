@@ -68,7 +68,7 @@
         ORDER BY b.create_time DESC
     </select>
 
-    <select id="selectBlogpostTransformJson" resultMap="blogpostResultMap">
+    <select id="selectBlogpostPublishPublicly" resultMap="blogpostResultMap">
         SELECT
         b.*,
         c.name AS classify_name,
@@ -93,6 +93,9 @@
         <where>
             b.state = 1
             AND b.read_type = 1
+            <if test="id != null and id != 0">
+                AND b.id = #{id}
+            </if>
         </where>
         ORDER BY b.create_time DESC
     </select>

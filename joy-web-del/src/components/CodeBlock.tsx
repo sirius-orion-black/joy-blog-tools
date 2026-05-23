@@ -49,7 +49,7 @@ const CodeBlock = ({
             elements.push({
               type: "code",
               content: code.trim(),
-              language: language || "bash",
+              language: language,
               key: `code-${elementIndex++}`,
             });
           }

@@ -8,8 +8,6 @@ import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.entity.user.User;
 import com.joy.mapper.content.ContentBlogpostMapper;
-import com.joy.mapper.content.ContentLabelMapper;
-import com.joy.mapper.content.ContentMomentsLabelMapper;
 import com.joy.mapper.content.ContentMomentsMapper;
 import com.joy.mapper.sysConfig.SysConfigMapper;
 import com.joy.mapper.sysUser.SysUserMapper;
@@ -129,7 +127,7 @@ public class GenerateJsonServiceImpl implements GenerateJsonService {
     @Override
     @Async
     public void moments() throws IOException {
-        List<ContentMoments> moments = momentsMapper.selectMomentsTransformJson();
+        List<ContentMoments> moments = momentsMapper.selectMomentsPublishPublicly();
         // 去除重复用户ID的分组结果
         Map<Integer, Set<Long>> ids = moments.stream()
                 .collect(Collectors.groupingBy(
@@ -196,7 +194,7 @@ public class GenerateJsonServiceImpl implements GenerateJsonService {
     @Override
     @Async
     public void blogpost() throws IOException {
-        List<ContentBlogpost> blog = blogpostMapper.selectBlogpostTransformJson();
+        List<ContentBlogpost> blog = blogpostMapper.selectBlogpostPublishPublicly(0L);
         // 去除重复用户ID的分组结果
         Map<Integer, Set<Long>> ids = blog.stream()
                 .collect(Collectors.groupingBy(

@@ -41,7 +41,6 @@ Page<ContentBlogpost> selectBlogpostPageWithLike(
         @Param("state") Integer state);
 
 
-    List<ContentBlogpost> selectBlogpostTransformJson();
-
+    List<ContentBlogpost> selectBlogpostPublishPublicly(@Param("id") Long id);
 
 }

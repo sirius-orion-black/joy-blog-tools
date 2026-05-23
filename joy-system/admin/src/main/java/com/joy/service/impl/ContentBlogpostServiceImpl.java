@@ -164,7 +164,6 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         if (!labels.isEmpty()) {
             blogpostLabelMapper.batchInsert(labels);
         }
-        generateJsonService.blogpost();
         return Result.success();
 
     }
@@ -211,7 +210,6 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         if (!labels.isEmpty()) {
             blogpostLabelMapper.batchInsert(labels);
         }
-        generateJsonService.blogpost();
         return Result.success();
     }
 
@@ -242,7 +240,6 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         article.setId(blogpost.getId());
         article.setState(8);
         this.updateById(article);
-        generateJsonService.blogpost();
         return Result.success();
     }
 
@@ -277,7 +274,6 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
                 AdminCodeMessage.INVALID_OPERATION.throwIt();
         }
         this.update(wrapper);
-        generateJsonService.blogpost();
         return Result.success();
     }
 

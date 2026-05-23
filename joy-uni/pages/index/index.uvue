@@ -5,20 +5,8 @@
 	</view>
 </template>
 
-<script>
-	export default {
-		data() {
-			return {
-				title: 'Hello'
-			}
-		},
-		onLoad() {
-
-		},
-		methods: {
-
-		}
-	}
+<script setup lang="uts">
+	const title = ref('Hello')
 </script>
 
 <style>
@@ -31,6 +19,6 @@
 	.title {
 		font-size: 18px;
 		color: #8f8f94;
-    text-align: center;
+		text-align: center;
 	}
 </style>

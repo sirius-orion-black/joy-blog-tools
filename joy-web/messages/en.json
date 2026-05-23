@@ -1,0 +1,25 @@
+{
+  "common":{
+    "no_data":"No Data"
+  },
+  "moments": {
+    "welcome": "Welcome to joy blog",
+    "description": "开心最嗨"
+  },
+  "nav": {
+    "moments": "moments",
+    "article": "article",
+    "column": "column",
+    "message": "message",
+    "about": "about",
+    "author": "author"
+  },
+  "footer": {
+    "text": "© 2025 My Website. All rights reserved."
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "zh": "中文"
+  }
+}

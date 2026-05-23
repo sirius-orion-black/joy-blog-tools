@@ -2,13 +2,12 @@ import { useEffect } from "react";
 
 import { webConfigStore } from "@/store/webConfigStore";
 import { momentsStore } from "@/store/momentsStore";
-
-import VideoPlayer from "@/components/VideoPlayer";
 import { useIcon } from "@/utils/iconfont";
 
-import { formatTime, isEmpty, domClass } from "@/utils/favourUtil";
-
+import VideoPlayer from "@/components/VideoPlayer";
 import AlbumImage from "@/components/AlbumImage";
+
+import { formatTime, isEmpty, domClass } from "@/utils/favourUtil";
 
 import "./index.scss";
 

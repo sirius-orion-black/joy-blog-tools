@@ -15,6 +15,7 @@
         <module>infra</module>
         <module>server</module>
         <module>admin</module>
+        <module>dayByDay</module>
     </modules>
 
     <parent>

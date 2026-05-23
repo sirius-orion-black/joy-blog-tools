@@ -2,7 +2,6 @@
 .idea/
 .list
 target/
-*.log
 
 
 # Logs
@@ -15,7 +14,6 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-.DS_Store
 dist
 dist-ssr
 coverage
@@ -35,6 +33,37 @@ coverage
 
 .eslintcache
 
+# dependencies
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+*.pem
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+next-env.d.ts
+
 # Cypress
 /cypress/videos/
 /cypress/screenshots/
@@ -45,3 +74,4 @@ __screenshots__/
 joy-system/server/src/main/resources/application-sit.yml
 joy-system/server/src/main/resources/application-dev.yml
 joy-web/public/json/
+joy-web/.next/

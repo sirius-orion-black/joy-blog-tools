@@ -38,6 +38,12 @@
             <artifactId>infra</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <!--吾家朝夕-->
+        <dependency>
+            <groupId>com.joy</groupId>
+            <artifactId>dayByDay</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 

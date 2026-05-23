@@ -1,0 +1,71 @@
+import { headers } from 'next/headers';
+
+import type { ApiResponse } from '@/types/request';
+
+type FetchOptions = RequestInit & {
+  baseURL?: string;
+  skipResponseParse?: boolean;
+};
+
+/**
+ * 统一请求工具
+ */
+export async function serverFetch<T = unknown>(
+  pathOrURL: string,
+  options?: FetchOptions
+): Promise<ApiResponse<T>> {
+  // ---- 获取 baseURL ----
+  let baseURL = options?.baseURL;
+  if (!baseURL) {
+    if (process.env.NEXT_PUBLIC_API_BASE_URL) {
+      baseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
+    } else {
+      const headersList = await headers();
+      const host = headersList.get('host') || 'localhost:3000';
+      const protocol =
+        process.env.NODE_ENV === 'production' ? 'https' : 'http';
+      baseURL = `${protocol}://${host}`;
+    }
+  }
+
+  // 拼接完整 URL
+  const url = pathOrURL.startsWith('http')
+    ? pathOrURL
+    : `${baseURL}${pathOrURL}`;
+
+  // 公共请求头
+  const defaultHeaders: Record<string, string> = {
+    'X-Timestamp': Date.now() + '',
+    'X-Device-Id': 'server-fixed-id-007',
+  };
+  const mergedHeaders = {
+    ...defaultHeaders,
+    ...(options?.headers as Record<string, string>),
+  };
+
+  // 发起请求
+  const { baseURL: _, skipResponseParse, ...restOptions } = options || {};
+  const res = await fetch(url, {
+    ...restOptions,
+    headers: mergedHeaders,
+  });
+
+  if (!res.ok) {
+    throw new Error(`HTTP error: ${res.status} ${res.statusText}`);
+  }
+
+  // 解析响应
+  const json: ApiResponse<T> = await res.json();
+
+  // 如果当前接口不需要统一解析，直接返回原始 json
+  if (skipResponseParse) {
+    return json;
+  }
+
+  // 业务状态码检查
+  if (json.code !== 200) {
+    throw new Error(`[${json.code}] ${json.message}`);
+  }
+
+  return json;
+}

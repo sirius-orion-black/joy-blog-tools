@@ -19,10 +19,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configure) {
-        // 为博客模块Controller添加 /blog 前缀
-        configure.addPathPrefix("/blog",
+        // 为博客模块Controller添加 /blog 前缀,需要认证的
+        configure.addPathPrefix("/blog/v2",
                 c -> c.isAnnotationPresent(ApiPrefixBlogRestController.class));
-        // 为用户模块Controller添加 /file 前缀
+        // 为博客模块Controller添加 /blog/v1 前缀,该前缀数据是不需要认证
+        configure.addPathPrefix("/blog/v1",
+                c -> c.isAnnotationPresent(ApiPrefixBlogVoRestController.class));
+        // 为用户模块Controller添加 /infra 前缀
         configure.addPathPrefix("/infra",
                 c -> c.isAnnotationPresent(ApiPrefixInfraRestController.class));
         // 为后台模块Controller添加 /admin 前缀

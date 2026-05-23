@@ -40,7 +40,7 @@
     </select>
 
     <!-- 查询列表，含标签信息 -->
-    <select id="selectMomentsTransformJson" resultMap="MomentsWithLabelsResultMap">
+    <select id="selectMomentsPublishPublicly" resultMap="MomentsWithLabelsResultMap">
         SELECT m.*,
         GROUP_CONCAT(ml.label_id) as label_ids,
         GROUP_CONCAT(cl.name) as label_names
