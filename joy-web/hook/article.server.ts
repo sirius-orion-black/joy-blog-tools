@@ -11,8 +11,9 @@ export async function getArticles(): Promise<ArticleListState[]> {
   return data;
 }
 
-export async function getArticleDetail(id: number): Promise<ArticleDetailsState[]> {
-  const {data} = await serverFetch<ArticleDetailsState[]>(`/api/blog/v1/post/article?id=${id}`, {
+export async function getArticleDetail(id: number = 0): Promise<ArticleDetailsState[]> {
+  const url = id > 0 ? `/api/blog/v1/post/article?id=${id}` : `/api/blog/v1/post/article`;
+  const {data} = await serverFetch<ArticleDetailsState[]>(`/api/blog/v1/post/article`, {
     next: { revalidate: 7200 },
   });
 

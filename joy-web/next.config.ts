@@ -5,21 +5,20 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   /* config options here */
+  output: 'standalone',//Standalone 模式
+  experimental: {
+    // 减少并发
+    workerThreads: false,
+  },
   images: {
-    unoptimized: process.env.NODE_ENV === 'development',
+    // unoptimized: process.env.NODE_ENV === 'development',
+    unoptimized: true,
     remotePatterns: [
       // 开发环境 - localhost
       {
         protocol: 'http',
         hostname: 'localhost',
         port: '8000',
-        pathname: '/**',
-      },
-      // 生产环境 - 您的域名
-      {
-        protocol: 'https',
-        hostname: 'joyimg.lexujia.com',
-        port: '',
         pathname: '/**',
       },
     ],

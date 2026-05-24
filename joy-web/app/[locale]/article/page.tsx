@@ -1,8 +1,11 @@
-import PageTop from '@/components/PageTop'; // 假设你已有这个组件
+import PageTop from '@/components/PageTop';
 import ArticleList from './articleList';
 import { getArticles } from '@/hook/article.server';
 
 import './index.scss'
+
+export const dynamic = 'force-static'; // 强制静态化
+export const revalidate = 3600;
 
 export const metadata = {
   title: '技术文章列表',

@@ -44,17 +44,17 @@ _——毕竟这个用头发换代码的地方，该有它的星图_
 #### 技术栈
 
 
-| 客户端(小程序，app) | 客户端(pc)      | 管理端         | 服务端       |
-| ------------------- | --------------- | -------------- | ------------ |
-| Uni-app x           | React           | Vue3           | Spring boot  |
-|                     | Zustand         | Vite           | JDK 1.8      |
-|                     | React Router v6 | TS             | Sa-Token     |
-|                     | React Query     | Pinia          | Redis        |
-|                     | TS              | Vue-i18n       | knife4j      |
-|                     | Vite            | Vue-router     | MyBatis Plus |
-|                     | Axios           | Ant-design-vue | MySQL        |
-|                     | react-i18next   | Axios          |              |
-|                     |                 | Scss           |              |
+| 客户端(小程序，app) | 客户端(pc)  | 管理端         | 服务端       |
+| ------------------- | ----------- | -------------- | ------------ |
+| Uni-app x           | React       | Vue3           | Spring boot  |
+|                     | Zustand     | Vite           | JDK 1.8      |
+|                     | Next        | TS             | Sa-Token     |
+|                     | Next-Intl   | Pinia          | Redis        |
+|                     | TS          | Vue-i18n       | knife4j      |
+|                     | React Query | Vue-router     | MyBatis Plus |
+|                     |             | Ant-design-vue | MySQL        |
+|                     |             | Axios          |              |
+|                     |             | Scss           |              |
 
 #### 安装教程
 
@@ -62,11 +62,53 @@ _——毕竟这个用头发换代码的地方，该有它的星图_
 
 > 使用 HBuilder X 在各个平台构建
 
-##### 管理端与客户端(PC)
+##### 管理端
 
 > 1. 添加依赖————yarn add
 > 2. 开放环境运行——yarn dev
 > 3. 生产部署————yarn build
+
+##### 客户端(PC)
+
+> 1. 开放环境运行——yarn dev
+> 2. 开放环境运行——HOST=0.0.0.0 PORT=3000 yarn build(麻烦的再下面了，我服务器小，不想装docker来处理，docker简单很多)
+>    =====>.next/standalone/ (核心服务)
+>    =====>.next/static/ (静态资源)
+>    =====>public/ (公共资源)
+>    =====>package.json (用于安装生产依赖)
+>    =====>.env (环境变量)
+>    ღ ੭ღ ੭ღ ੭ღ ੭服务器ღ ੭ღ ੭ღ ੭ღ ੭
+>    /var/www/你的项目/
+>    ├── server.js       <-- 入口
+>    ├── node_modules/
+>    ├── package.json   <-- 安装依赖
+>    ├── public/        <-- 静态资源
+>    └── .env
+>    └── .next          <-- 这个目录必须存在
+>    yarn install --production
+> 3. nginx配置，添加缓存配置
+>    全局配置文件里面加上下面的
+>
+>    ```
+>    proxy_cache_path /tmp/存储位置 levels=1:2 keys_zone=名称:10m max_size=1g inactive=10m;
+>    include /www/server/panel/vhost/nginx/*.conf;
+>    ```
+>
+>    添加相对应缓存（vhost/nginx/**.nginx）
+>
+>    ```
+>    location / {
+>       proxy_cache 名称; 
+>       proxy_cache_valid 200 10m;
+>       proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+>       add_header X-Cache-Status $upstream_cache_status;
+>       proxy_cache_key "$scheme$request_method$host$request_uri";
+>
+>       proxy_set_header Host $host;
+>       proxy_set_header X-Real-IP $remote_addr;
+>       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+>    }
+>    ```
 
 ##### 服务端
 

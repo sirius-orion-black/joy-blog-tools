@@ -48,12 +48,13 @@ public class HeadInterceptor implements HandlerInterceptor {
         String uri = request.getRequestURI();  // 拿到请求路径
         // 全局 API 限流，IP 维度限流
         String ip = IpRegionUtil.getClientIpAddress(request);
+        long maxLimit = IpRegionUtil.isLoopBackIp(ip) ? MAX_REQUESTS * 20 : MAX_REQUESTS;
         String ipKey = PREFIX_IP + ip + ":" + uri;  // 按 IP + 接口 独立限流
         long count = redis.increment(ipKey, 1);
         if (count == 1) {
             redis.expire(ipKey, WINDOW_SECONDS);
         }
-        if (count > MAX_REQUESTS) {
+        if (count > maxLimit) {
             log.warn("触发全局限流，ipKey:{}, IP: {}, URI: {}, 当前次数: {}", ipKey, ip, uri, count);
             GatewayCodeMessage.MANY_REQUESTS.throwIt();
             return false;
@@ -69,7 +70,7 @@ public class HeadInterceptor implements HandlerInterceptor {
         if (devCount == 1) {
             redis.expire(devKey, WINDOW_SECONDS);
         }
-        if (devCount > MAX_REQUESTS) {
+        if (devCount > maxLimit) {
             log.warn("设备限流触发，deviceId:{}, URI:{}, 次数:{}", deviceId, uri, devCount);
             GatewayCodeMessage.MANY_REQUESTS.throwIt();
             return false;

@@ -12,13 +12,14 @@ import BackButton from '@/components/BackButton';
 
 import "./detail.scss";
 
+export const dynamic = 'force-static'; // 强制静态化
+export const revalidate = 3600;
+
 // 动态生成 SEO 元数据
 export async function generateMetadata({ params }: { params: { id: number } }): Promise<Metadata> {
   const { id } = await params;
   const article = await getArticleDetail(id);
-  if (!article || article.length < 1) {
-    notFound();
-  }
+  if (!article || article.length < 1) return { title: '文章不存在' };
   const details:ArticleDetailsState = article[0];
   
   return {
@@ -32,13 +33,25 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
   };
 }
 
+// export async function generateStaticParams() {
+//   const articles = await getArticleDetail();
+//   return articles.map((article) => ({
+//     id: article.id.toString(),
+//   }));
+// }
+
 export default async function ArticleDetail({ params }: { params: { id: number } }) {
 
   const { id } = await params;
 
-  const article = await getArticleDetail(id);
-  if (!article || article.length < 1) return { title: '文章不存在' };
-  const details:ArticleDetailsState = article[0];
+  const articles = await getArticleDetail(id);
+
+  const details:ArticleDetailsState | undefined = articles.find((a) => a.id.toString() === id.toString());
+
+  // const article = await getArticleDetail(id);
+  if (!details) {
+    notFound();
+  }
 
   return (
     <div className="page">
