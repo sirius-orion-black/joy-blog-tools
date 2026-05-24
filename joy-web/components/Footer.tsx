@@ -6,6 +6,7 @@ type Props = {
   webConfig: WebConfigState;
 };
 
+//底部
 const Footer = ({ webConfig }: Props) => {
   const linkLeftStyle: React.CSSProperties = {
     marginLeft: "5px",

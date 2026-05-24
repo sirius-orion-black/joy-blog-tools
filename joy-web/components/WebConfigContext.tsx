@@ -7,6 +7,7 @@ import { WebConfigState } from "@/types/webConfig";
 
 const WebConfigContext = createContext<WebConfigState | undefined>(undefined);
 
+//通用webconfig
 export const WebConfigProvider = ({ children, webConfig }: { children: ReactNode, webConfig: WebConfigState }) => {
   return (
     <WebConfigContext.Provider value={webConfig}>

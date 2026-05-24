@@ -10,6 +10,7 @@ import "prismjs/themes/prism-tomorrow.css";
 import "./codeblock.scss";
 import type { CodeBlockProps, ContentElement } from "@/types/code";
 
+//代码块
 const CodeBlock = ({
   content,
   showLineNumbers = false,

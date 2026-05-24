@@ -1,5 +1,14 @@
-// 纯粹给客户端用的请求封装
-// 不依赖 next/headers，不写 'use server'
+import { localCache } from "@/lib/storage";
+
+// 获取或生成设备ID
+const getDeviceId = (): string => {
+  let id: string | undefined = localCache.getCache("device_id");
+  if (!id) {
+    id = crypto.randomUUID();
+    localCache.setCache("device_id", id);
+  }
+  return id;
+};
 
 type ClientFetchOptions = RequestInit & {
   baseURL?: string;
@@ -7,9 +16,6 @@ type ClientFetchOptions = RequestInit & {
 
 /**
  * 客户端请求封装
- * - 自动拼接 baseURL（from 环境变量）
- * - 统一加公共请求头
- * - 浏览器端相对路径会自动拼当前域名，不需要手动拼
  */
 export async function clientFetch(
   pathOrURL: string,
@@ -28,12 +34,9 @@ export async function clientFetch(
 
   // ---- 公共请求头 ----
   const defaultHeaders: Record<string, string> = {
+    'X-Timestamp': Date.now() + '',
+    'X-Device-Id': getDeviceId(),
     'Content-Type': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-    // 如果有公共 token 或 api key，也从环境变量拿
-    ...(process.env.NEXT_PUBLIC_API_KEY
-      ? { 'X-API-Key': process.env.NEXT_PUBLIC_API_KEY }
-      : {}),
   };
 
   const mergedHeaders = {

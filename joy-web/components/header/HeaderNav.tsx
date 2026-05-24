@@ -4,6 +4,7 @@ import { usePathname, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
+//导航列表
 export default function HeaderNav() {
   const t = useTranslations('nav');
   const pathname = usePathname();

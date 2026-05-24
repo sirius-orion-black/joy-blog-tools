@@ -12,6 +12,7 @@ const modelStyle: React.CSSProperties = {
   transition: 'transform 0.2s ease, color 0.2s ease',
 };
 
+//主题切换
 export default function ThemeToggle() {
   // 初始值设为默认主题，确保服务端和客户端一致
   const [theme, setTheme] = useState<ThemeType>(DEFAULT_THEME);

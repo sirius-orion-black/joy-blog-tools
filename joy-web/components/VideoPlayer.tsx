@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 
 import type { VideoPlayerProps } from "@/types/video";
 
+//视频
 const VideoPlayer = ({
   src,
   poster = "",

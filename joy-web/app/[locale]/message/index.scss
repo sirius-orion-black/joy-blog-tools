@@ -1,0 +1,288 @@
+.message-main {
+
+    // 页面容器
+    .message-page {
+        margin: 0 auto;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+
+        // 顶部：发表新留言
+        .new-message {
+            background: #fff;
+            border: 1px solid #e8ecf1;
+            border-radius: 16px;
+            padding: 20px 22px 18px;
+            box-shadow: 0 4px 24px (255, 161, 206, 0.1);
+            ;
+            transition: border-color 0.2s, box-shadow 0.25s;
+
+            &:focus-within {
+                border-color: #ffa1cf;
+                box-shadow: 0 0 0 3px rgba(255, 161, 206, 0.2);
+            }
+
+            .new-message-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 10px;
+
+                .new-message-label {
+                    font-size: 15px;
+                    font-weight: 600;
+                    color: #ffa1cf;
+                    letter-spacing: 0.3px;
+                }
+
+            }
+
+            textarea {
+                width: 100%;
+                min-height: 72px;
+                padding: 10px 12px;
+                font-size: 14px;
+                color: #ffa1cf;
+                background: #f7f8fa;
+                border: 1px solid transparent;
+                border-radius: 8px;
+                outline: none;
+                resize: vertical;
+                transition: background 0.2s, border-color 0.2s;
+                box-sizing: border-box;
+                line-height: 1.6;
+
+                &::placeholder {
+                    color: #ffa1cf;
+                    font-size: 13px;
+                }
+
+                &:focus {
+                    background: #fff;
+                    border-color: #ffa1cf;
+                }
+            }
+
+            .new-message-footer {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 10px;
+
+                .char-count {
+                    font-size: 12px;
+                    color: #f9a11b;
+                }
+
+                .publish-btn {
+                    padding: 7px 22px;
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #fff;
+                    background: rgba(255, 161, 206, 0.9);
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: background 0.2s, transform 0.1s;
+
+                    &:hover {
+                        background: #ffa1cf;
+                    }
+
+                    &:active {
+                        background: #ffa1cf;
+                        transform: scale(0.97);
+                    }
+                }
+            }
+        }
+
+        // 留言列表卡片
+        .message-list {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+
+            .message-detail {
+                display: flex;
+                gap: 14px;
+
+                .message-avatar {
+                    flex-shrink: 0;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 1px solid rgba(208, 221, 239, 0.6);
+                    transition: border-color 0.2s;
+
+                    &:hover {
+                        border-color: #d0ddef;
+                    }
+                }
+
+                .message-body {
+                    flex: 1;
+                    min-width: 0;
+
+                    .message-author {
+                        font-weight: 600;
+                        font-size: 15px;
+                        color: #ffa1cf;
+                        margin-bottom: 2px;
+                    }
+
+                    .message-date {
+                        font-size: 12px;
+                        color: #999;
+                        margin-bottom: 10px;
+                    }
+
+                    .message-text {
+                        font-size: 14px;
+                        color: #444;
+                        line-height: 1.7;
+                        word-break: break-word;
+                    }
+
+                    // 二级评论
+                    .message-comments {
+                        margin-top: 14px;
+                        padding: 14px 16px;
+                        background: #f8f9fa;
+                        border-radius: 10px;
+
+                        .comment-item {
+                            display: flex;
+                            gap: 10px;
+                            padding: 10px 0;
+
+                            &+& {
+                                border-top: 1px solid #8aabcc;
+                            }
+
+                            .comment-avatar {
+                                flex-shrink: 0;
+                                border-radius: 50%;
+                                object-fit: cover;
+                                border: 1.5px solid #e8ecf1;
+                            }
+
+                            .comment-body {
+                                flex: 1;
+                                min-width: 0;
+                                line-height: 1.6;
+
+                                .comment-author {
+                                    font-weight: 600;
+                                    font-size: 13px;
+                                    color: #ffa1cf;
+                                    margin-right: 10px;
+                                }
+
+                                .comment-date {
+                                    font-size: 11px;
+                                    color: #bbb;
+                                }
+
+                                .comment-text {
+                                    margin: 4px 0 0;
+                                    font-size: 13px;
+                                    color: #666;
+                                    word-break: break-word;
+                                }
+                            }
+                        }
+                    }
+
+                    // 底部回复框
+                    .reply-box {
+                        margin-top: 14px;
+
+                        .reply-input-row {
+                            display: flex;
+                            align-items: flex-start;
+                            gap: 10px;
+                            padding: 10px 12px;
+                            background: #f7f8fa;
+                            border-radius: 10px;
+                            border: 1px solid transparent;
+                            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+
+                            &:focus-within {
+                                background: #fff;
+                                border-color: #ffa1cf;
+                                box-shadow: 0 0 0 3px rgba(255, 161, 206, 0.2);
+                            }
+
+                            .reply-mini-avatar {
+                                flex-shrink: 0;
+                                border-radius: 50%;
+                                object-fit: cover;
+                                margin-top: 4px;
+                            }
+
+                            textarea {
+                                flex: 1;
+                                min-height: 36px;
+                                max-height: 90px;
+                                padding: 6px 0;
+                                font-size: 13px;
+                                color: #ffa1cf;
+                                background: transparent;
+                                border: none;
+                                outline: none;
+                                resize: none;
+                                line-height: 1.5;
+
+                                &::placeholder {
+                                    color: #ffa1cf;
+                                }
+                            }
+
+                            .reply-ope {
+                                flex-shrink: 0;
+                                align-self: flex-end;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: space-between;
+                                align-items: flex-end;
+
+                                .emoji-trigger{
+                                    width: 28px;
+                                    height: 28px;
+                                    font-size: 14px;
+                                }
+
+                                .reply-btn {
+                                    margin-top: 5px;
+                                    padding: 3px 13px;
+                                    font-size: 13px;
+                                    font-weight: 500;
+                                    color: #ffa1cf;
+                                    background: transparent;
+                                    border: 1px solid #ffa1cf;
+                                    border-radius: 6px;
+                                    cursor: pointer;
+                                    transition: all 0.2s;
+                                    white-space: nowrap;
+
+                                    &:hover {
+                                        color: #fff;
+                                        background: #ffa1cf;
+                                    }
+
+                                    &:active {
+                                        background: #ffa1cf;
+                                        border-color: #ffa1cf;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}

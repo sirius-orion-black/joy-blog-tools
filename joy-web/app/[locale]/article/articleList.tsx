@@ -10,6 +10,7 @@ interface ArticleListProps {
   articles: ArticleListState[];
 }
 
+//技术文章列表
 export default function ArticleList({ articles }: ArticleListProps) {
 
   if (!articles || articles.length === 0) {

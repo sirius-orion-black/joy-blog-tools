@@ -1,0 +1,105 @@
+// ⬇ 表情选择器嵌套在 header 中
+.emoji-picker-wrapper {
+  position: relative;
+  display: inline-flex;
+
+  .emoji-trigger {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    border: none;
+    background: rgba(255, 161, 206, 0.5);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: #ffa1cf;
+    }
+  }
+
+  .emoji-panel {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    z-index: 100;
+    width: 332px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border: 1px solid #e8ecf1;
+    padding: 12px;
+    animation: emojiFadeIn 0.15s ease-out;
+
+    .emoji-category-tabs {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+
+      .emoji-category-tab {
+        width: 36px;
+        height: 32px;
+        font-size: 16px;
+        border: none;
+        background: transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.15s;
+
+        &:hover {
+          background: rgba(255, 161, 206, 0.6);
+        }
+
+        &.active {
+          background: rgba(255, 161, 206, 0.6);
+        }
+      }
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 6px;
+
+      .emoji-item {
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+        border: none;
+        background: transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.12s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          background: #f0f3f7;
+        }
+
+        &:active {
+          background: #e2e7f0;
+          transform: scale(0.85);
+        }
+      }
+    }
+  }
+
+  @keyframes emojiFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

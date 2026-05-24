@@ -7,6 +7,7 @@ interface Props {
   webConfig: WebConfigState;
 }
 
+//左侧导航
 export default function Header({ webConfig }: Props) {
   return (
     <header className="header">

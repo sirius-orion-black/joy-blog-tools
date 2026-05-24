@@ -9,6 +9,7 @@ const iconStyle: React.CSSProperties = {
   transition: 'transform 0.2s ease, color 0.2s ease',
 };
 
+//语言切换
 export default function LocaleSwitcher() {
   const pathname = usePathname();
   const router = useRouter();

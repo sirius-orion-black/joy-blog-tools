@@ -7,6 +7,7 @@ import "react-medium-image-zoom/dist/styles.css";
 
 import type { AlbumImageProps } from "@/types/image";
 
+//图片可放大
 const AlbumImage = ({ src, alt = "图片预览", size = 200 }: AlbumImageProps) => {
   return (
     <div style={{ display: "inline-block" }}>

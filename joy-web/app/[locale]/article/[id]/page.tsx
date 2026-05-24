@@ -13,7 +13,7 @@ import BackButton from '@/components/BackButton';
 import "./detail.scss";
 
 export const dynamic = 'force-static'; // 强制静态化
-export const revalidate = 3600;
+export const revalidate = 7200;
 
 // 动态生成 SEO 元数据
 export async function generateMetadata({ params }: { params: { id: number } }): Promise<Metadata> {
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
 //     id: article.id.toString(),
 //   }));
 // }
-
+//文章详情
 export default async function ArticleDetail({ params }: { params: { id: number } }) {
 
   const { id } = await params;
