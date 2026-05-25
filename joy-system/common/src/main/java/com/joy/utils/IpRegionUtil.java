@@ -99,7 +99,7 @@ public class IpRegionUtil {
     public static IpLocationDto getLocationInfo(String ip) throws Exception {
         // 检查是否为本地回环地址，如果是则直接返回"内网ip"
         if (isLoopBackIp(ip)) {
-            return new IpLocationDto("内网ip", "内网ip", "内网ip", "内网ip", "内网ip");
+            return new IpLocationDto("内网", "内网", "内网", "内网", "内网");
         }
         String region = getRegion(ip);
         if ("未知".equals(region)) {

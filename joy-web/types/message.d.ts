@@ -8,6 +8,7 @@ export interface MessageState {
   parentId: number;
   userId: number | null;
   content: string;
+  location: string;
   state: number;
   createTime: string;
   children: MessageItem[];

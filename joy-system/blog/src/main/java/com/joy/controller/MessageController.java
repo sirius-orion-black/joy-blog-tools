@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @ApiPrefixBlogVoRestController
@@ -20,11 +21,21 @@ public class MessageController {
 
     private final MessageService messageService;
 
+    /**
+     * 提交留言
+     * @param request 头部信息
+     * @param comment 提交的数据
+     * @return 返回的数据
+     */
     @PostMapping("/post")
-    public Result<String> postComment(@RequestBody PostCommentDto comment){
-        return Result.success(messageService.postComment(comment));
+    public Result<String> postComment(HttpServletRequest request, @RequestBody PostCommentDto comment) throws Exception {
+        return Result.success(messageService.postComment(request,comment));
     }
 
+    /**
+     * 获取列表
+     * @return 返回的数据
+     */
     @GetMapping("/getList")
     public Result<List<ContentMessage>> messageList() {
         return Result.success(messageService.messageList());

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,8 +39,8 @@ public class StatController {
      * @param request http request
      * @return 给前端返回的数据
      */
-    @GetMapping("/track")
-    public ResponseEntity<Void> track(StatTrackDTO stat, HttpServletRequest request) {
+    @PostMapping("/track")
+    public ResponseEntity<Void> track(@RequestBody StatTrackDTO stat, HttpServletRequest request) {
         // 1. 获取真实 IP
         String ip = getClientIpAddress(request);
 

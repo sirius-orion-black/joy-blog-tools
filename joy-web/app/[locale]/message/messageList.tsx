@@ -4,7 +4,7 @@ import { MessageState } from "@/types/message";
 
 import ReplyBox from "./replyBox";
 
-import { formatTime, domClass } from "@/lib/favourUtil";
+import { formatTime } from "@/lib/favourUtil";
 
 interface Props {
   message: MessageState;
@@ -12,20 +12,19 @@ interface Props {
 
 //留言列表
 export default function MessageList({ message }: Props) {
-  const { id, content, createTime, children } = message;
-  console.log(children);
+  const { id, content, createTime, children, location } = message;
   return (
     <div className="message-list">
       <div className="message-detail">
         <Image
           className="message-avatar"
-          src="http://localhost:8000/article/08eee589-49e0-437c-987wdq.png"
+          src="https://joyimg.lexujia.com/static/avatar-images/2d7d40c4-c62f-4db8-b1ef-cb33ef13698e.png"
           width={52}
           height={52}
           alt="测试"
         />
         <div className="message-body">
-          <div className="message-author ffa1cf">游客</div>
+          <div className="message-author ffa1cf">来自{location}游客</div>
           <div className="message-date a5f5f5f">{formatTime(createTime)}</div>
           <div className="message-text">{content}</div>
 
@@ -36,14 +35,18 @@ export default function MessageList({ message }: Props) {
                 <div className="comment-item" key={item.id}>
                   <Image
                     className="comment-avatar"
-                    src="http://localhost:8000/article/08eee589-49e0-437c-987wdq.png"
+                    src="https://joyimg.lexujia.com/static/avatar-images/2d7d40c4-c62f-4db8-b1ef-cb33ef13698e.png"
                     width={36}
                     height={36}
                     alt=""
                   />
                   <div className="comment-body">
-                    <span className="comment-author">回复者A</span>
-                    <span className="comment-date">{formatTime(item.createTime)}</span>
+                    <span className="comment-author">
+                      来自{item.location}游客的评论：
+                    </span>
+                    <span className="comment-date">
+                      {formatTime(item.createTime)}
+                    </span>
                     <p className="comment-text">{item.content}</p>
                   </div>
                 </div>

@@ -10,6 +10,7 @@ import { WebConfigProvider } from "../../components/WebConfigContext";
 
 import Footer from "@/components/Footer";
 import Header from "@/components/header/Header";
+import Tracker from "@/components/Tracker";
 
 import "@/app/[locale]/styles/globals.scss";
 
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
     "全栈",
   ],
   icons: {
-    icon: "/favicon.png",
+    icon: "/publi/favicon.png",
   },
   referrer: "origin-when-cross-origin",
   robots: {
@@ -81,7 +82,10 @@ export default async function LocaleLayout({ children, params }: Props) {
             <div className="content">
               <Header webConfig={webConfig} />
               <WebConfigProvider webConfig={webConfig}>
-                <main className="main">{children}</main>
+                <main className="main">
+                  <Tracker />
+                  {children}
+                  </main>
               </WebConfigProvider>
             </div>
             <Footer webConfig={webConfig} />

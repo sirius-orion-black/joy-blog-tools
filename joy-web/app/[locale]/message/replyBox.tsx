@@ -43,7 +43,7 @@ export default function ReplyBox({ parentId }: { parentId: number }) {
       <div className="reply-input-row">
         <Image
           className="reply-mini-avatar"
-          src="http://localhost:8000/article/08eee589-49e0-437c-987wdq.png"
+          src="https://joyimg.lexujia.com/static/avatar-images/2d7d40c4-c62f-4db8-b1ef-cb33ef13698e.png"
           width={30}
           height={30}
           alt="我"

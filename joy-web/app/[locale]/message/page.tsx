@@ -9,6 +9,12 @@ import "./index.scss";
 
 export const dynamic = "force-dynamic"; 
 
+export const metadata = {
+  title: '留言-让我们互相交流交流吧',
+  description: '你有什么想和我说的吗？或者你有什么想让其他人看到的吗？',
+};
+
+// 留言
 export default async function Message() {
   const messages = await getMessages();
 
