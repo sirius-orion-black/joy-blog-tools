@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { Inter } from "next/font/google";
+// import { Inter } from "next/font/google";
 
 import { routing, type Locale } from "@/i18n/routing";
 
@@ -17,7 +17,7 @@ import Tracker from "@/components/Tracker";
 
 import "@/app/[locale]/styles/globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+// const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 // 全局 SEO 元数据
 export const metadata: Metadata = {
@@ -28,8 +28,6 @@ export const metadata: Metadata = {
   applicationName: "徐徐乐之的博客与小工具",
   description:
     "徐徐乐之博客与工具集合，一个很懒的全栈程序猿，偶尔空闲下敲的项目,主要以blog和自己常用的小工具为主的个人小站点",
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   keywords: [
     "AI",
     "大模型",
@@ -61,11 +59,17 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
-
 
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
@@ -100,14 +104,14 @@ export default async function LocaleLayout({ children, params }: Props) {
           }}
         />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <div className="app min-h-screen bg-center bg-cover bg-no-repeat">
-              <div className="content min-h-[calc(100vh-32px)] md:p-8.75 pb-0 flex">
+              <div className="content min-h-[calc(100vh-32px)] md:p-8.75 pb-0 md:flex">
                 <Header webConfig={webConfig} />
                 <WebConfigProvider webConfig={webConfig}>
-                  <main className="main flex-1">
+                  <main className="main md:flex-1">
                     <Tracker />
                     {children}
                   </main>

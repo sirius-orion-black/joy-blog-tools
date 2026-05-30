@@ -1,5 +1,6 @@
 .code-block {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   line-height: 1.6;
 }
 
@@ -143,4 +144,23 @@
 .dark .code-block .code-container code[class*="language-"],
 .dark .code-block .code-container pre[class*="language-"] {
   color: #dbdbdb;
+}
+/* 覆盖 code 本身 */
+.code-block .code-container pre,.code-block .code-container code[class*="language-"] {
+    white-space: pre-wrap !important;  /* 保留格式，但允许自动换行 */
+    overflow-wrap: break-word;
+}
+/* 穿透所有内部 span */
+.code-block .code-container code[class*="language-"] span {
+    white-space: pre-wrap !important;
+    display: inline !important;       /* 确保 span 是内联的 */
+}
+.code-block .code-container pre code{
+  width: 100%;
+  overflow: hidden;
+}
+
+.code-block .code-container pre code,.code-block .code-container pre code * {
+  word-break: break-all;
+  overflow-wrap: break-word;
 }

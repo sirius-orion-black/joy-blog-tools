@@ -41,7 +41,7 @@
 }
 
 .page {
-  @apply mb-20 md:mb-5 bg-white/60 dark:bg-black/60;
+  @apply mb-10 md:mb-5 bg-white/60 dark:bg-black/60;
 }
 
 .page-main {
