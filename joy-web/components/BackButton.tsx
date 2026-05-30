@@ -7,7 +7,7 @@ export default function BackButton({ title }: { title: string }) {
   const router = useRouter();
 
   return (
-    <span onClick={() => router.back()} className="c8aabcc">
+    <span onClick={() => router.back()} className="text-c8aa cursor-pointer">
       <i className="iconfont icon-back" />
       {title}
     </span>

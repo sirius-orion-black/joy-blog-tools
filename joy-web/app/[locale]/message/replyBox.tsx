@@ -39,16 +39,23 @@ export default function ReplyBox({ parentId }: { parentId: number }) {
   };
 
   return (
-    <div className="reply-box">
-      <div className="reply-input-row">
-        <Image
-          className="reply-mini-avatar"
-          src="https://joyimg.lexujia.com/static/avatar-images/2d7d40c4-c62f-4db8-b1ef-cb33ef13698e.png"
-          width={30}
-          height={30}
-          alt="我"
-        />
+    <div className="reply-box mt-3.5">
+      <div
+        className="flex items-start gap-2.5 py-2.5 px-3 bg-cf7f-bg rounded-lg border border-transparent
+      transition-all duration-200 focus-within:bg-white focus-within:border-cffa focus-within:shadow-[0_0_0_3px_rgba(255,161,206,0.2)]"
+      >
+        <span>
+          <Image
+            className="shrink-0 rounded-full object-cover mt-1"
+            src="https://joyimg.lexujia.com/static/avatar-images/2d7d40c4-c62f-4db8-b1ef-cb33ef13698e.png"
+            width={30}
+            height={30}
+            alt="我"
+          />
+        </span>
         <textarea
+          className="flex-1 min-h-9 max-h-22.5 py-1.5 text-[13px] text-cffa bg-transparent border-none outline-none
+          resize-none leading-normal placeholder:text-cffa"
           ref={replyRef}
           placeholder="写下你的回复..."
           rows={2}
@@ -56,7 +63,7 @@ export default function ReplyBox({ parentId }: { parentId: number }) {
           onChange={(e) => setContent(e.target.value)}
           maxLength={300}
         />
-        <div className="reply-ope">
+        <div className="shrink-0 self-end flex flex-col justify-between items-end">
           <EmojiPicker
             onInsert={(emoji) => {
               const el = replyRef.current;
@@ -76,7 +83,9 @@ export default function ReplyBox({ parentId }: { parentId: number }) {
             }}
           />
           <button
-            className="reply-btn"
+            className="mt-1.25 px-3.25 py-0.75 text-xs font-medium text-cffa bg-transparent border
+            border-cffa rounded-md cursor-pointer transition-all duration-200 whitespace-nowrap hover:text-white
+            hover:bg-cffa active:bg-cffa active:border-cffa"
             type="button"
             onClick={handleSend}
             disabled={loading}

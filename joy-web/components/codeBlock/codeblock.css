@@ -1,0 +1,146 @@
+.code-block {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+.code-block .text-content {
+  margin: 10px 0;
+  color: #555555;
+}
+
+.code-block .text-content p {
+  margin: 1rem 0;
+}
+
+.code-block .code-container {
+  margin: 20px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dark .code-block .code-container {
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.code-block .code-container .code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
+.code-block .code-container .code-language {
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.code-block .code-container .copy-button {
+  border: none;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+  background-color: #4a5568;
+  color: white;
+}
+
+.code-block .code-container .copy-button:hover {
+  background-color: #718096;
+}
+
+.code-block .code-container pre {
+  padding: 10px !important;
+  border-radius: 0 0 8px 8px;
+}
+
+.code-block .code-container .token.important,
+.code-block .code-container .token.bold {
+  font-weight: bold;
+}
+
+.code-block .code-container .token.italic {
+  font-style: italic;
+}
+
+.code-block .code-container .token.entity {
+  cursor: help;
+}
+
+/* Prism.js 主题定制 */
+.code-block .code-container code[class*="language-"],
+.code-block .code-container pre[class*="language-"] {
+  color: #555555;
+}
+
+.code-block .code-container .token.comment,
+.code-block .code-container .token.prolog,
+.code-block .code-container .token.doctype,
+.code-block .code-container .token.cdata {
+  color: #a0aec0;
+}
+
+.code-block .code-container .token.punctuation {
+  color: #e2e8f0;
+}
+
+.namespace {
+  opacity: 0.7;
+}
+
+.code-block .code-container .token.property,
+.code-block .code-container .token.tag,
+.code-block .code-container .token.boolean,
+.code-block .code-container .token.number,
+.code-block .code-container .token.constant,
+.code-block .code-container .token.symbol,
+.code-block .code-container .token.deleted {
+  color: #fc8d59;
+}
+
+.code-block .code-container .token.selector,
+.code-block .code-container .token.attr-name,
+.code-block .code-container .token.string,
+.code-block .code-container .token.char,
+.code-block .code-container .token.builtin,
+.code-block .code-container .token.inserted {
+  color: #91d054;
+}
+
+.code-block .code-container .token.operator,
+.code-block .code-container .token.entity,
+.code-block .code-container .token.url,
+.code-block .code-container .language-css .token.string,
+.code-block .code-container .style .token.string {
+  color: #b3b3b3;
+}
+
+.code-block .code-container .token.atrule,
+.code-block .code-container .token.attr-value,
+.code-block .code-container .token.keyword {
+  color: #63b3ed;
+}
+
+.code-block .code-container .token.function,
+.code-block .code-container .token.class-name {
+  color: #f6ad55;
+}
+
+.code-block .code-container .token.regex,
+.code-block .code-container .token.important,
+.code-block .code-container .token.variable {
+  color: #fc8d59;
+}
+
+.dark .code-block .text-content {
+  color: #cfcfcf;
+}
+
+.dark .code-block .code-container code[class*="language-"],
+.dark .code-block .code-container pre[class*="language-"] {
+  color: #dbdbdb;
+}

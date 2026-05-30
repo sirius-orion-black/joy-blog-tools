@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@import "../../../public/css/iconfont.css";
+
+@font-face {
+  font-family: Cang-Er-ink;
+  src: url("../../../public/fonts/cang/Cang-Er-ink.ttf");
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-c71d: #c71d23;
+  --color-c221: #221f1f;
+  --color-ca66: #a66cff;
+  --color-c5f5: #5f5f5f;
+  --color-cf9a: #f9a11b;
+  --color-cffa: #ffa1cf;
+  --color-c8aa: #8aabcc;
+  --color-c9c9: #9c9efe;
+  --color-c662: #662b2f;
+  --color-ccfc: #cfcfcf;
+  --color-ca5f: #5f5f5f;
+  --color-c444: #444;
+  --color-cd0d-bg: #d0ddef;
+  --color-cf8f-bg: #f8f9fa;
+  --color-cf7f-bg: #f7f8fa;
+  --color-cebe-bd: #e8ecf1;
+}
+* {
+  font-family:
+    Cang-Er-ink,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+.app {
+  background-image: url("../../../public/img/boat.jpg");
+}
+
+.page {
+  @apply mb-20 md:mb-5 bg-white/60 dark:bg-black/60;
+}
+
+.page-main {
+  @apply p-3.5;
+}
+
+.main .moments-top {
+  background-image: url("../../../public/img/kitten.jpg");
+}
+
+.main .article-top {
+  background-image: url("../../../public/img/water-board.jpg");
+}
+
+.main .column-top {
+  background-image: url("../../../public/img/book-wood.jpg");
+}
+
+.main .message-top {
+  background-image: url("../../../public/img/macbook.jpg");
+}
+
+.main .about-top {
+  background-image: url("../../../public/img/landscape.jpg");
+}
+
+.main .no-data {
+  background-image: url("../../../public/img/no-data.png");
+}

@@ -7,7 +7,6 @@ import VideoPlayer from "@/components/VideoPlayer";
 import AlbumImage from "@/components/AlbumImage";
 import NoData from "@/components/NoData";
 
-
 import { formatTime, isEmpty, domClass } from "@/lib/favourUtil";
 
 interface MomentsListProps {
@@ -17,12 +16,12 @@ interface MomentsListProps {
 export default function MomentsList({ moments }: MomentsListProps) {
   const webConfig = useWebConfig();
 
-    if (!moments || moments.length === 0) {
-      return <NoData />;
-    }
+  if (!moments || moments.length === 0) {
+    return <NoData />;
+  }
 
   return (
-    <div className="page-main moments-main">
+    <div className="page-main">
       {moments.map((item) => {
         const {
           content,
@@ -36,54 +35,49 @@ export default function MomentsList({ moments }: MomentsListProps) {
         } = item;
 
         return (
-          <div key={item.id} className="moments-list">
+          <div key={item.id} className="flex">
             {/* 头像 */}
             <div
-              className="list-avatar"
+              className="size-15 bg-center bg-size-[60px] rounded-lg"
               style={{
                 backgroundImage: `url(${userAvatar || webConfig.headPortrait})`,
               }}
               aria-label="User Avatar"
             />
 
-            <div className="moments-detail">
+            <div className="flex-1 mb-6.25 ml-1.5 text-black dark:text-white">
               {/* 用户名 */}
-              <div className="detail-list detail-name ffa1cf">
+              <div className="text-base text-cffa leading-[1.8em]">
                 {userName || webConfig.webAuthor}
               </div>
 
               {/* 时间 */}
-              <div className="detail-list detail-time a5f5f5f">
-                {formatTime(createTime)}
-              </div>
+              <div className="text-xs leading-[1.8em] text-ca5f dark:text-ccfc">{formatTime(createTime)}</div>
 
               {/* 地点 */}
               {!isEmpty(location) && (
-                <div className="detail-list detail-place">
-                  <span className="f9a11b">
+                <div className="text-xs leading-[1.8em]">
+                  <span className="text-cf9a">
                     <i className="iconfont icon-place" aria-hidden="true" />
                   </span>
-                  <span style={{ marginLeft: "5px" }}>{location}</span>
+                  <span className="ml-1.25">{location}</span>
                 </div>
               )}
 
               {/* 内容文本 */}
-              {!isEmpty(content) && (
-                <div className="detail-list detail-content">{content}</div>
-              )}
+              {!isEmpty(content) && <div className="text-sm leading-[1.8em] mt-1">{content}</div>}
 
               {/* 图片列表 */}
               {!isEmpty(imageUrls) && typeof imageUrls === "string" && (
-                <div className="detail-list detail-img">
+                <div className="grid grid-cols-3 gap-2 md:gap-4 md:w-230 mt-1.5">
                   {imageUrls.split(",").map((url, index) => {
                     const trimmedUrl = url.trim();
                     if (!trimmedUrl) return null; // 跳过空字符串
                     return (
                       <div
-                        className="detail-img-content"
+                        className="aspect-square overflow-hidden relative rounded-lg"
                         key={`${item.id}-img-${index}`}
                       >
-                        {/* 建议替换为 next/image 以获得更好的性能优化 */}
                         <AlbumImage src={trimmedUrl} size={280} />
                       </div>
                     );
@@ -93,10 +87,9 @@ export default function MomentsList({ moments }: MomentsListProps) {
 
               {/* 视频 */}
               {!isEmpty(videoUrl) && (
-                <div className="detail-list detail-video">
+                <div className="w-4/5 md:w-90 h-50 overflow-hidden">
                   <VideoPlayer
                     src={videoUrl}
-                    width={"300px"}
                     height={"200px"}
                   />
                 </div>
@@ -104,9 +97,9 @@ export default function MomentsList({ moments }: MomentsListProps) {
 
               {/* 标签 */}
               {!isEmpty(labelNames) && Array.isArray(labelNames) && (
-                <div className="detail-list detail-label bgd0ddef">
+                <div className="mt-3.75 text-xs rounded py-1 px-2.5 bg-cd0d-bg">
                   {labelNames.map((label, index) => (
-                    <span className={domClass[index]} key={index}>
+                    <span className={`text-${domClass[index]} mr-1`} key={index}>
                       {label}
                     </span>
                   ))}

@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { EMOJI_DATA } from '@/lib/emoji';
 
-import './index.scss'
+import './index.css'
 
 interface EmojiPickerProps {
   onInsert: (emoji: string) => void;

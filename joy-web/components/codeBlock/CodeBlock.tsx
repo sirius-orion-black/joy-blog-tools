@@ -7,7 +7,7 @@ import "prismjs/components/prism-sql";
 import "prismjs/components/prism-shell-session";
 import "prismjs/themes/prism-tomorrow.css";
 
-import "./codeblock.scss";
+import "./codeblock.css";
 import type { CodeBlockProps, ContentElement } from "@/types/code";
 
 //代码块

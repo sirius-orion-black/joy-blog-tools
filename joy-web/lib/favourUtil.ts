@@ -50,10 +50,10 @@ export const isBlank = (
 
 //多种标签色
 export const domClass: string[] = [
-  "a66cff",
-  "f9a11b",
-  "ffa1cf",
-  "c8aabcc",
-  "c9c9efe",
-  "c662b2f",
+  "ca66",
+  "cf9a",
+  "cffa",
+  "c8aa",
+  "c9c9",
+  "c662",
 ];

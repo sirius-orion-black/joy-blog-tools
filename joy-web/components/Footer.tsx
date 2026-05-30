@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { WebConfigState } from '@/types/webConfig';
+import type { WebConfigState } from "@/types/webConfig";
 
 type Props = {
   webConfig: WebConfigState;
@@ -15,20 +15,17 @@ const Footer = ({ webConfig }: Props) => {
     marginRight: "15px",
   };
 
-
   return (
-    <footer className="footer">
-      <div>
-        <span style={summaryLeftStyle}>{webConfig.webSummary}</span>
-        <span>Copyright©{webConfig.webName}</span>
-        <a
-          style={linkLeftStyle}
-          href="https://beian.miit.gov.cn/"
-          target="_blank"
-        >
-          {webConfig.webRegistration}
-        </a>
-      </div>
+    <footer className="footer hidden md:block text-center bg-[rgba(255,161,206,0.8)] text-white dark:text-black py-2 leading-8 text-[0.85rem]">
+      <span style={summaryLeftStyle}>{webConfig.webSummary}</span>
+      <span>Copyright©{webConfig.webName}</span>
+      <a
+        style={linkLeftStyle}
+        href="https://beian.miit.gov.cn/"
+        target="_blank"
+      >
+        {webConfig.webRegistration}
+      </a>
     </footer>
   );
 };

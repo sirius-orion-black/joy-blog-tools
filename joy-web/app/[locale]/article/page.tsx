@@ -2,7 +2,6 @@ import PageTop from '@/components/PageTop';
 import ArticleList from './articleList';
 import { getArticles } from '@/hook/article.server';
 
-import './index.scss'
 
 export const dynamic = 'force-static'; // 强制静态化
 export const revalidate = 7200;

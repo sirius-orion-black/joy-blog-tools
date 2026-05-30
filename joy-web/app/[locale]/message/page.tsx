@@ -5,7 +5,7 @@ import NewMessage from "./newMessage";
 import MessageList from "./messageList";
 import NoData from "@/components/NoData";
 
-import "./index.scss";
+import "./index.css";
 
 export const dynamic = "force-dynamic"; 
 
@@ -21,8 +21,8 @@ export default async function Message() {
   return (
     <div className="page">
       <PageTop classStr="message-top" />
-      <div className="page-main message-main">
-        <div className="message-page">
+      <div className="page-main">
+        <div className="message-page mx-auto p-6 flex flex-col gap-6">
           <NewMessage />
           {messages.length === 0 ? (
           <NoData />

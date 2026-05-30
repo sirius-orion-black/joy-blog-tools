@@ -15,7 +15,7 @@ export default function NewMessage() {
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const handlePost = async () => {
-    if (!content.trim())  {
+    if (!content.trim()) {
       console.log("请输入回复内容");
       return;
     }
@@ -35,9 +35,15 @@ export default function NewMessage() {
     }
   };
   return (
-    <div className="new-message">
-      <div className="new-message-header">
-        <span className="new-message-label">发表留言</span>
+    <div
+      className="bg-white border border-cebe-bd rounded-2xl pt-5 pb-4.5 px-5.5
+                    shadow-[0_4px_24px_rgba(255,161,206,0.1)] transition duration-200
+                  focus-within:border-cffa focus-within:shadow-[0_0_0_3px_rgba(255,161,206,0.2)]"
+    >
+      <div className="flex items-center justify-between mb-2.5">
+        <span className="text-sm font-semibold text-cffa tracking-wide">
+          发表留言
+        </span>
         <EmojiPicker
           onInsert={(emoji) => {
             const el = newMsgRef.current;
@@ -58,6 +64,11 @@ export default function NewMessage() {
         />
       </div>
       <textarea
+        className="w-full min-h-18 px-3 py-2.5 text-sm text-cffa bg-cf7f-bg
+             border border-transparent rounded-lg outline-none resize-y
+             transition-colors duration-200 box-border leading-relaxed
+             placeholder:text-cffa placeholder:text-sm
+             focus:bg-white focus:border-cffa"
         ref={newMsgRef}
         placeholder="写下你想说的，新的一天新的开始…"
         rows={3}
@@ -65,10 +76,14 @@ export default function NewMessage() {
         onChange={(e) => setContent(e.target.value)}
         maxLength={300}
       />
-      <div className="new-message-footer">
-        <span className="char-count">{content.length} / 300</span>
+      <div className="flex justify-between items-center mt-2.5">
+        <span className="text-xs text-cf9a">{content.length} / 300</span>
         <button
-          className="publish-btn"
+          className="py-1.75 px-5.5 text-sm font-medium text-white 
+             bg-cffa border-none rounded-md cursor-pointer 
+             transition-all duration-200
+             hover:bg-cffa
+             active:bg-cffa active:scale-[0.97]"
           type="button"
           onClick={handlePost}
           disabled={loading}

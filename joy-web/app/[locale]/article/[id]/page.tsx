@@ -10,8 +10,6 @@ import { formatTime } from "@/lib/favourUtil";
 import CodeBlock from "@/components/codeBlock/CodeBlock";
 import BackButton from '@/components/BackButton';
 
-import "./detail.scss";
-
 export const dynamic = 'force-static'; // 强制静态化
 export const revalidate = 7200;
 
@@ -55,26 +53,26 @@ export default async function ArticleDetail({ params }: { params: { id: number }
 
   return (
     <div className="page">
-      <div className="page-main article-detail-main">
+      <div className="page-main">
         <div className="detail-header">
-          <div className="header-title">
+          <div className="flex items-center flex-nowrap h-11">
             <BackButton title='返回列表' />
-            <h2>{details.title}</h2>
+            <span className='flex-1 text-center text-xl'>{details.title}</span>
           </div>
-          <div className="detail-meta">
-            <span className="f9a11b">作者: {details.userName}</span>
-            <span className="ffa1cf">关键词: {details.keywords}</span>
-            <span className="a66cff">分类: {details.classifyName}</span>
-            <span className="c9c9efe">
+          <div className="mt-5 text-xs">
+            <span className="text-cf9a mr-3.5">作者: {details.userName}</span>
+            <span className="text-cffa mr-3.5">关键词: {details.keywords}</span>
+            <span className="text-ca66 mr-3.5">分类: {details.classifyName}</span>
+            <span className="text-c9c9 mr-3.5">
               标签:{" "}
               {details.labelNames?.length ? details.labelNames.join(",") : ""}
             </span>
-            <span className="a5f5f5f">
+            <span className="text-ca5f">
               发布日期: {formatTime(details.createTime ?? "")}
             </span>
           </div>
         </div>
-        <div className="detail-content">
+        <div className="mt-5">
           <CodeBlock content={details.content} />
         </div>
       </div>

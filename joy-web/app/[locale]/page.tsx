@@ -2,8 +2,6 @@ import PageTop from "@/components/PageTop";
 import { getMoments } from "@/hook/moments.server"; // 确保这是服务端函数
 import MomentsList from "./momentsList"; // 引入刚才创建的客户端组件
 
-import '@/app/[locale]/styles/moments.scss';
-
 export const dynamic = 'force-static'; // 强制静态化
 export const revalidate = 7200;
 
