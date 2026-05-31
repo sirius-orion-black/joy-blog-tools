@@ -27,12 +27,12 @@
             </div>
           </template>
           <template v-else-if="column.key === 'operation'">
-            <a class="f9a11b" @click="changeDrawer('review', text)">
+            <a class="f9a11b" @click="changeDrawer('review', text)" :title="$t('columns.reviewing')">
               <IconFont type="icon-review" />
             </a>
           </template>
           <template v-if="userLogin.user?.id === text?.userId">
-            <a class="c9c9efe" @click="delMoments(text)"><IconFont type="icon-delete" /></a>
+            <a class="c9c9efe" @click="delMoments(text)" :title="$t('menu.delete')"><IconFont type="icon-delete" /></a>
           </template>
         </template>
       </a-table>
@@ -127,7 +127,7 @@ import { momentsStore } from '@/stores/contentMoments'
 import { userLoginStore } from '@/stores/login'
 import { filesManageStore } from '@/stores/files'
 
-import type { momentsState, momentsSearchState, momentsVideoState } from '@/types/moments'
+import type { MomentsState, MomentsSearchState, MomentsVideoState } from '@/types/moments'
 import type { PageTableState } from '@/types/resultType'
 import type { UploadChangeParam, UploadProps, UploadFile } from 'ant-design-vue'
 import type { AxiosRequestConfig } from 'axios'
@@ -139,7 +139,7 @@ const moments = momentsStore()
 const userLogin = userLoginStore()
 const filesManage = filesManageStore()
 // 获取用户列表参数
-const searchParam = ref<momentsSearchState>({
+const searchParam = ref<MomentsSearchState>({
   name: '',
   page: 1,
   size: 10,
@@ -187,7 +187,7 @@ onMounted(() => {
   moments.getLabel()
 })
 //朋友圈内容
-const info = ref<momentsState>({
+const info = ref<MomentsState>({
   id: null,
   userId: null,
   content: '',
@@ -206,7 +206,7 @@ const imgVideo = ref<boolean>(true)
 const showDrawer = ref<boolean>(false)
 const drawerTitle = ref<string>('drawer.new_moments‌')
 const showType = ref<string>('')
-const player = ref<momentsVideoState>({
+const player = ref<MomentsVideoState>({
   width: '497px',
   height: '500px',
   poster: '',
@@ -230,7 +230,7 @@ const handleTableChange = (pagination: PageTableState) => {
 }
 const changeDrawer = (
   type: string,
-  text: momentsState = {
+  text: MomentsState = {
     id: null,
     userId: null,
     content: '',
@@ -250,7 +250,7 @@ const changeDrawer = (
   showDrawer.value = true
   drawerTitle.value = type === 'new' ? 'drawer.new_moments‌' : 'drawer.review_moments‌'
 }
-const delMoments = (text: momentsState) => {
+const delMoments = (text: MomentsState) => {
   Modal.confirm({
     title: t('base.sure_deleted_it'),
     onOk() {
@@ -387,7 +387,7 @@ const onSubmit = () => {
   if (!info.value.content && !info.value.imageUrls && urls.length < 1) {
     message.info(t('request.friends_pictures_videos'))
   } else {
-    const params: momentsState = { labels: info.value.labels, privacy: info.value.privacy, state: info.value.state }
+    const params: MomentsState = { labels: info.value.labels, privacy: info.value.privacy, state: info.value.state }
     if (info.value.content) params.content = info.value.content
     if (imgVideo.value && urls.length > 0) params.imageUrls = urls.join(',')
     if (!imgVideo.value && urls.length > 0) params.videoUrl = urls.join(',')

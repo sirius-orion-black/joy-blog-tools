@@ -38,8 +38,8 @@
               <IconFont type="icon-review" />
             </a>
             <template v-if="userLogin.user?.id === text.userId">
-              <a class="ffa1cf" @click="changeDrawer('edit', text)"><IconFont type="icon-edit" /></a>
-              <a class="c9c9efe" @click="delColumn(text)"><IconFont type="icon-delete" /></a>
+              <a class="ffa1cf" @click="changeDrawer('edit', text)" :title="$t('menu.edit')"><IconFont type="icon-edit" /></a>
+              <a class="c9c9efe" @click="delColumn(text)" :title="$t('menu.delete')"><IconFont type="icon-delete" /></a>
             </template>
           </template>
         </template>

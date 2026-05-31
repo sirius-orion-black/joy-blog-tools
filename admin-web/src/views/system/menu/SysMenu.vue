@@ -23,9 +23,11 @@
           </template>
           <template v-else-if="column.key === 'operation'">
             <div class="ase-btn-a font-size-16">
-              <a class="f9a11b" @click="showDrawer('drawer.new_menu', { parentId: text.id })"><IconFont type="icon-menu-plus" /></a>
-              <a class="ffa1cf" @click="showDrawer('drawer.edit_menu', text)"><IconFont type="icon-edit" /></a>
-              <a class="c9c9efe" @click="deleteMenu(text)"><IconFont type="icon-delete" /></a>
+              <a class="f9a11b" @click="showDrawer('drawer.new_menu', { parentId: text.id })" :title="$t('menu.add')">
+                <IconFont type="icon-menu-plus" />
+              </a>
+              <a class="ffa1cf" @click="showDrawer('drawer.edit_menu', text)" :title="$t('menu.edit')"><IconFont type="icon-edit" /></a>
+              <a class="c9c9efe" @click="deleteMenu(text)" :title="$t('menu.delete')"><IconFont type="icon-delete" /></a>
             </div>
           </template>
         </template>

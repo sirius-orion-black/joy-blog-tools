@@ -40,8 +40,14 @@
             <IconFont v-if="menuData.icon" :type="menuData.icon" />{{ $t('drawer.icon_select') }}<DownOutlined />
           </a-button>
           <div class="icon-list base-bg-shadow" v-show="showIconSelect">
-            <a-flex wrap="wrap" gap="small" justify="space-between">
-              <div class="icon-content base-bg" v-for="value in menuIcons" :key="value.iconKey" @click="setIcon(value.iconKey + '')">
+            <a-flex wrap="wrap" gap="9">
+              <div
+                class="icon-content base-bg"
+                v-for="value in menuIcons"
+                :key="value.iconKey"
+                @click="setIcon(value.iconKey + '')"
+                :data-tip="value.name"
+              >
                 <IconFont :type="value.iconKey" style="font-size: 32px" />
               </div>
             </a-flex>
@@ -123,8 +129,9 @@ const props = defineProps<{
 
 const menuIcons = computed(() => {
   return menu.menuIcons?.map(
-    (icon: { iconKey: string }): MenuIconState => ({
+    (icon: { iconKey: string; name: string }): MenuIconState => ({
       iconKey: icon.iconKey, // 保留 configValue
+      name: icon.name,
     }),
   )
 })
@@ -205,7 +212,27 @@ const onSubmit = () => {
     transition: transform 0.5s ease;
     .icon-content {
       cursor: pointer;
-      padding: 15px;
+      padding: 13px;
+      position: relative;
+      &:hover::after {
+        content: attr(data-tip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #5b5b5b;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 1;
+        visibility: visible;
+        transition:
+          opacity 0.2s,
+          visibility 0.2s;
+        transition-delay: 0.1s; /* 这里自定义延迟 */
+      }
     }
   }
 }

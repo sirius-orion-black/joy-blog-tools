@@ -1,4 +1,4 @@
-export interface momentsState {
+export interface MomentsState {
   //朋友圈
   id?: number | null
   userId?: number | null //用户id
@@ -16,13 +16,13 @@ export interface momentsState {
   userName?: string //用户名
 }
 
-export interface momentsSearchState {
+export interface MomentsSearchState {
   name: string //用户名
   page: number //当前页
   size: number //页数
 }
 
-export interface momentsVideoState {
+export interface MomentsVideoState {
   width: string
   height: string
   poster: string

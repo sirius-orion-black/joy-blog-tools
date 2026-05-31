@@ -45,8 +45,8 @@
             {{ $t(text === 1 ? 'columns.blog' : 'columns.moments') }}
           </template>
           <template v-else-if="column.key === 'operation'">
-            <a class="ffa1cf" @click="changeDrawer('edit', text)"><IconFont type="icon-edit" /></a>
-            <a class="c9c9efe" @click="delLabel(text)"><IconFont type="icon-delete" /></a>
+            <a class="ffa1cf" @click="changeDrawer('edit', text)" :title="$t('menu.edit')"><IconFont type="icon-edit" /></a>
+            <a class="c9c9efe" @click="delLabel(text)" :title="$t('menu.delete')"><IconFont type="icon-delete" /></a>
           </template>
         </template>
       </a-table>

@@ -2,20 +2,20 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import momentsApi from '@/apis/contentMoments'
 
-import type { momentsState, momentsSearchState } from '@/types/moments'
+import type { MomentsState, MomentsSearchState } from '@/types/moments'
 import type { PageDataState } from '@/types/resultType'
 import type { LabelTypeState } from '@/types/labelType'
 
 export const momentsStore = defineStore('moments', () => {
   const list = ref<PageDataState>()
-  const searchParams = ref<momentsSearchState>({
+  const searchParams = ref<MomentsSearchState>({
     name: '',
     page: 1,
     size: 10,
   })
   const label = ref<LabelTypeState[]>()
 
-  function getList(params: momentsSearchState) {
+  function getList(params: MomentsSearchState) {
     searchParams.value = params
     momentsApi.getList(params).then((rs) => (list.value = rs.data))
   }
@@ -28,21 +28,21 @@ export const momentsStore = defineStore('moments', () => {
   }
 
   //发表朋友圈
-  function addmoments(params: momentsState) {
+  function addmoments(params: MomentsState) {
     momentsApi.addmoments(params).then(() => {
       getList(searchParams.value)
     })
   }
 
   //删除朋友圈
-  function delmoments(params: momentsState) {
+  function delmoments(params: MomentsState) {
     momentsApi.delmoments(params).then(() => {
       getList(searchParams.value)
     })
   }
 
   //朋友圈违规处理
-  function revMoments(params: momentsState) {
+  function revMoments(params: MomentsState) {
     momentsApi.revMoments(params).then(() => {
       getList(searchParams.value)
     })

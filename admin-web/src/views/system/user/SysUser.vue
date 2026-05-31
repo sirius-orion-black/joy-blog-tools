@@ -53,10 +53,14 @@
           </template>
           <template v-else-if="column.key === 'operation'">
             <div class="base-btn-a font-size-16">
-              <a class="a66cff" @click="showUserDrawer('permission', 360, text)"><IconFont type="icon-permission" /></a>
-              <a class="ffa1cf" @click="showUserDrawer('edit', 360, text)"><IconFont type="icon-edit" /></a>
-              <a class="c662b2f" @click="isBannedUser(text)"><IconFont :type="text.state !== 2 ? 'icon-batch-banned' : 'icon-batch-unbanned'" /></a>
-              <a class="c9c9efe" @click="delUser(text)"><IconFont type="icon-delete" /></a>
+              <a class="a66cff" @click="showUserDrawer('permission', 360, text)" :title="$t('columns.permission')">
+                <IconFont type="icon-permission" />
+              </a>
+              <a class="ffa1cf" @click="showUserDrawer('edit', 360, text)" :title="$t('menu.edit')"><IconFont type="icon-edit" /></a>
+              <a class="c662b2f" @click="isBannedUser(text)" :title="$t('columns.blocked')">
+                <IconFont :type="text.state !== 2 ? 'icon-batch-banned' : 'icon-batch-unbanned'" />
+              </a>
+              <a class="c9c9efe" @click="delUser(text)" :title="$t('menu.delete')"><IconFont type="icon-delete" /></a>
             </div>
           </template>
         </template>

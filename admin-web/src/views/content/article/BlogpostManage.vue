@@ -41,12 +41,12 @@
             </div>
           </template>
           <template v-else-if="column.key === 'operation'">
-            <a class="f9a11b" @click="changeDrawer('review', text)">
+            <a class="f9a11b" @click="changeDrawer('review', text)" :title="$t('columns.reviewing')">
               <IconFont type="icon-review" />
             </a>
             <template v-if="userLogin.user?.id === text.userId">
-              <a class="ffa1cf" @click="changeDrawer('edit', text)"><IconFont type="icon-edit" /></a>
-              <a class="c9c9efe" @click="delArticle(text)"><IconFont type="icon-delete" /></a>
+              <a class="ffa1cf" @click="changeDrawer('edit', text)" :title="$t('menu.edit')"><IconFont type="icon-edit" /></a>
+              <a class="c9c9efe" @click="delArticle(text)" :title="$t('menu.delete')"><IconFont type="icon-delete" /></a>
             </template>
           </template>
         </template>

@@ -146,9 +146,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public Result<List<SysMenuIcon>> getIcons() {
-        QueryWrapper<SysMenuIcon> query = new QueryWrapper<>();
-        List<SysMenuIcon> list = sysMenuIconMapper.selectList(query);
-        return Result.success(list);
+        return Result.success(sysMenuIconMapper.selectList(new QueryWrapper<SysMenuIcon>().orderByAsc("sort")));
     }
 
 }

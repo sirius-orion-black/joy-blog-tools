@@ -5,7 +5,7 @@
       <div class="header-personal header-margin-right">
         <div class="header-margin-right">{{ login.user?.nickname }}</div>
         <a-badge :count="99" class="cursor-pointer header-margin-right">
-          <IconFont type="icon-message" class="cursor-pointer header-margin-right font-size-24" />
+          <IconFont type="icon-messages-a" class="cursor-pointer header-margin-right font-size-24" />
         </a-badge>
         <IconFont type="icon-language" class="cursor-pointer header-margin-right font-size-24" @click="changeLanguage" />
         <IconFont type="icon-moon" class="cursor-pointer header-margin-right font-size-24" @click="changeTheme" />

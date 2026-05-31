@@ -1,4 +1,4 @@
-package com.joy.entity.content;
+package com.joy.entity.message;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @TableName
-public class ContentMessage {
+public class MessageComment {
     //主键id
     @TableId(value = "id",type = IdType.AUTO)
     private Long id;
@@ -40,7 +40,11 @@ public class ContentMessage {
     @TableField
     private Date createTime;
 
+    //昵称
+    @TableField(exist = false)
+    private String nickname;
+
     // 嵌套返回
     @TableField(exist = false)
-    private List<ContentMessage> children;
+    private List<MessageComment> children;
 }

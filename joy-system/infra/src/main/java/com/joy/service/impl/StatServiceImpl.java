@@ -9,6 +9,7 @@ import com.joy.mapper.stat.StatAccessLogMapper;
 import com.joy.mapper.stat.StatDailyTrafficMapper;
 import com.joy.service.StatService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
@@ -105,10 +106,15 @@ public class StatServiceImpl implements StatService {
             redisTemplate.opsForValue().increment(pvKey);
 
             // UV: HyperLogLog 去重计数
-            redisTemplate.opsForHyperLogLog().add(uvKey, deviceId);
+            if (StringUtils.isNotBlank(deviceId)) {
+                redisTemplate.opsForHyperLogLog().add(uvKey, deviceId);
+            }
 
             // IP: Set 去重计数
-            redisTemplate.opsForSet().add(ipKey, ip);
+            if (StringUtils.isNotBlank(ip)) {
+                redisTemplate.opsForSet().add(ipKey, ip);
+            }
+
 
             // 设置过期时间 (3天)，防止 Redis 无限膨胀
             long expireSeconds = 3 * 24 * 3600;
@@ -178,21 +184,18 @@ public class StatServiceImpl implements StatService {
 
                     // 获取各项指标
                     Long pv = redisTemplate.opsForValue().increment(pvKey, 0); // 读取不增加
+                    pv = (pv != null) ? pv : 0L;
                     String uvKey = KEY_PREFIX_UV + today + ":" + dimension;
                     Long uv = redisTemplate.opsForHyperLogLog().size(uvKey);
                     String ipKey = KEY_PREFIX_IP + today + ":" + dimension;
                     Long ipCount = redisTemplate.opsForSet().size(ipKey);
+                    ipCount = (ipCount != null) ? ipCount : 0L;
 
                     StatDailyTraffic daily = new StatDailyTraffic();
                     daily.setStatDate(LocalDate.now());
                     daily.setPagePath(dimension); // 存储维度标识
                     daily.setPv(pv);
                     daily.setUv(uv);
-                    // assert ipCount != null;
-                    // 记录日志或给个默认值
-                    if (ipCount == null) {
-                        ipCount = 0L;
-                    }
                     daily.setIpCount(ipCount.intValue());
 
                     statSave(daily);

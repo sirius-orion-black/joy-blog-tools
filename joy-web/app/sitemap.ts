@@ -1,13 +1,18 @@
 import type { MetadataRoute } from 'next'
-import { getArticles } from '@/hook/article.server'
 
 const BASE_URL = 'https://www.lexujia.com'
 const locales = ['zh', 'en']
 
 // 获取所有文章的函数
 async function getAllArticles() {
-  const res = await getArticles()
-  return res
+  
+  return [
+    { id: '10000000', updateTime: '2026-05-24 16:46:55' },
+    { id: '10000001', updateTime: '2026-05-24 16:44:40' },
+    { id: '10000002', updateTime: '2026-05-24 16:46:03' },
+    { id: '10000004', updateTime: '2026-05-24 16:43:34' },
+    { id: '10000005', updateTime: '2026-05-24 16:42:49' },
+  ]
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -19,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const article of articles) {
       blogEntries.push({
         url: `${BASE_URL}/${locale}/article/${article.id}`,
-        lastModified: new Date(article.createTime),
+        lastModified: new Date(article.updateTime),
         changeFrequency: 'monthly' as const,
         priority: 0.6,
       })

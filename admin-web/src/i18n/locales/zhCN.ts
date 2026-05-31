@@ -28,6 +28,16 @@ export default {
     copy_initial_password: '请复制初始密码',
     sure_violation_it: '确认违规吗？',
   },
+  dash: {
+    moments: '朋友圈记录总量',
+    messages: '留言数',
+    articles: '文章数',
+    users: '有效用户数',
+    vists: '总访问量',
+    pv: '网站被打开的次数',
+    uv: '独立访客数',
+    ipCount: '独立IP数',
+  },
   columns: {
     name: '名称',
     permission: '权限',
@@ -94,6 +104,8 @@ export default {
     friend: '好友',
     secret: '私密',
     file: '文件',
+    review: '待审核',
+    blocked: '屏蔽',
   },
   drawer: {
     new_menu: '新增菜单',
@@ -153,6 +165,8 @@ export default {
     moments‌_manage: '说说管理',
     column_manage: '专栏管理',
     web_config: '网站配置',
+    message_manage: '消息管理',
+    comment_manage: '留言管理',
   },
   config: {
     file_type: '文件存储详细地址',
