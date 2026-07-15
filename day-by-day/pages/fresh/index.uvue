@@ -1,0 +1,381 @@
+<template>
+  <view class="page-container">
+    <!-- 顶部店铺信息 (固定不滚动，或者随页面滚动看需求，这里模拟截图作为头部) -->
+    <view class="header-info">
+      <view class="shop-row">
+        <image class="avatar" src="/static/logo.png"></image>
+        <view class="text-group">
+          <text class="shop-name">美猫猫小厨房</text>
+          <text class="sub-text">共2人</text>
+        </view>
+      </view>
+      <view class="notice">
+        <text class="notice-text">公告：家是爱的地方，好好生活...</text>
+      </view>
+    </view>
+
+    <!-- 核心点单区域 (左右分栏) -->
+    <!-- flex: 1 确保它占据除了头部和底部之外的所有空间 -->
+    <view class="menu-area">
+      <!-- 左侧分类导航 -->
+      <scroll-view class="sidebar" scroll-y>
+        <view
+          v-for="(item, index) in categories"
+          :key="index"
+          class="nav-item"
+          :class="{ active: currentCategory === item.name }"
+          @click="switchCategory(item.name)"
+        >
+          <text>{{ item.name }}</text>
+        </view>
+      </scroll-view>
+
+      <!-- 右侧菜品列表 -->
+      <scroll-view class="product-list" scroll-y>
+        <view class="category-title">{{ currentCategory }}({{ productList.length }})</view>
+        <view class="product-item" v-for="(prod, idx) in productList" :key="idx">
+          <image class="prod-img" :src="prod.image"></image>
+          <view class="prod-info">
+            <text class="prod-name">{{ prod.name }}</text>
+            <text class="prod-desc">{{ prod.desc }}</text>
+            <text class="prod-sales">月销 {{ prod.sales }}</text>
+          </view>
+          <view class="add-btn">+</view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 底部购物车栏 (悬浮/固定) -->
+    <!-- 这里的逻辑是：它始终存在，但高度和样式会根据 isCartOpen 变化 -->
+    <view class="cart-bar" :class="{ 'cart-open': isCartOpen }">
+      <!-- 购物车主体部分 -->
+      <view class="cart-main" @click="toggleCart">
+        <view class="cart-icon-wrapper">
+          <!-- 这里可以用 iconfont 或者图片 -->
+          <text class="icon">🛒</text>
+          <view v-if="totalCount > 0" class="badge">{{ totalCount }}</view>
+        </view>
+        <view class="price-info">
+           <text v-if="totalPrice > 0" class="price">¥{{ totalPrice }}</text>
+           <text v-else class="empty-tip">未选购商品</text>
+        </view>
+        <view class="action-btn" :class="{ disabled: totalPrice === 0 }">
+          <text>去结算</text>
+        </view>
+      </view>
+
+      <!-- 弹出的详细列表 (只有 isCartOpen 为 true 时显示) -->
+      <view v-if="isCartOpen" class="cart-detail-popup">
+         <text class="clear-cart" @click.stop="clearCart">清空</text>
+         <view class="detail-item" v-for="(item, i) in cartList" :key="i">
+            <text>{{ item.name }} x {{ item.count }}</text>
+         </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script setup lang="uts">
+import { ref, computed } from 'vue';
+
+// 模拟数据
+const categories = [
+  { name: '无肉不欢' },
+  { name: '靓汤' },
+  { name: '青菜' },
+  { name: '主食' },
+];
+
+const productList = [
+  { name: '酸菜炒大肠', desc: '肥肠、酸菜、姜...', sales: 0, image: '/static/food1.jpg' },
+  { name: '五花肉辣炒鹿茸菇', desc: '五花肉、干鹿茸菇...', sales: 0, image: '/static/food2.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+  { name: '油豆腐炒肉', desc: '...', sales: 0, image: '/static/food3.jpg' },
+];
+
+// 状态管理
+const currentCategory = ref<string>('无肉不欢');
+const isCartOpen = ref<boolean>(false); // 控制购物车是否展开
+const totalCount = ref<number>(0); // 购物车总数
+const totalPrice = ref<number>(0); // 总价
+const cartList = ref<any[]>([]); // 购物车详情列表
+
+// 方法
+const switchCategory = (name: string) => {
+  currentCategory.value = name;
+};
+
+const toggleCart = () => {
+  if (totalCount.value > 0) {
+    isCartOpen.value = !isCartOpen.value;
+  }
+};
+
+const clearCart = () => {
+  totalCount.value = 0;
+  totalPrice.value = 0;
+  cartList.value = [];
+  isCartOpen.value = false;
+};
+</script>
+
+<style scoped>
+/* 页面根容器：Flex 纵向布局 */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  /* 占满全屏 */
+  /* #ifdef H5 */
+  height: calc(100vh - 180rpx);
+  /* #endif */
+  /* #ifndef H5 */
+  height: calc(100vh);
+  /* #endif */
+  background-color: #f5f5f5;
+}
+
+/* 头部信息区 */
+.header-info {
+  background-color: #ffffff;
+  padding: 10px 15px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.shop-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  margin-right: 10px;
+  background-color: #ddd; /* 占位色 */
+}
+
+.shop-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.sub-text {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.notice-text {
+  font-size: 12px;
+  color: #666;
+}
+
+/* 中间菜单区：Flex 1 撑开剩余空间 */
+.menu-area {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden; /* 防止溢出 */
+}
+
+/* 左侧侧边栏 */
+.sidebar {
+  width: 85px;
+  background-color: #f7f8fa;
+  height: 100%;
+}
+
+.nav-item {
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  color: #666;
+}
+
+.nav-item.active {
+  background-color: #ffffff;
+  color: #333;
+  font-weight: bold;
+  /* 左边那个竖条装饰 */
+  border-left: 3px solid #e95f5d;
+}
+
+/* 右侧列表 */
+.product-list {
+  flex: 1;
+  height: 100%;
+  background-color: #ffffff;
+}
+
+.category-title {
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.product-item {
+  display: flex;
+  flex-direction: row;
+  padding: 10px 15px;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.prod-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  background-color: #eee;
+  margin-right: 10px;
+}
+
+.prod-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.prod-name {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.prod-desc {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.prod-sales {
+  font-size: 11px;
+  color: #999;
+}
+
+.add-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: #e95f5d;
+  color: #fff;
+  text-align: center;
+  line-height: 24px;
+  align-self: flex-end; /* 靠下对齐 */
+}
+
+/* 底部购物车栏 (关键点) */
+.cart-bar {
+  position: relative; /* 或者 absolute bottom:0，视具体层级需求而定 */
+  z-index: 999;
+  background-color: #333;
+  /* 默认状态：只显示一行的高度 */
+  height: 50px;
+  transition: all 0.3s ease; /* 添加过渡动画 */
+  display: flex;
+  flex-direction: column-reverse; /* 让主栏在下面，详情在上面弹出 */
+}
+
+/* 购物车展开时的样式 */
+.cart-bar.cart-open {
+  height: 200px; /* 展开后的高度 */
+  background-color: rgba(0,0,0,0.8); /* 背景变暗一点衬托列表 */
+}
+
+.cart-main {
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 15px;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background-color: #444;
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -15px; /* 让图标突出一半 */
+  border: 5px solid #333; /* 用边框模拟镂空效果 */
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #e95f5d;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.price-info {
+  flex: 1;
+  padding-left: 10px;
+  color: white;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.empty-tip {
+  font-size: 14px;
+  color: #999;
+}
+
+.action-btn {
+  width: 100px;
+  height: 50px;
+  background-color: #e95f5d;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.action-btn.disabled {
+  background-color: #555;
+  color: #999;
+}
+
+/* 弹出的详情列表 */
+.cart-detail-popup {
+  flex: 1; /* 占据剩余高度 */
+  background-color: #fff;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.clear-cart {
+  float: right;
+  color: #666;
+  font-size: 12px;
+  padding: 5px;
+}
+</style>

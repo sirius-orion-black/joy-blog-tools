@@ -1,0 +1,9 @@
+.common-body{
+	width: 100%;
+	overflow-x: hidden;
+	.common-main{
+		width: 100%;
+		padding: 0 20rpx;
+		z-index: 2;
+	}
+}

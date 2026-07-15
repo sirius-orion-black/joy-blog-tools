@@ -1,0 +1,10 @@
+{
+  "app.name": "DayByDay",
+  //tab
+  "tab.kitchen": "Hearth",
+  "tab.fresh": "Fresh",
+  "tab.serenity": "Serenity",
+  "tab.nest": "Nest",
+  //kitchen
+  "kitchen.info.title":"Dutch Pig's Small Kitchen"
+}

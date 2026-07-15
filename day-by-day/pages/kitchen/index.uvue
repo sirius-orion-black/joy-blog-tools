@@ -1,0 +1,413 @@
+<template>
+	<view class="common-body">
+		<!-- 轮播图 -->
+		<view class="kitchen-carousel">
+			<swiper class="kitchen-swiper" autoplay interval="3000" circular>
+				<swiper-item item-id="A">
+					<image class="carousel-img"
+						:src="encodeURI('https://joyimg.lexujia.com/day-by-day/2026-06-02_161859_797.jpg')"></image>
+				</swiper-item>
+				<swiper-item item-id="B">
+					<image class="carousel-img"
+						:src="encodeURI('https://joyimg.lexujia.com/day-by-day/2026-06-02_161922_203.jpg')"></image>
+				</swiper-item>
+			</swiper>
+		</view>
+		<view class="kitchen-header">
+			<!-- 顶部 -->
+			<view class="header-section">
+				<view class="header-info">
+					<image src="/static/img/logo.jpg" class="avatar"></image>
+					<view class="info-content">
+						<view class="title-row">
+							<text class="tag">Lv.1</text>
+							<text class="name">朝夕小厨房</text>
+						</view>
+						<text class="people-count">共2人</text>
+					</view>
+				</view>
+				<text class="notice-text">公告：家是爱的地方，好好生活，好好吃饭，好好爱老婆，照顾好77。</text>
+			</view>
+			<!-- 搜索导航栏 -->
+			<view class="header-bar">
+				<text class="header-title active">点单</text>
+				<view class="search-box">
+					<view class="search-icon">
+						<SvgIcon :svg="searchIcon" :size="24" />
+					</view>
+					<text class="search-placeholder">搜索</text>
+				</view>
+			</view>
+		</view>
+
+		<!-- 3. 主体内容区 (关键点：flex:1 占据剩余空间) -->
+		<view class="kitchen-body">
+			<!-- 左侧分类菜单 -->
+			<scroll-view class="left-menu" scroll-y="true">
+				<view v-for="(item, index) in categories" :key="index" class="menu-item"
+					:class="{ 'active': currentCategoryIndex === index }" @click="switchCategory(index)">
+					<text class="menu-text">{{ item }}</text>
+				</view>
+			</scroll-view>
+
+			<!-- 右侧菜品列表 -->
+			<scroll-view class="right-list" scroll-y="true" :scroll-into-view="scrollViewId">
+				<view v-for="(cat, index) in categories" :key="index" :id="'cat-' + index" class="category-block">
+					<view class="category-header">
+						<text class="cat-title">{{ cat }}</text>
+						<text class="cat-count">(68)</text>
+					</view>
+
+					<!-- 单个菜品卡片 -->
+					<view class="food-card" v-for="(food, fIndex) in 5" :key="fIndex">
+						<image src="/static/food.jpg" class="food-img" mode="aspectFill"></image>
+						<view class="food-info">
+							<text class="food-name">酸菜炒大肠</text>
+							<text class="food-desc">肥肠、酸菜、姜、干辣椒...</text>
+							<view class="sales-row">
+								<text class="sales-text">月销 0</text>
+							</view>
+						</view>
+						<view class="add-btn">+</view>
+					</view>
+				</view>
+			</scroll-view>
+		</view>
+
+
+
+
+	</view>
+</template>
+
+<script setup lang="uts">
+	import { ref } from 'vue'
+	
+	import SvgIcon from '@/components/SvgIcon.uvue'
+
+	import { searchIcon } from '@/utils/svg/kitchenSvg'
+
+	const scrollViewId = ref("")
+	const currentCategoryIndex = ref(0)
+	const categories = ref(['无肉不欢', '靓汤', '青菜', '主食', '饮料', '水果', '甜点', '套餐'])
+
+	const switchCategory = (index: number) => {
+	  // 更新响应式数据，这会自动触发视图更新
+	  currentCategoryIndex.value = index
+	  scrollViewId.value = 'cat-' + index
+	  
+	  // 如果需要，可以在这里添加其他逻辑
+	  console.log('切换到分类:', categories.value[index])
+	}
+</script>
+
+<style lang="scss">
+	.common-body {
+		position: relative;
+		padding-top: 200rpx;
+		display: flex;
+		flex-direction: column;
+		/* 锁定全屏高度 */
+		/* #ifdef H5 */
+		height: calc(100vh - 90rpx);
+		/* #endif */
+		/* #ifndef H5 */
+		height: calc(100vh);
+		/* #endif */
+
+		width: 100%;
+		background-color: #ffffff;
+
+		.kitchen-carousel {
+			width: 100%;
+			height: 350rpx;
+			z-index: 1;
+			position: absolute;
+			top: 0;
+
+			.kitchen-swiper {
+				width: 100%;
+				height: 350rpx;
+			}
+
+			.carousel-img {
+				width: 100%;
+				height: 350rpx;
+			}
+		}
+
+		.kitchen-header {
+			z-index: 2;
+			border-top-right-radius: 30rpx;
+			border-top-left-radius: 30rpx;
+			position: relative;
+
+			.header-section {
+				padding: 20rpx 30rpx;
+				background-color: #fff;
+				border-bottom: 1rpx solid #eeeeee;
+
+				.header-info {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+
+					.avatar {
+						width: 100rpx;
+						height: 100rpx;
+						border-radius: 10rpx;
+						background-color: #ddd;
+						/* 占位色 */
+						margin-right: 20rpx;
+					}
+
+					.info-content {
+						display: flex;
+						flex-direction: column;
+
+						.title-row {
+							display: flex;
+							flex-direction: row;
+							align-items: center;
+							margin-bottom: 10rpx;
+
+							.tag {
+								background-color: #a0cfff;
+								color: #fff;
+								font-size: 20rpx;
+								padding: 4rpx 8rpx;
+								border-radius: 6rpx;
+								margin-right: 10rpx;
+							}
+
+							.shop-name {
+								font-size: 32rpx;
+								font-weight: bold;
+								color: #333;
+							}
+						}
+
+						.count {
+							font-size: 24rpx;
+							color: #999;
+						}
+					}
+				}
+
+				.notice-text {
+					font-size: 24rpx;
+					color: #666;
+					margin-top: 15rpx;
+					lines: 1;
+					/* 单行省略 */
+					// text-overflow: ellipsis;
+					// white-space: nowrap;
+					// overflow: hidden;
+				}
+			}
+
+			/* --- 导航栏 --- */
+			.header-bar {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+				padding: 20rpx 30rpx;
+				background-color: #fff;
+
+				.header-title {
+					font-size: 32rpx;
+					font-weight: bold;
+					position: relative;
+				}
+
+				&.active::after {
+					content: '';
+					position: absolute;
+					bottom: -10rpx;
+					left: 0;
+					width: 100%;
+					height: 6rpx;
+					background-color: #333;
+					border-radius: 3rpx;
+				}
+			}
+
+			.search-box {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				background-color: #f0f0f0;
+				padding: 10rpx 20rpx;
+				border-radius: 30rpx;
+				width: 200rpx;
+
+				.search-icon {
+					font-size: 24rpx;
+					margin-right: 10rpx;
+					color: #999;
+				}
+
+				.search-placeholder {
+					font-size: 24rpx;
+					color: #999;
+				}
+			}
+
+		}
+
+		/* --- 主体内容区 (核心修复部分) --- */
+		.kitchen-body {
+			flex: 1;
+			/* 占据剩余所有高度 */
+			display: flex;
+			/* 内部开启 flex 布局 */
+			flex-direction: row;
+			height: 0;
+			/* 关键：配合 flex:1 强制限制高度，触发内部滚动 */
+			overflow: hidden;
+
+
+			/* 左侧菜单 */
+			.left-menu {
+				width: 180rpx;
+				height: 100%;
+				/* 必须显式设置高度 */
+				background-color: #f7f8fa;
+
+				.menu-item {
+					height: 100rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background-color: #f7f8fa;
+
+					&.active {
+						background-color: #ffffff;
+						font-weight: bold;
+						position: relative;
+
+						.menu-text {
+							color: #333;
+						}
+					}
+
+					&.active::before {
+						content: '';
+						position: absolute;
+						left: 0;
+						top: 30rpx;
+						bottom: 30rpx;
+						width: 8rpx;
+						background-color: #333;
+						border-radius: 0 4rpx 4rpx 0;
+					}
+
+					.menu-text {
+						font-size: 28rpx;
+						color: #666;
+					}
+
+				}
+
+			}
+
+			/* 右侧列表 */
+			.right-list {
+				flex: 1;
+				/* 占据剩余宽度 */
+				height: 100%;
+				/* 必须显式设置高度 */
+				background-color: #ffffff;
+				padding-left: 20rpx;
+				box-sizing: border-box;
+
+				.category-block {
+					margin-bottom: 30rpx;
+
+					.category-header {
+						padding: 20rpx 0;
+						display: flex;
+						flex-direction: row;
+						align-items: baseline;
+
+						.cat-title {
+							font-size: 30rpx;
+							font-weight: bold;
+							color: #333;
+							margin-right: 10rpx;
+						}
+
+						.cat-count {
+							font-size: 24rpx;
+							color: #999;
+						}
+					}
+
+					.food-card {
+						display: flex;
+						flex-direction: row;
+						margin-bottom: 30rpx;
+						padding-right: 20rpx;
+
+						.food-img {
+							width: 180rpx;
+							height: 180rpx;
+							border-radius: 10rpx;
+							background-color: #eee;
+							margin-right: 20rpx;
+						}
+
+						.food-info {
+							flex: 1;
+							display: flex;
+							flex-direction: column;
+							justify-content: space-between;
+							padding-top: 10rpx;
+
+							.food-name {
+								font-size: 30rpx;
+								font-weight: bold;
+								color: #333;
+							}
+
+							.food-desc {
+								font-size: 22rpx;
+								color: #999;
+								margin-top: 10rpx;
+								lines: 2;
+							}
+
+							.sales-text {
+								font-size: 22rpx;
+								color: #999;
+							}
+						}
+
+						.add-btn {
+							width: 50rpx;
+							height: 50rpx;
+							border-radius: 50%;
+							background-color: #dcdde1;
+							color: #fff;
+							text-align: center;
+							line-height: 50rpx;
+							align-self: flex-end;
+							font-size: 30rpx;
+						}
+					}
+				}
+			}
+
+
+
+
+
+
+
+
+
+
+		}
+	}
+</style>

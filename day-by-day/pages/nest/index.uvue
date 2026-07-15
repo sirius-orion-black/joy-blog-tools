@@ -1,0 +1,14 @@
+<template>
+	<view>
+		<image class="logo" src="/static/img/logo.jpg"></image>
+		<text class="title">我的</text>
+	</view>
+</template>
+
+<script setup>
+		
+</script>
+
+<style>
+		
+</style>

@@ -1,0 +1,10 @@
+{
+  "app.name": "吾家朝夕",
+  //tab
+  "tab.kitchen": "烟火",
+  "tab.fresh": "藏鲜",
+  "tab.serenity": "怡养",
+  "tab.nest": "吾家",
+  //烟火
+  "kitchen.info.title":"荷兰猪的小厨房"
+}

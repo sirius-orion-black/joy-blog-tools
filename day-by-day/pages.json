@@ -1,0 +1,72 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://doc.dcloud.net.cn/uni-app-x/collocation/pagesjson.html
+		{
+			"path": "pages/kitchen/index",
+			"style": {
+				"navigationBarTitleText": "%tab.kitchen%",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/fresh/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/serenity/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "pages/nest/index",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		}
+	],
+	"tabBar": {
+		"color": "#8a8a8a",
+		"selectedColor": "#FFD1DC",
+		"backgroundColor": "#FFF8F2", //FFA07A
+		"borderStyle": "white",
+		"list": [{
+				"pagePath": "pages/kitchen/index",
+				"text": "%tab.kitchen%",
+				"iconPath": "/static/img/tab/kitchen.png",
+				"selectedIconPath": "static/img/tab/kitchen-active.png"
+			},
+			{
+				"pagePath": "pages/fresh/index",
+				"text": "%tab.fresh%",
+				"iconPath": "/static/img/tab/fresh.png",
+				"selectedIconPath": "/static/img/tab/fresh-active.png"
+			},
+			{
+				"pagePath": "pages/serenity/index",
+				"text": "%tab.serenity%",
+				"iconPath": "/static/img/tab/serenity.png",
+				"selectedIconPath": "/static/img/tab/serenity-active.png"
+			},
+			{
+				"pagePath": "pages/nest/index",
+				"text": "%tab.nest%",
+				"iconPath": "/static/img/tab/nest.png",
+				"selectedIconPath": "/static/img/tab/nest-active.png"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "%app.name%",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"locale": "zh-Hans", // 设置默认语言
+	"locales": {
+		"zh-Hans": "/locales/zh-Hans.json", // 确保路径指向你的中文语言包
+		"en": "/locales/en.json" // 确保路径指向你的英文语言包
+	},
+	"uniIdRouter": {}
+}

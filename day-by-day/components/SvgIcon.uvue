@@ -1,0 +1,49 @@
+<template>
+  <view class="svg-icon-container" :style="containerStyle" @click="handleClick">
+    <!-- H5 端 -->
+    <!-- #ifdef H5 -->
+    <view class="svg-inline" :style="{ width: size + 'px', height: size + 'px' }" v-html="props.svg" />
+    <!-- #endif -->
+
+    <!-- 小程序 / App 端 -->
+    <!-- #ifndef H5 -->
+    <image :src="svgDataUrl" :style="{ width: size + 'px', height: size + 'px' }" mode="aspectFit" />
+    <!-- #endif -->
+  </view>
+</template>
+
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+import { svgToBase64 } from '@/utils/svg/svgUtils.uts'
+
+const props = defineProps({
+  svg: { type: String, default: '' },
+  size: { type: Number, default: 24 }
+})
+
+const emit = defineEmits(['click'])
+const svgDataUrl = ref('')
+
+const containerStyle = computed(() => ({
+  width: props.size + 'px',
+  height: props.size + 'px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center'
+}))
+
+const updateBase64 = () => {
+  if (!props.svg) {
+    svgDataUrl.value = ''
+    return
+  }
+  svgDataUrl.value = svgToBase64(props.svg)
+}
+
+// #ifndef H5
+onMounted(() => updateBase64())
+watch(() => props.svg, () => updateBase64())
+// #endif
+
+const handleClick = () => emit('click')
+</script>
