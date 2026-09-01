@@ -1,6 +1,6 @@
 <template>
   <view class="page-container">
-    <!-- 顶部店铺信息 (固定不滚动，或者随页面滚动看需求，这里模拟截图作为头部) -->
+    <!-- 顶部信息随页面滚动看需求 -->
     <view class="header-info">
       <view class="shop-row">
         <image class="avatar" src="/static/logo.png"></image>

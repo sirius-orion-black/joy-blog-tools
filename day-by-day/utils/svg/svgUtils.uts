@@ -5,8 +5,8 @@ export function svgToBase64(svgString: string): string {
     .trim()
 
   const utf8Bytes = stringToUtf8Bytes(cleaned)
-  const buffer = new Uint8Array(utf8Bytes).buffer
-  const base64 = uni.arrayBufferToBase64(buffer)
+  const buffer = new Uint8Array(utf8Bytes).buffer.slice(0)
+  const base64 = uni.arrayBufferToBase64((buffer as ArrayBuffer))
 
   return `data:image/svg+xml;base64,${base64}`
 }

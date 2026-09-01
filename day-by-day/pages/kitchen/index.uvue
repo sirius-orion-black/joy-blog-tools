@@ -31,8 +31,9 @@
 			<!-- 搜索导航栏 -->
 			<view class="header-bar">
 				<text class="header-title active">点单</text>
-				<view class="search-box">
-					<view class="search-icon">
+				<view class="search-box" :class="{'active' : isSearch}" @click="toogleSearch">
+					<input class="search-input" ref="searchFoodRef" @blur="toogleSearch" />
+					<view class="search-icon" @click="searchFood">
 						<SvgIcon :svg="searchIcon" :size="24" />
 					</view>
 					<text class="search-placeholder">搜索</text>
@@ -81,7 +82,7 @@
 </template>
 
 <script setup lang="uts">
-	import { ref } from 'vue'
+	import { ref,nextTick } from 'vue'
 	
 	import SvgIcon from '@/components/SvgIcon.uvue'
 
@@ -98,6 +99,33 @@
 	  
 	  // 如果需要，可以在这里添加其他逻辑
 	  console.log('切换到分类:', categories.value[index])
+	}
+	
+	const isSearch = ref(false)
+	const searchFoodRef = ref<any>(null)
+	const toogleSearch = ()=>{
+		isSearch.value = !isSearch.value
+		if(!isSearch.value)
+			return
+		nextTick(() => {
+		    // 4. 判空检查：确保 ref 已经绑定到组件实例
+		    if (searchFoodRef.value) {
+		      try {
+		        // 5. 调用 focus 方法
+		        searchFoodRef.value.focus()
+		      } catch (e) {
+		        console.error('聚焦失败:', e)
+		      }
+		    } else {
+		      console.warn('searchFoodRef 仍为 null，视图可能未就绪')
+		    }
+		  })
+	}
+	
+	const searchFood = ()=>{
+		if(!isSearch.value)
+			return
+		console.log(123);
 	}
 </script>
 
@@ -241,6 +269,10 @@
 				padding: 10rpx 20rpx;
 				border-radius: 30rpx;
 				width: 200rpx;
+				
+				.search-input{
+					display: none;
+				}
 
 				.search-icon {
 					font-size: 24rpx;
@@ -251,6 +283,17 @@
 				.search-placeholder {
 					font-size: 24rpx;
 					color: #999;
+				}
+				
+				&.active{
+					width: 450rpx;
+					.search-input{
+						display: block;
+						width: 360rpx;
+					}
+					.search-placeholder{
+						display: none;
+					}
 				}
 			}
 
@@ -398,6 +441,9 @@
 					}
 				}
 			}
+			
+			
+			
 
 
 
