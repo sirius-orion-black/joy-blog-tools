@@ -11,7 +11,7 @@ import java.util.List;
 
 @Data
 @TableName
-public class MessageComment {
+public class ContentMessageComment {
     //主键id
     @TableId(value = "id",type = IdType.AUTO)
     private Long id;
@@ -46,5 +46,5 @@ public class MessageComment {
 
     // 嵌套返回
     @TableField(exist = false)
-    private List<MessageComment> children;
+    private List<ContentMessageComment> children;
 }

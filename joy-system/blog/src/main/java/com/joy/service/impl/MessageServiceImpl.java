@@ -4,8 +4,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.dto.blog.content.PostCommentDto;
-import com.joy.entity.blog.message.MessageComment;
-import com.joy.mapper.blog.message.MessageCommentMapper;
+import com.joy.entity.blog.message.ContentMessageComment;
+import com.joy.mapper.blog.message.ContentMessageCommentMapper;
 import com.joy.service.MessageService;
 import com.joy.utils.IpRegionUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class MessageServiceImpl extends ServiceImpl<MessageCommentMapper, MessageComment> implements MessageService {
+public class MessageServiceImpl extends ServiceImpl<ContentMessageCommentMapper, ContentMessageComment> implements MessageService {
 
     /**
      *
@@ -39,13 +39,13 @@ public class MessageServiceImpl extends ServiceImpl<MessageCommentMapper, Messag
             userId = StpUtil.getLoginIdAsLong();
         }
 
-        MessageComment message = new MessageComment();
+        ContentMessageComment message = new ContentMessageComment();
 
         if (comment.getParentId() == null || comment.getParentId() == 0L) {
             message.setParentId(0L);
         } else {
             // 评论：校验父留言是否存在
-            MessageComment parent = this.getById(comment.getParentId());
+            ContentMessageComment parent = this.getById(comment.getParentId());
             if (parent == null) {
                 throw new IllegalArgumentException("被评论的留言不存在");
             }
@@ -73,22 +73,22 @@ public class MessageServiceImpl extends ServiceImpl<MessageCommentMapper, Messag
      * @return 返回的数据
      */
     @Override
-    public List<MessageComment> messageList() {
+    public List<ContentMessageComment> messageList() {
         // 1. 查出所有审核通过的留言，按时间正序
-        List<MessageComment> all = this.list(
-                new LambdaQueryWrapper<MessageComment>()
-                        .in(MessageComment::getState, 1,2)
-                        .orderByAsc(MessageComment::getCreateTime)
+        List<ContentMessageComment> all = this.list(
+                new LambdaQueryWrapper<ContentMessageComment>()
+                        .in(ContentMessageComment::getState, 1,2)
+                        .orderByAsc(ContentMessageComment::getCreateTime)
         );
 
         // 2. 分离顶级留言和评论
-        List<MessageComment> topMessages = all.stream()
+        List<ContentMessageComment> topMessages = all.stream()
                 .filter(m -> m.getParentId() == 0L)
                 .collect(Collectors.toList());
 
-        Map<Long, List<MessageComment>> childrenMap = all.stream()
+        Map<Long, List<ContentMessageComment>> childrenMap = all.stream()
                 .filter(m -> m.getParentId() != 0L)
-                .collect(Collectors.groupingBy(MessageComment::getParentId));
+                .collect(Collectors.groupingBy(ContentMessageComment::getParentId));
 
         // 3. 把评论塞进对应顶级留言的 children 字段
         topMessages.forEach(parent ->

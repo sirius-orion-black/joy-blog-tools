@@ -3,7 +3,7 @@ package com.joy.controller;
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixBlogVoRestController;
 import com.joy.dto.blog.content.PostCommentDto;
-import com.joy.entity.blog.message.MessageComment;
+import com.joy.entity.blog.message.ContentMessageComment;
 import com.joy.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +37,7 @@ public class MessageController {
      * @return 返回的数据
      */
     @GetMapping("/getList")
-    public Result<List<MessageComment>> messageList() {
+    public Result<List<ContentMessageComment>> messageList() {
         return Result.success(messageService.messageList());
     }
 

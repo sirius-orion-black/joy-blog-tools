@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
 import com.joy.dto.blog.message.CommentParamDto;
-import com.joy.entity.blog.message.MessageComment;
+import com.joy.entity.blog.message.ContentMessageComment;
 import com.joy.service.MessageCommentServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +25,7 @@ public class MessageCommentController {
      * @return 返回数据
      */
     @GetMapping("getList")
-    public Result<Page<MessageComment>> getComment(CommentParamDto params){
+    public Result<Page<ContentMessageComment>> getComment(CommentParamDto params){
         return Result.success(commentServer.getComment(params));
     }
 
