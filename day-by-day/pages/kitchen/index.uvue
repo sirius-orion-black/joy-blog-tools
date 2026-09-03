@@ -1,5 +1,5 @@
 <template>
-	<view class="common-body">
+	<view class="common-flex-body">
 		<!-- 轮播图 -->
 		<view class="kitchen-carousel">
 			<swiper class="kitchen-swiper" autoplay interval="3000" circular>
@@ -29,19 +29,26 @@
 				<text class="notice-text">公告：家是爱的地方，好好生活，好好吃饭，好好爱老婆，照顾好77。</text>
 			</view>
 			<!-- 搜索导航栏 -->
-			<view class="header-bar">
-				<text class="header-title active">点单</text>
-				<view class="search-box" :class="{'active' : isSearch}" @click="toogleSearch">
-					<input class="search-input" ref="searchFoodRef" @blur="toogleSearch" />
-					<view class="search-icon" @click="searchFood">
+			<view class="header-bar" @click="handleBarClick">
+				<text class="header-title" :class="{ 'active': !isSearch }" @click.stop="cancelSearch">
+					点单
+				</text>
+				<view class="search-box" :class="{ 'active': isSearch }">
+					<input class="search-input" v-model="keyword" :focus="isSearch" placeholder="请输入菜名"
+						confirm-type="search" :adjust-position="false" @confirm="performSearch" @blur="handleBlur"
+						@click.stop />
+					<view class="search-icon" @click.stop="handleSearchClick">
 						<SvgIcon :svg="searchIcon" :size="24" />
 					</view>
-					<text class="search-placeholder">搜索</text>
+					<text class="search-placeholder" :class="{ 'hidden': isSearch || keyword.length > 0 }"
+						@click.stop="toogleSearch">
+						搜索
+					</text>
 				</view>
 			</view>
 		</view>
 
-		<!-- 3. 主体内容区 (关键点：flex:1 占据剩余空间) -->
+		<!-- 3. 主体内容区 (flex:1 占据剩余空间) -->
 		<view class="kitchen-body">
 			<!-- 左侧分类菜单 -->
 			<scroll-view class="left-menu" scroll-y="true">
@@ -75,6 +82,16 @@
 			</scroll-view>
 		</view>
 
+		<view class="kitchen-cart">
+			<view class="cart-main">
+				<view class="cart-icon">
+					<SvgIcon :svg="shopCardIcon" :size="30" color="#ED317F" />
+				</view>
+				<view class="random-food">随机选菜</view>
+				<view class="invite-btn">邀请下单</view>
+				<view class="order-btn">下单</view>
+			</view>
+		</view>
 
 
 
@@ -82,70 +99,115 @@
 </template>
 
 <script setup lang="uts">
-	import { ref,nextTick } from 'vue'
-	
+	import { ref, nextTick } from 'vue'
+
 	import SvgIcon from '@/components/SvgIcon.uvue'
 
-	import { searchIcon } from '@/utils/svg/kitchenSvg'
+	import { searchIcon, shopCardIcon } from '@/utils/svg/kitchenSvg'
 
 	const scrollViewId = ref("")
 	const currentCategoryIndex = ref(0)
 	const categories = ref(['无肉不欢', '靓汤', '青菜', '主食', '饮料', '水果', '甜点', '套餐'])
 
-	const switchCategory = (index: number) => {
-	  // 更新响应式数据，这会自动触发视图更新
-	  currentCategoryIndex.value = index
-	  scrollViewId.value = 'cat-' + index
-	  
-	  // 如果需要，可以在这里添加其他逻辑
-	  console.log('切换到分类:', categories.value[index])
+	const switchCategory = (index : number) => {
+		// 更新响应式数据，这会自动触发视图更新
+		currentCategoryIndex.value = index
+		scrollViewId.value = 'cat-' + index
+
+		// 如果需要，可以在这里添加其他逻辑
+		console.log('切换到分类:', categories.value[index])
 	}
-	
+
 	const isSearch = ref(false)
-	const searchFoodRef = ref<any>(null)
-	const toogleSearch = ()=>{
-		isSearch.value = !isSearch.value
-		if(!isSearch.value)
-			return
-		nextTick(() => {
-		    // 4. 判空检查：确保 ref 已经绑定到组件实例
-		    if (searchFoodRef.value) {
-		      try {
-		        // 5. 调用 focus 方法
-		        searchFoodRef.value.focus()
-		      } catch (e) {
-		        console.error('聚焦失败:', e)
-		      }
-		    } else {
-		      console.warn('searchFoodRef 仍为 null，视图可能未就绪')
-		    }
-		  })
+	const keyword = ref<string>('')
+	const isFocusing = ref<boolean>(false)
+
+	const handleBarClick = () : void => {
+		// 如果当前处于搜索状态，则关闭搜索框并收起键盘
+		if (isSearch.value && !isFocusing.value) {
+			cancelSearch()
+		}
 	}
-	
-	const searchFood = ()=>{
-		if(!isSearch.value)
+
+	const toogleSearch = () => {
+		if (isSearch.value) return
+
+		// 1. 先标记正在聚焦，阻止 blur 立即关闭
+		isFocusing.value = true
+
+		// 2. 等待 DOM 更新后，强制调用 focus
+		// 这是解决小程序首次聚焦不稳定的最有效手段
+		nextTick(() => {
+
+			isSearch.value = true
+			// 3. 延迟重置标记，允许后续的 normal blur 生效
+			setTimeout(() => {
+				isFocusing.value = false
+			}, 500)
+		})
+
+	}
+
+	/**
+	 * 搜索图标点击事件
+	 * 逻辑分流
+	 */
+	const handleSearchClick = () => {
+		if (!isSearch.value) {
+			// 状态为 false，点击则展开搜索框
+			toogleSearch()
+		} else {
+			// 状态为 true，点击则执行搜索逻辑
+			performSearch()
+		}
+	}
+
+	/**
+	 * 实际搜索业务逻辑
+	 */
+	const performSearch = () => {
+		if (!keyword.value.trim()) {
+			uni.showToast({ title: '请输入内容', icon: 'none' })
 			return
-		console.log(123);
+		}
+		console.log('搜索:', keyword.value)
+
+		uni.showToast({ title: `搜索: ${keyword.value}`, icon: 'none' })
+		cancelSearch()
+	}
+
+	/**
+	 * 输入框失去焦点处理
+	 * 策略：如果输入框为空，则自动收起搜索栏
+	 */
+	const handleBlur = () => {
+		// 如果正在聚焦过程中，忽略此次 blur
+		if (isFocusing.value) {
+			return
+		}
+
+		// 延迟判断，防止点击搜索按钮时先 blur 后 click 导致的冲突
+		setTimeout(() => {
+			if (isSearch.value && !keyword.value) {
+				cancelSearch()
+			}
+		}, 100)
+	}
+
+	/**
+	 * 点击标题取消搜索
+	 */
+	const cancelSearch = () => {
+		isSearch.value = false
+		uni.hideKeyboard()
+		keyword.value = ''
 	}
 </script>
 
 <style lang="scss">
-	.common-body {
-		position: relative;
-		padding-top: 200rpx;
-		display: flex;
-		flex-direction: column;
-		/* 锁定全屏高度 */
-		/* #ifdef H5 */
-		height: calc(100vh - 90rpx);
-		/* #endif */
-		/* #ifndef H5 */
-		height: calc(100vh);
-		/* #endif */
-
-		width: 100%;
-		background-color: #ffffff;
-
+	.common-flex-body {
+		padding-top: 300rpx;
+		background-color: $unify-white;
 		.kitchen-carousel {
 			width: 100%;
 			height: 350rpx;
@@ -172,8 +234,8 @@
 
 			.header-section {
 				padding: 20rpx 30rpx;
-				background-color: #fff;
-				border-bottom: 1rpx solid #eeeeee;
+				background-color: $unify-white;
+				border-bottom: 1rpx solid $border-color-grey;
 
 				.header-info {
 					display: flex;
@@ -184,7 +246,7 @@
 						width: 100rpx;
 						height: 100rpx;
 						border-radius: 10rpx;
-						background-color: #ddd;
+						background-color: $bg-color-grey;
 						/* 占位色 */
 						margin-right: 20rpx;
 					}
@@ -200,7 +262,7 @@
 							margin-bottom: 10rpx;
 
 							.tag {
-								background-color: #a0cfff;
+								background-color: $select-color;
 								color: #fff;
 								font-size: 20rpx;
 								padding: 4rpx 8rpx;
@@ -211,20 +273,20 @@
 							.shop-name {
 								font-size: 32rpx;
 								font-weight: bold;
-								color: #333;
+								color: $unify-black;
 							}
 						}
 
 						.count {
 							font-size: 24rpx;
-							color: #999;
+							color: $unify-white;
 						}
 					}
 				}
 
 				.notice-text {
 					font-size: 24rpx;
-					color: #666;
+					color: $unify-grey;
 					margin-top: 15rpx;
 					lines: 1;
 					/* 单行省略 */
@@ -241,7 +303,7 @@
 				justify-content: space-between;
 				align-items: center;
 				padding: 20rpx 30rpx;
-				background-color: #fff;
+				background-color: $unify-white;
 
 				.header-title {
 					font-size: 32rpx;
@@ -256,7 +318,7 @@
 					left: 0;
 					width: 100%;
 					height: 6rpx;
-					background-color: #333;
+					background-color: $unify-black;
 					border-radius: 3rpx;
 				}
 			}
@@ -265,33 +327,35 @@
 				display: flex;
 				flex-direction: row;
 				align-items: center;
-				background-color: #f0f0f0;
+				background-color: $bg-color-grey;
 				padding: 10rpx 20rpx;
 				border-radius: 30rpx;
 				width: 200rpx;
-				
-				.search-input{
+
+				.search-input {
 					display: none;
 				}
 
 				.search-icon {
 					font-size: 24rpx;
 					margin-right: 10rpx;
-					color: #999;
+					color: $unify-white;
 				}
 
 				.search-placeholder {
 					font-size: 24rpx;
-					color: #999;
+					color: $unify-grey;
 				}
-				
-				&.active{
+
+				&.active {
 					width: 450rpx;
-					.search-input{
+
+					.search-input {
 						display: block;
 						width: 360rpx;
 					}
-					.search-placeholder{
+
+					.search-placeholder {
 						display: none;
 					}
 				}
@@ -316,22 +380,22 @@
 				width: 180rpx;
 				height: 100%;
 				/* 必须显式设置高度 */
-				background-color: #f7f8fa;
+				background-color: $bg-un-color;
 
 				.menu-item {
 					height: 100rpx;
 					display: flex;
 					align-items: center;
 					justify-content: center;
-					background-color: #f7f8fa;
+					background-color: $bg-un-color;
 
 					&.active {
-						background-color: #ffffff;
+						background-color: $unify-white;
 						font-weight: bold;
 						position: relative;
 
 						.menu-text {
-							color: #333;
+							color: $unify-black;
 						}
 					}
 
@@ -342,13 +406,13 @@
 						top: 30rpx;
 						bottom: 30rpx;
 						width: 8rpx;
-						background-color: #333;
+						background-color: $unify-black;
 						border-radius: 0 4rpx 4rpx 0;
 					}
 
 					.menu-text {
 						font-size: 28rpx;
-						color: #666;
+						color: $unify-grey;
 					}
 
 				}
@@ -361,12 +425,14 @@
 				/* 占据剩余宽度 */
 				height: 100%;
 				/* 必须显式设置高度 */
-				background-color: #ffffff;
+				background-color: $unify-white;
 				padding-left: 20rpx;
 				box-sizing: border-box;
 
 				.category-block {
 					margin-bottom: 30rpx;
+					padding-bottom: 90rpx;
+					
 
 					.category-header {
 						padding: 20rpx 0;
@@ -377,13 +443,13 @@
 						.cat-title {
 							font-size: 30rpx;
 							font-weight: bold;
-							color: #333;
+							color: $unify-black;
 							margin-right: 10rpx;
 						}
 
 						.cat-count {
 							font-size: 24rpx;
-							color: #999;
+							color: $unify-white;
 						}
 					}
 
@@ -397,7 +463,7 @@
 							width: 180rpx;
 							height: 180rpx;
 							border-radius: 10rpx;
-							background-color: #eee;
+							background-color: $bg-color-grey;
 							margin-right: 20rpx;
 						}
 
@@ -411,19 +477,19 @@
 							.food-name {
 								font-size: 30rpx;
 								font-weight: bold;
-								color: #333;
+								color: $unify-black;
 							}
 
 							.food-desc {
 								font-size: 22rpx;
-								color: #999;
+								color: $unify-white;
 								margin-top: 10rpx;
 								lines: 2;
 							}
 
 							.sales-text {
 								font-size: 22rpx;
-								color: #999;
+								color: $unify-white;
 							}
 						}
 
@@ -431,7 +497,7 @@
 							width: 50rpx;
 							height: 50rpx;
 							border-radius: 50%;
-							background-color: #dcdde1;
+							background-color: $bg-color-grey;
 							color: #fff;
 							text-align: center;
 							line-height: 50rpx;
@@ -441,19 +507,59 @@
 					}
 				}
 			}
-			
-			
-			
 
+		}
 
+		.kitchen-cart {
+			position: fixed;
+			/* #ifdef H5 */
+			bottom: 130rpx;
+			/* #endif */
+			/* #ifndef H5 */
+			bottom: 20rpx;
+			/* #endif */
+			right: 50rpx;
+			left: 50rpx;
+			padding: 15rpx;
+			z-index: 9;
+			border-radius: 50rpx;
+			box-shadow: $shadow-color-black;
+			background-color: $shadow-color-black;
 
+			.cart-main {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: 24rpx;
+				font-size: 24rpx;
 
+				.cart-icon {
+					flex-shrink: 0;
+				}
 
+				.random-food {
+					margin-left: auto;
+					color: $select-color;
+					flex-shrink: 0;
+				}
 
+				.invite-btn {
+					padding: 10rpx 25rpx;
+					border: 1px solid $select-color;
+					border-radius: 25rpx;
+					color: $select-color;
+					background-color: $unify-white;
+					flex-shrink: 0;
+				}
 
-
-
-
+				.order-btn {
+					padding: 10rpx 25rpx;
+					border-radius: 25rpx;
+					color: $unify-grey;
+					background-color: $bg-color-grey;
+					flex-shrink: 0;
+				}
+			}
 		}
 	}
 </style>

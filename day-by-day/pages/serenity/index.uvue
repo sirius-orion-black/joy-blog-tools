@@ -1,24 +1,462 @@
 <template>
-	<view>
-		<image class="logo" src="/static/img/logo.jpg"></image>
-		<text class="title">serenity</text>
+	<view class="common-flex-body">
+		<!-- 1. 沉浸式粉色顶栏 -->
+		<view class="serenity-header">
+			<view class="header-top">
+				<text class="header-title">怡养</text>
+				<!-- 月份选择器：居中 -->
+				<picker mode="date" fields="month" :value="pickerValue" @change="onPickerChange" class="month-selector">
+					<view class="month-selector-inner">
+						<text class="month-text">{{ currentYear }}年{{ currentMonth }}月</text>
+						<text class="month-arrow">▾</text>
+					</view>
+				</picker>
+				<view class="today-btn" @click="backToToday">
+					<text class="today-btn-text">今天</text>
+				</view>
+			</view>
+
+			<!-- 2. 悬浮日历卡片（无阴影） -->
+			<view class="serenity-calendar">
+				<view class="week-row">
+					<text v-for="(w, i) in weeks" :key="i" class="week-cell"
+						:class="{'weekend': i===0 || i===6}">{{ w }}</text>
+				</view>
+
+				<view class="days-grid">
+					<view v-for="(day, idx) in calendarDays" :key="idx" class="day-cell"
+						:class="{'other-month': !day.isCurrentMonth}" @click="selectDate(day)">
+						<!-- 选中态：小尺寸粉色实心圆 -->
+						<view v-if="day.isSelected" class="selected-circle"></view>
+
+						<!-- 今日未选中：粉色空心圆环 -->
+						<view v-if="day.isToday && !day.isSelected" class="today-ring"></view>
+
+						<text class="day-num" :class="{
+								'today-num': day.isToday && !day.isSelected,
+								'selected-num': day.isSelected
+							}">{{ day.day }}</text>
+
+						<!-- 事项小圆点 -->
+						<view v-if="day.hasEvent && !day.isSelected" class="event-dot"></view>
+					</view>
+				</view>
+			</view>
+		</view>
+
+
+
+		<!-- 3. 下方日程列表 -->
+		<scroll-view class="serenity-schedule" scroll-y="true">
+			<view class="schedule-header">
+				<text class="schedule-date">{{ selectedDateStr }}</text>
+				<text class="schedule-count">共 {{ currentEvents.length }} 项</text>
+			</view>
+
+			<view v-if="currentEvents.length > 0" class="event-list">
+				<view v-for="(item, index) in currentEvents" :key="index" class="event-card">
+					<view class="icon-box">
+						<text class="icon-text">{{ item.icon }}</text>
+					</view>
+					<view class="event-content">
+						<text class="event-title">{{ item.title }}</text>
+						<text class="event-desc">{{ item.desc }}</text>
+					</view>
+					<text class="event-time">{{ item.time }}</text>
+				</view>
+			</view>
+
+			<view v-else class="empty-state">
+				<text class="empty-icon">🌤️</text>
+				<text class="empty-text">这一天暂无安排</text>
+				<text class="empty-sub">好好休息，或添加新日程吧</text>
+			</view>
+
+			<view style="height: 80rpx;"></view>
+		</scroll-view>
 	</view>
 </template>
 
-<script setup lang="uts">
-	const title = ref('Hello')
-</script>
+<script setup lang="ts">
+	import { ref, computed } from 'vue';
 
-<style>
-	.logo {
-		height: 100px;
-		width: 100px;
-		margin: 100px auto 25px auto;
+	interface CalendarDay {
+		day : number;
+		isCurrentMonth : boolean;
+		isSelected : boolean;
+		isToday : boolean;
+		hasEvent : boolean;
 	}
 
-	.title {
-		font-size: 18px;
-		color: #8f8f94;
-		text-align: center;
+	interface EventItem {
+		time : string;
+		title : string;
+		desc : string;
+		icon : string;
+	}
+
+	interface EventMap {
+		[key : string] : EventItem[];
+	}
+
+	const padZero = (num : number) : string => {
+		return num < 10 ? '0' + num.toString() : num.toString();
+	};
+
+	const now = new Date();
+	const TODAY_Y : number = now.getFullYear();
+	const TODAY_M : number = now.getMonth() + 1;
+	const TODAY_D : number = now.getDate();
+
+	const currentYear = ref<number>(TODAY_Y);
+	const currentMonth = ref<number>(TODAY_M);
+	const selectedDay = ref<number>(TODAY_D);
+	const pickerValue = ref<string>(`${TODAY_Y}-${padZero(TODAY_M)}`);
+
+	const weeks : string[] = ['日', '一', '二', '三', '四', '五', '六'];
+
+	const dateKey = (y : number, m : number, d : number) : string => `${y}-${m}-${d}`;
+
+	const initialEvents : EventMap = {};
+	initialEvents[dateKey(TODAY_Y, TODAY_M, TODAY_D)] = [
+		{ time: '09:00', title: '晨会', desc: '同步项目进度 · 会议室A', icon: '💼' },
+		{ time: '14:30', title: '代码评审', desc: 'UniApp X 日历组件适配', icon: '💻' },
+		{ time: '19:00', title: '健身', desc: '腿部训练日 · 健身房', icon: '🏋️' }
+	];
+	initialEvents[dateKey(TODAY_Y, TODAY_M, TODAY_D + 2)] = [
+		{ time: '10:00', title: '产品需求评审', desc: 'V2.0 版本规划', icon: '📋' }
+	];
+	initialEvents[dateKey(TODAY_Y, TODAY_M, 15)] = [
+		{ time: '09:30', title: '月度总结会', desc: '大报告厅 · 全员参加', icon: '📊' }
+	];
+
+	const eventsData = ref<EventMap>(initialEvents);
+
+	const calendarDays = computed<CalendarDay[]>(() : CalendarDay[] => {
+		const days : CalendarDay[] = [];
+		const y : number = currentYear.value;
+		const m : number = currentMonth.value;
+
+		const firstWeek : number = new Date(y, m - 1, 1).getDay();
+		const daysInMonth : number = new Date(y, m, 0).getDate();
+		const prevDays : number = new Date(y, m - 1, 0).getDate();
+
+		for (let i = firstWeek - 1; i >= 0; i--) {
+			days.push({ day: prevDays - i, isCurrentMonth: false, isSelected: false, isToday: false, hasEvent: false });
+		}
+
+		for (let d = 1; d <= daysInMonth; d++) {
+			const isToday : boolean = (y === TODAY_Y && m === TODAY_M && d === TODAY_D);
+			const isSelected : boolean = (d === selectedDay.value);
+			const key : string = dateKey(y, m, d);
+			const hasEvent : boolean = eventsData.value[key] !== undefined && eventsData.value[key].length > 0;
+			days.push({ day: d, isCurrentMonth: true, isSelected, isToday, hasEvent });
+		}
+
+		const remain : number = 42 - days.length;
+		for (let i = 1; i <= remain; i++) {
+			days.push({ day: i, isCurrentMonth: false, isSelected: false, isToday: false, hasEvent: false });
+		}
+		return days;
+	});
+
+	const selectedDateStr = computed<string>(() : string => `${currentMonth.value}月${selectedDay.value}日`);
+
+	const currentEvents = computed<EventItem[]>(() : EventItem[] => {
+		const key : string = dateKey(currentYear.value, currentMonth.value, selectedDay.value);
+		const list = eventsData.value[key];
+		if (list === undefined) return [];
+		return list;
+	});
+
+	const onPickerChange = (e : any) => {
+		const val : string = e.detail.value as string;
+		const parts : string[] = val.split('-');
+		const newY : number = parseInt(parts[0]);
+		const newM : number = parseInt(parts[1]);
+		currentYear.value = newY;
+		currentMonth.value = newM;
+		selectedDay.value = (newY === TODAY_Y && newM === TODAY_M) ? TODAY_D : 1;
+		pickerValue.value = `${newY}-${padZero(newM)}`;
+	};
+
+	const selectDate = (day : CalendarDay) => {
+		if (!day.isCurrentMonth) return;
+		selectedDay.value = day.day;
+	};
+
+	const backToToday = () => {
+		currentYear.value = TODAY_Y;
+		currentMonth.value = TODAY_M;
+		selectedDay.value = TODAY_D;
+		pickerValue.value = `${TODAY_Y}-${padZero(TODAY_M)}`;
+	};
+</script>
+
+<style lang="scss">
+	$primary: #ED317F;
+	$primary-light: #FDEEF5;
+	$text-main: #333333;
+	$text-sub: #999999;
+
+	.common-flex-body {
+		background-color: #FAF7F8;
+
+		/* --- 顶栏 --- */
+		.serenity-header {
+			background: linear-gradient(180deg, #FADCE6 0%, #FAF7F8 100%);
+			padding: 0 30rpx 36rpx;
+			overflow: hidden;
+
+			.header-top {
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+				/* #ifdef H5 */
+				height: 120rpx;
+				margin-bottom: 30rpx;
+				/* #endif */
+				/* #ifndef H5 */
+				width: 500rpx;
+				height: 205rpx;
+				margin-top: 45rpx;
+
+				/* #endif */
+				.header-title {
+					font-size: 32rpx;
+					font-weight: bold;
+					color: #333333;
+				}
+
+				.today-btn {
+					padding: 8rpx 24rpx;
+					border-radius: 24rpx;
+					background-color: rgba(255, 255, 255, 0.25);
+
+					.today-btn-text {
+						font-size: 24rpx;
+						color: #333333;
+						font-weight: bold;
+					}
+				}
+
+				/* 月份选择器 */
+				.month-selector {
+					lex-direction: row;
+					align-items: center;
+					justify-content: center;
+					padding: 10rpx 20rpx;
+					display: flex;
+
+					.month-selector-inner {
+						flex-direction: row;
+						align-items: center;
+					}
+
+					.month-text {
+						font-size: 32rpx;
+						font-weight: bold;
+						color: #333333;
+						margin-right: 8rpx;
+					}
+
+					.month-arrow {
+						font-size: 20rpx;
+						color: rgba(255, 255, 255, 0.8);
+					}
+				}
+			}
+		}
+
+		/* --- 悬浮日历卡片（无阴影、纯净白） --- */
+		.serenity-calendar {
+			background-color: #ffffff;
+			border-radius: 28rpx;
+			margin: -36rpx 24rpx 24rpx;
+			padding: 28rpx 12rpx 20rpx;
+
+			.week-row {
+				flex-direction: row;
+				margin-bottom: 24rpx;
+
+				.week-cell {
+					flex: 1;
+					text-align: center;
+					font-size: 24rpx;
+					color: $text-sub;
+				}
+
+				.weekend {
+					color: $primary;
+				}
+			}
+
+			.days-grid {
+				flex-direction: row;
+				flex-wrap: wrap;
+
+				.day-cell {
+					width: 14.28%;
+					height: 88rpx;
+					align-items: center;
+					justify-content: center;
+					position: relative;
+
+					.day-num {
+						font-size: 28rpx;
+						color: $text-main;
+						z-index: 2;
+					}
+
+					/* 今日 */
+					.today-num {
+						color: $primary;
+						font-weight: bold;
+					}
+
+					.today-ring {
+						position: absolute;
+						width: 56rpx;
+						height: 56rpx;
+						border-radius: 28rpx;
+						border: 2rpx solid $primary;
+						z-index: 1;
+					}
+
+					/* 选中 */
+					.selected-circle {
+						position: absolute;
+						width: 56rpx;
+						height: 56rpx;
+						border-radius: 28rpx;
+						background-color: $primary;
+						z-index: 1;
+					}
+
+					.selected-num {
+						color: #ffffff !important;
+						font-weight: bold;
+					}
+
+					/* 事项小圆点 */
+					.event-dot {
+						position: absolute;
+						bottom: 8rpx;
+						width: 6rpx;
+						height: 6rpx;
+						border-radius: 3rpx;
+						background-color: $primary;
+						z-index: 2;
+					}
+				}
+
+				.other-month .day-num {
+					color: #dddddd;
+				}
+			}
+
+		}
+
+	}
+
+	/* --- 日程列表 --- */
+	.serenity-schedule {
+		flex: 1;
+		padding: 30rpx 24rpx;
+
+		.schedule-header {
+			flex-direction: row;
+			justify-content: space-between;
+			align-items: baseline;
+			margin-bottom: 20rpx;
+			padding: 0 8rpx;
+
+			.schedule-date {
+				font-size: 32rpx;
+				font-weight: bold;
+				color: $text-main;
+			}
+
+			.schedule-count {
+				font-size: 24rpx;
+				color: $text-sub;
+			}
+
+		}
+
+		.event-list {
+			.event-card {
+				flex-direction: row;
+				align-items: center;
+				background-color: #ffffff;
+				border-radius: 20rpx;
+				padding: 24rpx;
+				margin-bottom: 16rpx;
+
+				.icon-box {
+					width: 72rpx;
+					height: 72rpx;
+					border-radius: 36rpx;
+					background-color: $primary-light;
+					align-items: center;
+					justify-content: center;
+					margin-right: 20rpx;
+				}
+
+				.icon-text {
+					font-size: 32rpx;
+				}
+
+				.event-content {
+					flex: 1;
+					flex-direction: column;
+
+					.event-title {
+						font-size: 28rpx;
+						font-weight: bold;
+						color: $text-main;
+						margin-bottom: 6rpx;
+					}
+
+					.event-desc {
+						font-size: 22rpx;
+						color: $text-sub;
+						line-height: 32rpx;
+					}
+				}
+
+				.event-time {
+					font-size: 24rpx;
+					color: $primary;
+					font-weight: bold;
+					margin-left: 12rpx;
+				}
+
+			}
+		}
+
+		.empty-state {
+			align-items: center;
+			padding-top: 100rpx;
+			flex-direction: column;
+
+			.empty-icon {
+				font-size: 72rpx;
+				margin-bottom: 16rpx;
+				opacity: 0.6;
+			}
+
+			.empty-text {
+				font-size: 28rpx;
+				color: $text-sub;
+				margin-bottom: 8rpx;
+			}
+
+			.empty-sub {
+				font-size: 22rpx;
+				color: #cccccc;
+			}
+		}
 	}
 </style>

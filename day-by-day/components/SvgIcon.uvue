@@ -1,49 +1,77 @@
 <template>
-  <view class="svg-icon-container" :style="containerStyle" @click="handleClick">
-    <!-- H5 端 -->
-    <!-- #ifdef H5 -->
-    <view class="svg-inline" :style="{ width: size + 'px', height: size + 'px' }" v-html="props.svg" />
-    <!-- #endif -->
+	<view class="svg-icon-container" :style="containerStyle" @click="handleClick">
+		<!-- H5 端：CSS currentColor 继承特性 -->
+		<!-- #ifdef H5 -->
+		<view class="svg-inline" :style="{ width: size + 'px', height: size + 'px', color: color }" v-html="cleanedSvg" />
+		<!-- #endif -->
 
-    <!-- 小程序 / App 端 -->
-    <!-- #ifndef H5 -->
-    <image :src="svgDataUrl" :style="{ width: size + 'px', height: size + 'px' }" mode="aspectFit" />
-    <!-- #endif -->
-  </view>
+		<!-- 小程序 / App 端：预处理颜色的 Base64 图片 -->
+		<!-- #ifndef H5 -->
+		<image :src="svgDataUrl" :style="{ width: size + 'px', height: size + 'px' }" mode="aspectFit" />
+		<!-- #endif -->
+	</view>
 </template>
 
-<script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import { svgToBase64 } from '@/utils/svg/svgUtils.uts'
+<script setup lang="uts">
+	import { ref, computed, watch, onMounted } from 'vue'
+	import { svgToBase64, replaceSvgColor } from '@/utils/svg/svgUtils.uts'
 
-const props = defineProps({
-  svg: { type: String, default: '' },
-  size: { type: Number, default: 24 }
-})
+	const props = defineProps({
+		svg: { type: String, default: '' },
+		size: { type: Number, default: 24 },
+		color: { type: String, default: '#333333' }
+	})
 
-const emit = defineEmits(['click'])
-const svgDataUrl = ref('')
+	const emit = defineEmits(['click'])
+	const svgDataUrl = ref('')
+	
+	const cleanedSvg = computed(() => {
+	  if (!props.svg) return ''
+	  let s = props.svg
+	  // 移除 svg 标签内的 width/height 属性
+	  s = s.replace(/<svg([^>]*)>/, (match, attrs) => {
+	    const newAttrs = attrs
+	      .replace(/width\s*=\s*["'][^"']*["']/gi, '')
+	      .replace(/height\s*=\s*["'][^"']*["']/gi, '')
+	    return `<svg${newAttrs}>`
+	  })
+	  return s
+	})
 
-const containerStyle = computed(() => ({
-  width: props.size + 'px',
-  height: props.size + 'px',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center'
-}))
+	const containerStyle = computed(() => ({
+		width: props.size + 'px',
+		height: props.size + 'px',
+		display: 'inline-flex',
+		alignItems: 'center',
+		justifyContent: 'center'
+	}))
 
-const updateBase64 = () => {
-  if (!props.svg) {
-    svgDataUrl.value = ''
-    return
-  }
-  svgDataUrl.value = svgToBase64(props.svg)
-}
+	const updateBase64 = () => {
+		if (!props.svg) {
+			svgDataUrl.value = ''
+			return
+		}
 
-// #ifndef H5
-onMounted(() => updateBase64())
-watch(() => props.svg, () => updateBase64())
-// #endif
+		// #ifndef H5
+		// 1. 替换 SVG 中的 currentColor 为目标颜色
+		const coloredSvg = replaceSvgColor(props.svg, props.color)
+		// 2. 转换为 Base64
+		svgDataUrl.value = svgToBase64(coloredSvg)
+		// #endif
+	}
 
-const handleClick = () => emit('click')
+	// #ifndef H5
+	onMounted(() => updateBase64())
+	// 监听 svg 内容和颜色的变化，重新生成 Base64
+	watch(() => [props.svg, props.color], () => updateBase64(), { deep: true })
+	// #endif
+
+	const handleClick = () => emit('click')
 </script>
+
+<style scoped>
+	.svg-icon-container {
+		/* 确保容器不影响布局 */
+		vertical-align: middle;
+	}
+</style>

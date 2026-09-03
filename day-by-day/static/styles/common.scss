@@ -1,9 +1,15 @@
-.common-body{
+@import '@/uni.scss';
+.common-flex-body{
 	width: 100%;
 	overflow-x: hidden;
-	.common-main{
-		width: 100%;
-		padding: 0 20rpx;
-		z-index: 2;
-	}
+	/* 锁定全屏高度 */
+	/* #ifdef H5 */
+	height: calc(100vh - 90rpx);
+	/* #endif */
+	/* #ifndef H5 */
+	height: calc(100vh);
+	/* #endif */
+	position: relative;
+	display: flex;
+	flex-direction: column;
 }

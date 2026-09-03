@@ -1,14 +1,282 @@
 <template>
-	<view>
-		<image class="logo" src="/static/img/logo.jpg"></image>
-		<text class="title">我的</text>
+	<view class="common-flex-body">
+		<!-- 1. 顶部区域 -->
+		<view class="nest-header header-bg-style">
+
+			<view class="header-content">
+				<image class="avatar" src="https://img.yzcdn.cn/vant/cat.jpeg" mode="aspectFill"></image>
+				<view class="title-group">
+					<!-- 背景图较亮，且有粉色遮罩，白色文字加阴影 -->
+					<text class="main-title">主君，欢迎回宫</text>
+					<text class="sub-title">又是辛苦但充实的一天，放个音乐轻松一下吧~</text>
+				</view>
+			</view>
+
+			<!-- 数据区域 -->
+			<view class="header-airenv glass-card">
+				<view class="airenv-item">
+					<text class="value">26°C</text>
+					<text class="label">温度</text>
+				</view>
+				<view class="divider-vertical"></view>
+				<view class="airenv-item">
+					<text class="value">68%</text>
+					<text class="label">湿度</text>
+				</view>
+				<view class="divider-vertical"></view>
+				<view class="airenv-item">
+					<text class="value">281AQI</text>
+					<text class="label">空气质量</text>
+				</view>
+			</view>
+		</view>
+
+		<!-- 2. 底部滚动区域 -->
+		<scroll-view class="nest-scroll" scroll-y="true">
+
+			<!-- 模块一：出行向导 -->
+			<view class="nest-card">
+				<text class="card-title">灶下鲜踪</text>
+				<view class="grid-container">
+					<view class="grid-item" v-for="(item, index) in guideList" :key="index">
+						<view class="icon-box">
+							<!-- 实际开发请替换为 image -->
+							<text class="icon-text">{{ item.icon }}</text>
+						</view>
+						<text class="grid-label">{{ item.name }}</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 模块二：常用功能 -->
+			<view class="nest-card">
+				<text class="card-title">智办小集</text>
+				<view class="grid-container">
+					<view class="grid-item" v-for="(item, index) in funcList" :key="index">
+						<view class="icon-box">
+							<text class="icon-text">{{ item.icon }}</text>
+							<!-- 角标 -->
+							<text v-if="item.badge" class="badge">{{ item.badge }}</text>
+						</view>
+						<text class="grid-label">{{ item.name }}</text>
+					</view>
+				</view>
+			</view>
+
+			<!-- 底部留白 -->
+			<view style="height: 40rpx;"></view>
+		</scroll-view>
 	</view>
 </template>
 
 <script setup>
-		
+	import { ref } from 'vue';
+
+	// 定义响应式数据
+	// 模拟数据：出行向导
+	const guideList = ref([
+		{ name: '车站大屏', icon: '📺' },
+		{ name: '时刻表', icon: '🕒' },
+		{ name: '起售时间', icon: '⏰' },
+		{ name: '正晚点查询', icon: '🚉' },
+		{ name: '票价查询', icon: '💰' },
+		{ name: '换乘时间', icon: '🔄' },
+		{ name: '代售点查询', icon: '🏠' },
+		{ name: '更多', icon: '...' }
+	]);
+
+	// 模拟数据：常用功能
+	const funcList = ref([
+		{ name: '人证核验', icon: '👤' },
+		{ name: '指纹登录', icon: '', badge: '去开启' },
+		{ name: '修改密码', icon: '🔒' },
+		{ name: '修改手机号', icon: '📱' },
+		{ name: '通知设置', icon: '🔔' },
+		{ name: '敬老版', icon: '❤️' },
+		{ name: '快捷退票', icon: '🎫' },
+		{ name: '学生资质核验', icon: '🎓' },
+		{ name: '电子发票', icon: '🧾' }
+	]);
+
+	// 如果有点击事件，可以直接在这里定义函数
+	const handleItemClick = (item) => {
+		console.log('点击了:', item.name);
+		// uni.showToast({ title: item.name });
+	};
 </script>
 
-<style>
-		
+<style lang="scss">
+	.common-flex-body {
+		background-color: $bg-un-color;
+
+		/* --- 顶部固定区域 --- */
+		.nest-header {
+			padding: 40rpx;
+			/* #ifndef H5 */
+			padding-top: 110rpx;
+			/* #endif */
+			padding-bottom: 60rpx;
+			position: relative;
+
+			&.header-bg-style {
+				background-image: linear-gradient(135deg, rgba($select-color, 0.85) 0%, rgba($bg-no-color, 0.85) 100%), url('/static/img/nest/home_bg.jpg');
+				background-size: cover;
+				background-position: center;
+				border-bottom-left-radius: 40rpx;
+				border-bottom-right-radius: 40rpx;
+				box-shadow: 0 10rpx 30rpx rgba(237, 49, 127, 0.2);
+			}
+
+			.header-content {
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: flex-start;
+				margin-bottom: 40rpx;
+				position: relative;
+				z-index: 2;
+
+				.title-group {
+					flex: 1;
+
+					.main-title {
+						font-size: 36rpx;
+						font-weight: bold;
+						color: $unify-white;
+						margin-bottom: 16rpx;
+						/* 给文字加一点阴影，防止背景图太亮导致文字模糊 */
+						text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+					}
+
+					.sub-title {
+						font-size: 24rpx;
+						color: rgba(255, 255, 255, 0.9);
+						line-height: 36rpx;
+						text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+					}
+				}
+
+				.avatar {
+					margin-right: 20rpx;
+					width: 100rpx;
+					height: 100rpx;
+					border-radius: 50rpx;
+					background-color: #ffffff;
+					border: 4rpx solid rgba(255, 255, 255, 0.6);
+					box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+				}
+			}
+
+			.header-airenv {
+				flex-direction: row;
+				justify-content: space-between;
+				align-items: center;
+
+				/* 玻璃卡片：在亮色背景图上，稍微提高一点白色背景的透明度，让它更通透 */
+				background-color: rgba(255, 255, 255, 0.3);
+				border-radius: 24rpx;
+				padding: 20rpx 0;
+				border: 1rpx solid rgba(255, 255, 255, 0.4);
+
+				position: relative;
+				z-index: 2;
+
+				.airenv-item {
+					flex: 1;
+					align-items: center;
+					justify-content: center;
+
+					.value {
+						font-size: 36rpx;
+						font-weight: bold;
+						color: $unify-white;
+						margin-bottom: 8rpx;
+						text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+					}
+
+					.label {
+						font-size: 24rpx;
+						color: rgba(255, 255, 255, 0.85);
+					}
+				}
+
+				.divider-vertical {
+					width: 2rpx;
+					height: 50rpx;
+					background-color: rgba(255, 255, 255, 0.4);
+				}
+			}
+
+		}
+
+		/* --- 底部滚动区域 --- */
+		.nest-scroll {
+			flex: 1;
+			margin-top: -30rpx;
+			border-top-left-radius: 30rpx;
+			border-top-right-radius: 30rpx;
+			background-color: $bg-un-color;
+			position: relative;
+			z-index: 10;
+
+			.nest-card {
+				background-color: $unify-white;
+				margin: 24rpx;
+				padding: 30rpx;
+				border-radius: 24rpx;
+
+				.card-title {
+					font-size: 32rpx;
+					font-weight: bold;
+					color: $unify-black;
+					margin-bottom: 30rpx;
+				}
+
+				.grid-container {
+					flex-direction: row;
+					flex-wrap: wrap;
+
+					.grid-item {
+						width: 25%;
+						align-items: center;
+						margin-bottom: 30rpx;
+
+						&:active {
+							opacity: 0.7;
+						}
+
+						.icon-box {
+							width: 80rpx;
+							height: 80rpx;
+							align-items: center;
+							justify-content: center;
+							margin-bottom: 16rpx;
+							position: relative;
+
+							.icon-text {
+								font-size: 48rpx;
+							}
+
+
+							.badge {
+								position: absolute;
+								top: -10rpx;
+								right: -20rpx;
+								background-color: $select-color;
+								color: $unify-black;
+								font-size: 20rpx;
+								padding: 4rpx 8rpx;
+								border-radius: 16rpx 16rpx 16rpx 0;
+							}
+						}
+
+						.grid-label {
+							font-size: 24rpx;
+							color: $unify-black;
+							text-align: center;
+						}
+					}
+				}
+			}
+		}
+	}
 </style>

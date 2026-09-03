@@ -1,16 +1,23 @@
-export function svgToBase64(svgString: string): string {
-  let cleaned = svgString
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
 
-  const utf8Bytes = stringToUtf8Bytes(cleaned)
-  const buffer = new Uint8Array(utf8Bytes).buffer.slice(0)
-  const base64 = uni.arrayBufferToBase64((buffer as ArrayBuffer))
-
-  return `data:image/svg+xml;base64,${base64}`
+/**
+ * 将 SVG 字符串中的 currentColor 替换为指定颜色
+ * @param svgString 原始 SVG 字符串
+ * @param color 目标颜色值 (如 '#FF0000')
+ */
+export function replaceSvgColor(svgString: string, color: string): string {
+  if (!svgString || !color) return svgString
+  
+  // 替换 fill="currentColor" 和 stroke="currentColor"
+  // 使用全局正则忽略大小写
+  let processed = svgString.replace(/fill\s*=\s*["']currentColor["']/gi, `fill="${color}"`)
+                           .replace(/stroke\s*=\s*["']currentColor["']/gi, `stroke="${color}"`)
+  
+  return processed
 }
 
+/**
+ * 将 SVG 字符串转换为 UTF-8 字节数组
+ */
 function stringToUtf8Bytes(str: string): number[] {
   const bytes: number[] = []
   for (let i = 0; i < str.length; i++) {
@@ -34,4 +41,22 @@ function stringToUtf8Bytes(str: string): number[] {
     }
   }
   return bytes
+}
+
+/**
+ * 将 SVG 字符串转换为 Base64 Data URL
+ */
+export function svgToBase64(svgString: string): string {
+  if (!svgString) return ''
+  
+  let cleaned = svgString
+    .replace(/<!--[\s\S]*?-->/g, '') // 移除注释
+    .replace(/\s{2,}/g, ' ')         // 压缩多余空白
+    .trim()
+
+  const utf8Bytes = stringToUtf8Bytes(cleaned)
+  const buffer = new Uint8Array(utf8Bytes).buffer.slice(0)
+  const base64 = uni.arrayBufferToBase64((buffer as ArrayBuffer))
+
+  return `data:image/svg+xml;base64,${base64}`
 }

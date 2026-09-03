@@ -3,55 +3,58 @@
 		{
 			"path": "pages/kitchen/index",
 			"style": {
-				"navigationBarTitleText": "%tab.kitchen%",
+				// "navigationBarTitleText": "烟火",
 				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/fresh/index",
 			"style": {
-				"navigationBarTitleText": ""
+				// "navigationBarTitleText": "藏鲜"
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/serenity/index",
 			"style": {
-				"navigationBarTitleText": ""
+				// "navigationBarTitleText": "怡养"
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/nest/index",
 			"style": {
-				"navigationBarTitleText": ""
+				// "navigationBarTitleText": "吾家"
+				"navigationStyle": "custom"
 			}
 		}
 	],
 	"tabBar": {
-		"color": "#8a8a8a",
-		"selectedColor": "#FFD1DC",
+		"color": "#333333",
+		"selectedColor": "#ED317F",
 		"backgroundColor": "#FFF8F2", //FFA07A
 		"borderStyle": "white",
 		"list": [{
 				"pagePath": "pages/kitchen/index",
-				"text": "%tab.kitchen%",
+				"text": "烟火",
 				"iconPath": "/static/img/tab/kitchen.png",
 				"selectedIconPath": "static/img/tab/kitchen-active.png"
 			},
 			{
 				"pagePath": "pages/fresh/index",
-				"text": "%tab.fresh%",
+				"text": "藏鲜",
 				"iconPath": "/static/img/tab/fresh.png",
 				"selectedIconPath": "/static/img/tab/fresh-active.png"
 			},
 			{
 				"pagePath": "pages/serenity/index",
-				"text": "%tab.serenity%",
+				"text": "怡养",
 				"iconPath": "/static/img/tab/serenity.png",
 				"selectedIconPath": "/static/img/tab/serenity-active.png"
 			},
 			{
 				"pagePath": "pages/nest/index",
-				"text": "%tab.nest%",
+				"text": "吾家",
 				"iconPath": "/static/img/tab/nest.png",
 				"selectedIconPath": "/static/img/tab/nest-active.png"
 			}
@@ -59,14 +62,9 @@
 	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "%app.name%",
+		"navigationBarTitleText": "吾家朝夕",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
-	},
-	"locale": "zh-Hans", // 设置默认语言
-	"locales": {
-		"zh-Hans": "/locales/zh-Hans.json", // 确保路径指向你的中文语言包
-		"en": "/locales/en.json" // 确保路径指向你的英文语言包
 	},
 	"uniIdRouter": {}
 }
