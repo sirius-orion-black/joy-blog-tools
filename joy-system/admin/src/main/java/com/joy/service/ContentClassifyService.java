@@ -2,8 +2,8 @@ package com.joy.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
-import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.ContentClassify;
+import com.joy.dto.blog.content.SearchParamDto;
+import com.joy.entity.blog.content.ContentClassify;
 
 import java.util.List;
 

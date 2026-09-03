@@ -1,11 +1,10 @@
 package com.joy.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.joy.dto.message.CommentParamDto;
-import com.joy.entity.message.MessageComment;
-import com.joy.mapper.message.MessageCommentMapper;
+import com.joy.dto.blog.message.CommentParamDto;
+import com.joy.entity.blog.message.MessageComment;
+import com.joy.mapper.blog.message.MessageCommentMapper;
 import com.joy.service.MessageCommentServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

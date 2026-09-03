@@ -1,6 +1,6 @@
 package com.joy.service;
 
-import com.joy.entity.content.ContentBlogpost;
+import com.joy.entity.blog.content.ContentBlogpost;
 
 import java.util.List;
 

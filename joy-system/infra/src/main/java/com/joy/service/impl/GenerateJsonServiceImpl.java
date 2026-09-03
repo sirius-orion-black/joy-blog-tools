@@ -2,13 +2,13 @@ package com.joy.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.joy.entity.content.ContentBlogpost;
-import com.joy.entity.content.ContentMoments;
+import com.joy.entity.blog.content.ContentBlogpost;
+import com.joy.entity.blog.content.ContentMoments;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.entity.user.User;
-import com.joy.mapper.content.ContentBlogpostMapper;
-import com.joy.mapper.content.ContentMomentsMapper;
+import com.joy.mapper.blog.content.ContentBlogpostMapper;
+import com.joy.mapper.blog.content.ContentMomentsMapper;
 import com.joy.mapper.sysConfig.SysConfigMapper;
 import com.joy.mapper.sysUser.SysUserMapper;
 import com.joy.mapper.user.UserMapper;

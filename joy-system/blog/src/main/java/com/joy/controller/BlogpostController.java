@@ -3,7 +3,7 @@ package com.joy.controller;
 
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixBlogVoRestController;
-import com.joy.entity.content.ContentBlogpost;
+import com.joy.entity.blog.content.ContentBlogpost;
 import com.joy.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

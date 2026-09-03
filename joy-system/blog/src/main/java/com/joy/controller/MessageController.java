@@ -2,8 +2,8 @@ package com.joy.controller;
 
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixBlogVoRestController;
-import com.joy.dto.content.PostCommentDto;
-import com.joy.entity.message.MessageComment;
+import com.joy.dto.blog.content.PostCommentDto;
+import com.joy.entity.blog.message.MessageComment;
 import com.joy.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

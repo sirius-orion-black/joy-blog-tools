@@ -1,7 +1,7 @@
 package com.joy.service;
 
-import com.joy.dto.content.PostCommentDto;
-import com.joy.entity.message.MessageComment;
+import com.joy.dto.blog.content.PostCommentDto;
+import com.joy.entity.blog.message.MessageComment;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

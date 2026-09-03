@@ -2,8 +2,8 @@ package com.joy.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
-import com.joy.dto.content.SearchParamDto;
-import com.joy.entity.content.ContentColumn;
+import com.joy.dto.blog.content.SearchParamDto;
+import com.joy.entity.blog.content.ContentColumn;
 
 public interface ContentColumnService {
     Result<Page<ContentColumn>> getColumn(SearchParamDto params);
