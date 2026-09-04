@@ -27,6 +27,18 @@
 				// "navigationBarTitleText": "吾家"
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/login/agreement",
+			"style": {
+				"navigationBarTitleText": "协议"
+			}
 		}
 	],
 	"tabBar": {

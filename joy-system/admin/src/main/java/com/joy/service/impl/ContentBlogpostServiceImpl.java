@@ -11,7 +11,7 @@ import com.joy.dto.blog.content.BlogpostUpdateDto;
 import com.joy.entity.blog.content.*;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.entity.user.User;
-import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.RequestCodeMessage;
 import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.blog.content.*;
 import com.joy.mapper.sysUser.SysUserMapper;
@@ -145,7 +145,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
         if(article.getId() != null)
             CommonCodeMessage.BAD_REQUEST.throwIt();
         if (validateArticle(article)) {
-            AdminCodeMessage.INFORMATION_INCOMPLETE.throwIt();
+            RequestCodeMessage.INFORMATION_INCOMPLETE.throwIt();
         }
         if (article.getState() == null)
             article.setState(4); // 初始状态：预审
@@ -182,7 +182,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
             CommonCodeMessage.UNAUTHORIZED.throwIt();
 
         if (validateArticle(blogpost)) {
-            AdminCodeMessage.INFORMATION_INCOMPLETE.throwIt();
+            RequestCodeMessage.INFORMATION_INCOMPLETE.throwIt();
         }
         if (blogpost.getIsOriginal() == 2)
             blogpost.setReprintAddress(null);
@@ -253,7 +253,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
     public Result<String> updateBlogpost(BlogpostUpdateDto blogpost) throws IOException {
         ContentBlogpost blog = this.getById(blogpost.getId());
         if (blog == null)
-            AdminCodeMessage.ARTICLE_NOT_EXIST.throwIt();
+            RequestCodeMessage.ARTICLE_NOT_EXIST.throwIt();
         UpdateWrapper<ContentBlogpost> wrapper = new UpdateWrapper<>();
         wrapper.eq("id", blogpost.getId())
                 .set("update_time", new Date());
@@ -271,7 +271,7 @@ public class ContentBlogpostServiceImpl extends ServiceImpl<ContentBlogpostMappe
                 wrapper.set("state", 5); // 退回
                 break;
             default:
-                AdminCodeMessage.INVALID_OPERATION.throwIt();
+                RequestCodeMessage.INVALID_OPERATION.throwIt();
         }
         this.update(wrapper);
         return Result.success();

@@ -1,45 +1,82 @@
-<script setup lang="uts">
+<script lang="uts">
+	import { checkAuth, isLoggedIn } from '@/utils/auth.uts';
 	// #ifdef APP-ANDROID || APP-HARMONY
 	let firstBackTime = 0
 	// #endif
+	export default {
+		onLaunch: function () {
+			const lang = uni.getStorageSync('lang') || 'zh-Hans'
+			console.log("语言是啥呀", lang)
+			uni.setLocale(lang)
+			console.log('App Launch')
 
-	onLaunch(() => {
-		const lang = uni.getStorageSync('lang') || 'zh-Hans'
-		console.log("语言是啥呀", lang)
-		uni.setLocale(lang)
-		console.log('App Launch')
-	})
-
-	onAppShow(() => {
-		console.log('App Show')
-	})
-
-	onAppHide(() => {
-		console.log('App Hide')
-	})
-
-	// #ifdef APP-ANDROID || APP-HARMONY
-	onLastPageBackPress(() => {
-		console.log('App LastPageBackPress')
-		if (firstBackTime == 0) {
-			uni.showToast({
-				title: '再按一次退出应用',
-				position: 'bottom',
+			// #ifdef APP-ANDROID || APP-HARMONY
+			onLastPageBackPress(() => {
+				console.log('App LastPageBackPress')
+				if (firstBackTime == 0) {
+					uni.showToast({
+						title: '再按一次退出应用',
+						position: 'bottom',
+					})
+					firstBackTime = Date.now()
+					setTimeout(() => {
+						firstBackTime = 0
+					}, 2000)
+				} else if (Date.now() - firstBackTime < 2000) {
+					firstBackTime = Date.now()
+					uni.exit()
+				}
 			})
-			firstBackTime = Date.now()
-			setTimeout(() => {
-				firstBackTime = 0
-			}, 2000)
-		} else if (Date.now() - firstBackTime < 2000) {
-			firstBackTime = Date.now()
-			uni.exit()
-		}
-	})
 
-	onExit(() => {
-		console.log('App Exit')
-	})
-	// #endif
+			onExit(() => {
+				console.log('App Exit')
+			})
+			// #endif
+
+			// ========== 冷启动鉴权：未登录直接跳登录页 ==========
+			if (!isLoggedIn()) {
+				console.warn('[Auth] 冷启动未登录，跳转登录页');
+				// 延迟一帧确保页面栈初始化完成
+				setTimeout(() => {
+					uni.navigateTo({ url: '/pages/login/login' });
+				}, 100);
+			}
+
+			// ========== 路由拦截器（兜底） ==========
+			const routeMethods : string[] = ['navigateTo', 'redirectTo', 'reLaunch'];
+
+			for (let i = 0; i < routeMethods.length; i++) {
+				const method = routeMethods[i];
+				uni.addInterceptor(method, {
+					invoke(args : any) : any {
+						const targetUrl = args.url as string;
+						if (!checkAuth(targetUrl)) {
+							console.warn('[Auth] 未登录，拦截: ' + targetUrl);
+							// 保存回跳地址（除 tabBar 页和登录页本身）
+							if (targetUrl.indexOf('/pages/tab/') === -1
+								&& targetUrl.indexOf('/pages/login/login') === -1) {
+								uni.setStorageSync('redirect_url', targetUrl);
+							}
+							uni.navigateTo({ url: '/pages/login/login' });
+							return false;
+						}
+						return args;
+					},
+					fail(err : any) {
+						console.error('路由跳转失败', err);
+					}
+				});
+			}
+		},
+
+		onShow: function () {
+			console.log('App Show')
+		},
+		onHide: function () {
+			console.log('App Hide')
+		}
+
+	}
 </script>
 
 <style lang="scss">

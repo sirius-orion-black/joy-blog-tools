@@ -1,13 +1,19 @@
 package com.joy.utils;
 
+import com.aliyun.dm20151123.Client;
+import com.aliyun.dm20151123.models.SingleSendMailRequest;
+import com.aliyun.teaopenapi.models.Config;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joy.entity.sysConfig.SysCloudMail;
 import com.joy.entity.sysConfig.SysConfigMail;
-import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.RequestCodeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +25,8 @@ public class VerifyCodeUtil {
     private static RedisUtil redis() {
         return BeanUtil.getBean(RedisUtil.class);
     }
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     // ==================== 限制参数 ====================
     private static final long EMAIL_INTERVAL = 60;   // 同一邮箱发送间隔（秒）
@@ -48,7 +56,7 @@ public class VerifyCodeUtil {
      *
      * @param email 目标邮箱
      * @param ip    客户端IP
-     *  表示允许发送，否则返回错误提示
+     *              表示允许发送，否则返回错误提示
      */
     public static void checkSendAllowed(String email, String ip) {
         RedisUtil redis = redis();
@@ -58,7 +66,7 @@ public class VerifyCodeUtil {
         String intervalKey = PREFIX_EMAIL_INTERVAL + email;
         if (redis.hasKey(intervalKey)) {
             long ttl = redis.getExpire(intervalKey);
-            AdminCodeMessage.VERIFICATION_CODE_SECONDS.throwIt(ttl);
+            RequestCodeMessage.VERIFICATION_CODE_SECONDS.throwIt(ttl);
         }
 
         // 2. 邮箱每小时上限
@@ -68,7 +76,7 @@ public class VerifyCodeUtil {
             redis.expire(emailHourKey, 3600);
         }
         if (emailHourCount > EMAIL_HOUR_MAX) {//该邮箱获取验证码过于频繁，请1小时后再试
-            AdminCodeMessage.VERIFICATION_CODES_FREQUENTLY.throwIt();
+            RequestCodeMessage.VERIFICATION_CODES_FREQUENTLY.throwIt();
         }
 
         // 3. 邮箱每天上限
@@ -78,7 +86,7 @@ public class VerifyCodeUtil {
             redis.expire(emailDayKey, 86400);
         }
         if (emailDayCount > EMAIL_DAY_MAX) {//该邮箱今日获取验证码次数已达上限，请明天再试
-            AdminCodeMessage.MAXIMUM_VERIFICATION_CODES_TODAY.throwIt();
+            RequestCodeMessage.MAXIMUM_VERIFICATION_CODES_TODAY.throwIt();
         }
 
         // ---- IP 维度 ----
@@ -89,7 +97,7 @@ public class VerifyCodeUtil {
             redis.expire(ipMinuteKey, 60);
         }
         if (ipMinuteCount > IP_MINUTE_MAX) {//当前网络请求过于频繁，请稍后再试
-            AdminCodeMessage.NETWORK_REQUESTS_FREQUENT.throwIt();
+            RequestCodeMessage.NETWORK_REQUESTS_FREQUENT.throwIt();
         }
 
         // 5. IP每小时上限
@@ -99,7 +107,7 @@ public class VerifyCodeUtil {
             redis.expire(ipHourKey, 3600);
         }
         if (ipHourCount > IP_HOUR_MAX) {//当前网络请求过于频繁，请1小时后再试
-            AdminCodeMessage.NETWORK_REQUESTS_FREQUENT_HOUR.throwIt();
+            RequestCodeMessage.NETWORK_REQUESTS_FREQUENT_HOUR.throwIt();
         }
 
         // 6. IP每天上限
@@ -109,7 +117,7 @@ public class VerifyCodeUtil {
             redis.expire(ipDayKey, 86400);
         }
         if (ipDayCount > IP_DAY_MAX) {// 当前网络今日请求次数已达上限，请明天再试
-            AdminCodeMessage.NETWORK_REQUESTS_FREQUENT_TODAY.throwIt();
+            RequestCodeMessage.NETWORK_REQUESTS_FREQUENT_TODAY.throwIt();
         }
 
     }
@@ -172,13 +180,13 @@ public class VerifyCodeUtil {
             redis.expire(errorKey, validTime);
         }
         if (errorCount > MAX_ERROR_COUNT) {
-            AdminCodeMessage.MANY_VERIFICATION_ERRORS.throwIt();
+            RequestCodeMessage.MANY_VERIFICATION_ERRORS.throwIt();
         }
 
         // 2. 检查验证码是否存在
         Object savedObj = redis.get(prefixCode + email);
         if (savedObj == null) {
-            AdminCodeMessage.VERIFICATION_CODE_EXPIRED.throwIt();
+            RequestCodeMessage.VERIFICATION_CODE_EXPIRED.throwIt();
             return;
         }
         String savedCode = savedObj.toString();
@@ -186,7 +194,7 @@ public class VerifyCodeUtil {
         // 3. 比对验证码
         if (!savedCode.equals(code)) {
             long remaining = MAX_ERROR_COUNT - errorCount;
-            AdminCodeMessage.VERIFICATION_CODE_ATTEMPTS.throwIt(remaining);
+            RequestCodeMessage.VERIFICATION_CODE_ATTEMPTS.throwIt(remaining);
         }
 
         // 4. 验证成功，清除验证码和错误计数
@@ -260,7 +268,7 @@ public class VerifyCodeUtil {
     }
 
     /**
-     * 发送验证码邮件
+     * 发送139邮箱验证码邮件
      *
      * @param verificationCode 验证码
      * @param content          发送邮箱
@@ -301,10 +309,11 @@ public class VerifyCodeUtil {
             log.info("模板内容======》〉》〉{}", content);
             log.info("邮件验证码======》〉》〉{}", verificationCode);
             // 发送邮件
-//            mailSender.send(message);
+            mailSender.send(message);
 
             return true;
         } catch (RuntimeException e) {
+            log.error("139云邮件发送失败", e);
             return false;
 //            throw new RuntimeException(e);
         }
@@ -323,5 +332,54 @@ public class VerifyCodeUtil {
         return replacePlaceholders(mail.getTemplate(), params);
     }
 
+    /**
+     *
+     * @param email 邮箱
+     */
+    private static String maskEmail(String email) {
+        if (email == null || !email.contains("@")) return "***";
+        int at = email.indexOf("@");
+//        return email.charAt(0) + "***" + email.substring(at);
+        return email.substring(0, 5) + "***" + email.substring(at);
+    }
 
+    /**
+     *
+     * @param verificationCode 验证码
+     * @param toAccount        目标邮箱地址
+     * @param mail             邮箱配置
+     * @return 是否发送成功
+     */
+    public static boolean sendCloudEmail(String verificationCode, String toAccount, SysCloudMail mail) throws Exception {
+        try {
+            Config clientConfig = new Config()
+                    .setAccessKeyId(mail.getAccessKeyId())
+                    .setAccessKeySecret(mail.getAccessKeySecret());
+            clientConfig.endpoint = "dm.aliyuncs.com";
+            Client client = new Client(clientConfig);
+            // 构造模板变量 JSON（key 必须与控制台模板占位符一致）
+            Map<String, String> templateData = new HashMap<>(4);
+            templateData.put("code", verificationCode);
+            templateData.put("time", formatSeconds(mail.getValidTime()));
+
+            SingleSendMailRequest request = new SingleSendMailRequest()
+                    .setAccountName(mail.getAccountName())
+                    .setFromAlias(mail.getFromAlias())
+                    .setAddressType(1)
+                    .setReplyToAddress(false)
+                    .setToAddress(toAccount)
+                    .setSubject("邮箱验证码")
+                    .setTemplate(new SingleSendMailRequest.SingleSendMailRequestTemplate()
+                            .setTemplateId(mail.getTemplateCode())
+                            .setTemplateData(templateData));
+
+            client.singleSendMail(request);
+            log.info("模板邮件发送成功: to={}, template={}", maskEmail(toAccount), verificationCode);
+            return true;
+        }catch (Exception e) {
+            log.error("阿里云模板邮件发送失败: to={}, template={}", maskEmail(toAccount), verificationCode, e);
+            return false;
+        }
+
+    }
 }

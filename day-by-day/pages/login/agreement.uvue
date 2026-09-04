@@ -1,0 +1,61 @@
+<template>
+	<view class="page">
+		<scroll-view class="content" scroll-y="true">
+			<text class="title">{{ pageTitle }}</text>
+			<text class="body-text">
+				欢迎使用 MySchedule 日程管理应用。
+
+				在使用本应用之前，请您仔细阅读并充分理解本协议的全部内容。
+
+				一、服务内容
+				本应用为用户提供日程管理、待办事项、提醒通知等功能。
+
+				二、用户账号
+				用户需使用真实手机号注册账号，并妥善保管账号信息。
+
+				三、隐私保护
+				我们重视用户隐私，不会将用户数据用于任何非法用途。
+
+				四、免责声明
+				因不可抗力导致的服务中断，本应用不承担责任。
+
+				五、协议修改
+				本应用有权随时修改本协议，修改后将在应用内通知用户。
+			</text>
+			<view style="height: 60rpx;"></view>
+		</scroll-view>
+	</view>
+</template>
+
+<script setup lang="ts">
+	import { ref } from 'vue';
+
+	const pageTitle = ref<string>('用户协议');
+
+</script>
+
+<style lang="scss">
+	.page {
+		flex: 1;
+		flex-direction: column;
+		background-color: #ffffff;
+	}
+
+	.content {
+		flex: 1;
+		padding: 40rpx;
+	}
+
+	.title {
+		font-size: 40rpx;
+		font-weight: bold;
+		color: #333333;
+		margin-bottom: 30rpx;
+	}
+
+	.body-text {
+		font-size: 28rpx;
+		color: #666666;
+		line-height: 48rpx;
+	}
+</style>

@@ -8,7 +8,7 @@ import com.joy.common.Result;
 import com.joy.dto.blog.content.SearchParamDto;
 import com.joy.entity.blog.content.ContentBlogpost;
 import com.joy.entity.blog.content.ContentColumn;
-import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.RequestCodeMessage;
 import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.blog.content.ContentBlogpostMapper;
 import com.joy.mapper.blog.content.ContentColumnMapper;
@@ -100,7 +100,7 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
         postQuery.eq("column_id",detail.getId()).ne("state",8);
         List<ContentBlogpost> list = blogpostMapper.selectList(postQuery);
         if(!list.isEmpty())
-            AdminCodeMessage.ARTICLES_COLUMN_NOTHING.throwIt();
+            RequestCodeMessage.ARTICLES_COLUMN_NOTHING.throwIt();
         detail.setState(4);
         return this.updateById(detail) ? Result.success() : Result.fail(CommonCodeMessage.INTERNAL_SERVER_ERROR.getHttpStatus());
     }

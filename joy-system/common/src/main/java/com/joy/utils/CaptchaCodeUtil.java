@@ -2,7 +2,7 @@ package com.joy.utils;
 
 import com.joy.dto.auth.CaptchaDto;
 import com.joy.enums.common.RedisConstant;
-import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.RequestCodeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -88,7 +88,7 @@ public class CaptchaCodeUtil {
             }
         } catch (Exception e) {
             log.info("获取拼图资源失败");
-            AdminCodeMessage.FAILED_OBTAIN_PUZZLE_RESOURCES.throwIt();
+            RequestCodeMessage.FAILED_OBTAIN_PUZZLE_RESOURCES.throwIt();
             //异常处理
             return null;
         }
@@ -226,7 +226,7 @@ public class CaptchaCodeUtil {
             return String.format("data:image/%s;base64,%s", type, base64);
         } catch (IOException e) {
             log.info("图片资源转换BASE64失败");
-            AdminCodeMessage.IMAGE_CONVERSION_BASE64_FAILED.throwIt();
+            RequestCodeMessage.IMAGE_CONVERSION_BASE64_FAILED.throwIt();
             //异常处理
             return null;
         }
@@ -243,10 +243,10 @@ public class CaptchaCodeUtil {
         RedisUtil redis = BeanUtil.getBean(RedisUtil.class);
         Object text = redis.get(RedisConstant.SliderVerificationCode.getValue() + "_" + imageKey);
         if(Objects.isNull(text))
-            AdminCodeMessage.VERIFICATION_CODE_EXPIRED.throwIt();
+            RequestCodeMessage.VERIFICATION_CODE_EXPIRED.throwIt();
         // 根据移动距离判断验证是否成功
         if (Math.abs(Integer.parseInt(text.toString()) - blockMove) > ALLOWABLE_DEVIATION)
-            AdminCodeMessage.VERIFICATION_FAILED_PUZZLE_GAP.throwIt();
+            RequestCodeMessage.VERIFICATION_FAILED_PUZZLE_GAP.throwIt();
     }
 
     /**

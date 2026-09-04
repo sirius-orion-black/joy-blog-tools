@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum AdminCodeMessage implements HttpCodeMessage {
+public enum RequestCodeMessage implements HttpCodeMessage {
     INFORMATION_INCOMPLETE(HttpStatus.OK, "information_incomplete"), // 信息不完全
     ARTICLE_NOT_EXIST(HttpStatus.OK, "article_not_exist"), // 文章不存在
     INVALID_OPERATION(HttpStatus.OK, "invalid_operation"), // 无效操作
@@ -47,7 +47,7 @@ public enum AdminCodeMessage implements HttpCodeMessage {
     private final HttpStatus httpStatus;
     private final String message;
 
-    AdminCodeMessage(HttpStatus httpStatus, String message) {
+    RequestCodeMessage(HttpStatus httpStatus, String message) {
         this.httpStatus = httpStatus;
         this.message = message;
     }

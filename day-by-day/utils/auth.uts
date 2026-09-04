@@ -1,0 +1,30 @@
+const WHITE_LIST: string[] = [
+	'/pages/login/login',
+	'/pages/login/agreement'
+];
+
+export function getToken(): string {
+	const val = uni.getStorageSync('token');
+	if (val === null || val === undefined) return '';
+	return val as string;
+}
+
+export function setToken(token: string): void {
+	uni.setStorageSync('token', token);
+}
+
+export function removeToken(): void {
+	uni.removeStorageSync('token');
+}
+
+export function isLoggedIn(): boolean {
+	return getToken().length > 0;
+}
+
+export function checkAuth(url: string): boolean {
+	const pureUrl = url.split('?')[0];
+	for (let i = 0; i < WHITE_LIST.length; i++) {
+		if (pureUrl === WHITE_LIST[i]) return true;
+	}
+	return isLoggedIn();
+}

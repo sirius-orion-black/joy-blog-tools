@@ -48,7 +48,7 @@ public class CodeMessageLookup {
         }
 
         // 添加管理消息码
-        for (AdminCodeMessage message : AdminCodeMessage.values()) {
+        for (RequestCodeMessage message : RequestCodeMessage.values()) {
             MESSAGE_MAP.put(message.getMessage(), message.getMessage());
         }
     }

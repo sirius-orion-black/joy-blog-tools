@@ -12,7 +12,7 @@ import com.joy.entity.blog.content.ContentMoments;
 import com.joy.entity.blog.content.ContentMomentsLabel;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.entity.user.User;
-import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.RequestCodeMessage;
 import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.blog.content.ContentLabelMapper;
 import com.joy.mapper.blog.content.ContentMomentsLabelMapper;
@@ -136,7 +136,7 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
         if (content.getId() != null)
             CommonCodeMessage.BAD_REQUEST.throwIt();
         if (validateMoments(content)) {
-            AdminCodeMessage.INFORMATION_INCOMPLETE.throwIt();
+            RequestCodeMessage.INFORMATION_INCOMPLETE.throwIt();
         }
         Long userId = StpUtil.getLoginIdAsLong();
         content.setUserId(userId);

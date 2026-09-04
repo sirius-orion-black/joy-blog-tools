@@ -14,7 +14,7 @@ import com.joy.dto.sysUser.UserMenuDto;
 import com.joy.entity.sysConfig.SysMenu;
 import com.joy.entity.sysConfig.SysUserMenu;
 import com.joy.entity.sysUser.SysUser;
-import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.RequestCodeMessage;
 import com.joy.enums.http.CommonCodeMessage;
 import com.joy.mapper.sysConfig.SysMenuMapper;
 import com.joy.mapper.sysConfig.SysUserMenuMapper;
@@ -85,10 +85,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public Result<Map<String, String>> addUser(SysUser sysUser) {
         UserVerifyUtil.sysUserVerify(sysUser);//用户信息校验
         if (sysUserMapper.countByUsername(sysUser.getUsername()) > 0) {
-            AdminCodeMessage.USERNAME_ALREADY_EXISTS.throwIt();//用户名已经存在
+            RequestCodeMessage.USERNAME_ALREADY_EXISTS.throwIt();//用户名已经存在
         }
         if (sysUserMapper.countByEmail(sysUser.getEmail()) > 0) {
-            AdminCodeMessage.EMAIL_ALREADY_EXISTS.throwIt();//邮箱已经存在
+            RequestCodeMessage.EMAIL_ALREADY_EXISTS.throwIt();//邮箱已经存在
         }
         sysUser.setState(6);
 
@@ -110,9 +110,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public Result<String> editUser(SysUser sysUser) {
         //格式校验
         if (!UserVerifyUtil.emailFormat(sysUser.getEmail()) || StringUtils.isEmpty(sysUser.getEmail()))
-            AdminCodeMessage.EMAIL_FORMAT_INCORRECT.throwIt();
+            RequestCodeMessage.EMAIL_FORMAT_INCORRECT.throwIt();
         else if (!UserVerifyUtil.phoneFormat(sysUser.getPhone()) || StringUtils.isEmpty(sysUser.getPhone()))
-            AdminCodeMessage.PHONE_NUMBER_INCORRECT.throwIt();
+            RequestCodeMessage.PHONE_NUMBER_INCORRECT.throwIt();
         SysUser user = new SysUser();
         user.setId(sysUser.getId());
         user.setEmail(sysUser.getEmail());
@@ -277,11 +277,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public Result<String> changePassword(ChangePasswordDto user) {
         if (!UserVerifyUtil.passwordFormat(user.getPassword()))
-            AdminCodeMessage.PASSWORD_NUMBER_INCORRECT.throwIt();
+            RequestCodeMessage.PASSWORD_NUMBER_INCORRECT.throwIt();
         long userId = StpUtil.getLoginIdAsLong();
         SysUser info = this.getById(userId);
         if (!BCrypt.checkpw(user.getOldPassword(), info.getPassword()))
-            AdminCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
+            RequestCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
         info.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
         info.setUpdateTime(new Date());
         this.updateById(info);

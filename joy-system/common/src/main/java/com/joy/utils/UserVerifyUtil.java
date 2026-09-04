@@ -1,7 +1,7 @@
 package com.joy.utils;
 
 import com.joy.entity.sysUser.SysUser;
-import com.joy.enums.http.AdminCodeMessage;
+import com.joy.enums.http.RequestCodeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,22 +60,22 @@ public class UserVerifyUtil {
     public static void sysUserVerify(SysUser sysUser) {
         String str = "success";
         if (StringUtils.isEmpty(sysUser.getUsername())) {
-            AdminCodeMessage.USERNAME_CANNOT_EMPTY.throwIt();//用户名不能为空
+            RequestCodeMessage.USERNAME_CANNOT_EMPTY.throwIt();//用户名不能为空
         }
         if (!usernameFormat(sysUser.getUsername())) {
-            AdminCodeMessage.USERNAME_BETWEEN.throwIt();//用户名为5-16个大小写字母
+            RequestCodeMessage.USERNAME_BETWEEN.throwIt();//用户名为5-16个大小写字母
         }
         if (StringUtils.isEmpty(sysUser.getEmail())) {
-            AdminCodeMessage.EMAIL_CANNOT_EMPTY.throwIt();//邮箱不能为空
+            RequestCodeMessage.EMAIL_CANNOT_EMPTY.throwIt();//邮箱不能为空
         }
         if (!emailFormat(sysUser.getEmail())) {
-            AdminCodeMessage.EMAIL_FORMAT_INCORRECT.throwIt();//邮箱格式不正确
+            RequestCodeMessage.EMAIL_FORMAT_INCORRECT.throwIt();//邮箱格式不正确
         }
         if (StringUtils.isEmpty(sysUser.getPhone())) {
-            AdminCodeMessage.PHONE_CANNOT_EMPTY.throwIt();//手机号不能为空
+            RequestCodeMessage.PHONE_CANNOT_EMPTY.throwIt();//手机号不能为空
         }
         if (!phoneFormat(sysUser.getPhone())) {
-            AdminCodeMessage.PHONE_NUMBER_INCORRECT.throwIt();//手机号格式不正确
+            RequestCodeMessage.PHONE_NUMBER_INCORRECT.throwIt();//手机号格式不正确
         }
     }
 

@@ -156,15 +156,8 @@
         <!-- 阿里云核心SDK -->
         <dependency>
             <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>4.5.3</version>
-        </dependency>
-
-        <!-- 阿里云邮件推送SDK -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-dm</artifactId>
-            <version>3.1.0</version>
+            <artifactId>dm20151123</artifactId>
+            <version>1.12.3</version>
         </dependency>
 
         <!--UAParse 获取设备信息-->
