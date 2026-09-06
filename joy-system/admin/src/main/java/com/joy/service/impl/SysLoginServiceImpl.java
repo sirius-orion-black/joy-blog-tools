@@ -7,7 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.auth.CaptchaDto;
-import com.joy.dto.common.LoginDto;
+import com.joy.dto.auth.EmailVerifyDto;
+import com.joy.dto.sysUser.SysLoginDto;
 import com.joy.dto.sysUser.SysUserInfoDto;
 import com.joy.entity.sysUser.SysUser;
 import com.joy.enums.http.RequestCodeMessage;
@@ -61,7 +62,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
      * @param user
      * @return
      */
-    private void loginVerify(LoginDto loginInfo, SysUser user) {
+    private void loginVerify(SysLoginDto loginInfo, SysUser user) {
         if (user == null || !BCrypt.checkpw(loginInfo.getPassword(), user.getPassword())){
             RequestCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
             return;
@@ -99,7 +100,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
      * @return
      */
     @Override
-    public Result<SysUserInfoDto> login(LoginDto loginInfo) {
+    public Result<SysUserInfoDto> login(SysLoginDto loginInfo) {
         QueryWrapper<SysUser> query = new QueryWrapper<>();
         SysUser user = null;
         String mes = "";
@@ -143,7 +144,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
      * @return
      */
     @Override
-    public Result<Map<String,Integer>> emailVerify(LoginDto loginInfo, HttpServletRequest request) throws Exception {
+    public Result<Map<String,Integer>> emailVerify(EmailVerifyDto loginInfo, HttpServletRequest request) throws Exception {
         if (StringUtils.isBlank(loginInfo.getUsername())) {//判断用户名
             RequestCodeMessage.USERNAME_CANNOT_EMPTY.throwIt();
         }

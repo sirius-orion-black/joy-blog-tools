@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
-import com.joy.dto.sysUser.ChangePasswordDto;
+import com.joy.dto.sysUser.SysChangePasswordDto;
 import com.joy.dto.sysUser.SysUserDto;
 import com.joy.dto.sysUser.UserMenuDto;
 import com.joy.entity.sysConfig.SysMenu;
@@ -275,7 +275,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public Result<String> changePassword(ChangePasswordDto user) {
+    public Result<String> changePassword(SysChangePasswordDto user) {
         if (!UserVerifyUtil.passwordFormat(user.getPassword()))
             RequestCodeMessage.PASSWORD_NUMBER_INCORRECT.throwIt();
         long userId = StpUtil.getLoginIdAsLong();

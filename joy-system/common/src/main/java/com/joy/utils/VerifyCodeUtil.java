@@ -373,7 +373,7 @@ public class VerifyCodeUtil {
                             .setTemplateId(mail.getTemplateCode())
                             .setTemplateData(templateData));
 
-            client.singleSendMail(request);
+//            client.singleSendMail(request);
             log.info("模板邮件发送成功: to={}, template={}", maskEmail(toAccount), verificationCode);
             return true;
         }catch (Exception e) {

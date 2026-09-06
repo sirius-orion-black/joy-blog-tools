@@ -4,7 +4,8 @@ import com.joy.common.Result;
 import com.joy.config.annotation.RateLimiter;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
 import com.joy.dto.auth.CaptchaDto;
-import com.joy.dto.common.LoginDto;
+import com.joy.dto.auth.EmailVerifyDto;
+import com.joy.dto.sysUser.SysLoginDto;
 import com.joy.dto.sysUser.SysUserInfoDto;
 import com.joy.service.SysLoginService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class SysLoginController {
      * @return
      */
     @PostMapping("/login")
-    public Result<SysUserInfoDto> login(LoginDto loginInfo) {
+    public Result<SysUserInfoDto> login(SysLoginDto loginInfo) {
         return sysLoginService.login(loginInfo);
     }
 
@@ -49,7 +50,7 @@ public class SysLoginController {
      */
     @PostMapping("/emailVerifyCode")
     @RateLimiter(key = "vc:email_code", maxCount = 3, time = 60, timeUnit = TimeUnit.SECONDS, message = "too_many_requests")
-    public Result<Map<String,Integer>> emailVerify(LoginDto loginInfo, HttpServletRequest request) throws Exception {
+    public Result<Map<String,Integer>> emailVerify(EmailVerifyDto loginInfo, HttpServletRequest request) throws Exception {
         return sysLoginService.emailVerify(loginInfo,request);
     }
 

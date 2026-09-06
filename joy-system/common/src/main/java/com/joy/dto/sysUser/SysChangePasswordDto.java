@@ -3,7 +3,7 @@ package com.joy.dto.sysUser;
 import lombok.Data;
 
 @Data
-public class ChangePasswordDto {
+public class SysChangePasswordDto {
 
     //旧密码
     private String oldPassword;

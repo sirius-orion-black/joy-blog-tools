@@ -3,7 +3,7 @@ package com.joy.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
-import com.joy.dto.sysUser.ChangePasswordDto;
+import com.joy.dto.sysUser.SysChangePasswordDto;
 import com.joy.dto.sysUser.SysUserDto;
 import com.joy.dto.sysUser.UserMenuDto;
 import com.joy.entity.sysConfig.SysMenu;
@@ -112,7 +112,7 @@ public class SysUserController {
      * @return
      */
     @PostMapping("/changePassword")
-    public Result<String> changePassword(ChangePasswordDto user){
+    public Result<String> changePassword(SysChangePasswordDto user){
         return sysUserService.changePassword(user);
     }
 

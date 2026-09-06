@@ -3,7 +3,7 @@ package com.joy.controller;
 import com.joy.common.Result;
 import com.joy.config.annotation.RateLimiter;
 import com.joy.config.apiPrefix.ApiPrefixInfraRestController;
-import com.joy.dto.common.LoginDto;
+import com.joy.dto.auth.EmailVerifyDto;
 import com.joy.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +29,10 @@ public class AuthController {
      */
     @PostMapping("/email/verifyCode")
     @RateLimiter(key = "vc:email_code", maxCount = 3, time = 60, timeUnit = TimeUnit.SECONDS, message = "too_many_requests")
-    public Result<Map<String,Integer>> emailCode(LoginDto loginInfo, HttpServletRequest request) throws Exception {
+    public Result<Map<String,Integer>> emailCode(EmailVerifyDto loginInfo, HttpServletRequest request) throws Exception {
         return authService.emailCode(loginInfo,request);
     }
+
+
 
 }

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
-import com.joy.dto.common.LoginDto;
+import com.joy.dto.auth.EmailVerifyDto;
 import com.joy.entity.sysConfig.SysCloudMail;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysConfigMail;
@@ -152,7 +152,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
      * @param key redis key
      */
     @Override
-    public Result<Map<String,Integer>> emailInfo(LoginDto loginInfo, String key) throws Exception {
+    public Result<Map<String,Integer>> emailInfo(EmailVerifyDto loginInfo, String key) throws Exception {
         //获取是否启用云邮箱配置
         SysConfig cloudEmail = this.getMailConfig();
         // 生成验证码
@@ -164,8 +164,6 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             SysCloudMail mail = this.getCloudMail();
             //发送邮件
             bl = VerifyCodeUtil.sendCloudEmail(verificationCode,loginInfo.getEmail(),mail);
-
-
             validTime = mail.getValidTime();
         } else {
             //获取配置邮箱，这里我用的是139邮箱
@@ -196,7 +194,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
      * @return
      */
     @Override
-    public Result<Map<String,Integer>> emailCode(LoginDto loginInfo, HttpServletRequest request) throws Exception {
+    public Result<Map<String,Integer>> emailCode(EmailVerifyDto loginInfo, HttpServletRequest request) throws Exception {
         if (StringUtils.isBlank(loginInfo.getUsername())) {//判断用户名
             RequestCodeMessage.USERNAME_CANNOT_EMPTY.throwIt();
         }

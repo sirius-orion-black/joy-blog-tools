@@ -2,7 +2,7 @@ package com.joy.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
-import com.joy.dto.sysUser.ChangePasswordDto;
+import com.joy.dto.sysUser.SysChangePasswordDto;
 import com.joy.dto.sysUser.SysUserDto;
 import com.joy.dto.sysUser.UserMenuDto;
 import com.joy.entity.sysConfig.SysMenu;
@@ -29,5 +29,5 @@ public interface SysUserService {
 
     Result<List<SysMenu>> menuList();
 
-    Result<String> changePassword(ChangePasswordDto user);
+    Result<String> changePassword(SysChangePasswordDto user);
 }
