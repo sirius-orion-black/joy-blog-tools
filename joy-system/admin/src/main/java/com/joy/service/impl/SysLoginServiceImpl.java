@@ -46,7 +46,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     /**
      * 验证码
      *
-     * @return
+     * @return 返回验证码信息
      */
     @Override
     public Result<CaptchaDto> getCaptcha() {
@@ -58,9 +58,8 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     /**
      * 登录校验
      *
-     * @param loginInfo
-     * @param user
-     * @return
+     * @param loginInfo 用户登录信息
+     * @param user 用户信息
      */
     private void loginVerify(SysLoginDto loginInfo, SysUser user) {
         if (user == null || !BCrypt.checkpw(loginInfo.getPassword(), user.getPassword())){
@@ -74,8 +73,8 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     /**
      * 封装登录数据
      *
-     * @param user
-     * @return
+     * @param user 用户信息
+     * @return 返回拼装好的用户信息
      */
     @NotNull
     private static SysUserInfoDto getUserInfoDto(SysUser user) {
@@ -96,14 +95,13 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     /**
      * 后台管理人员登录
      *
-     * @param loginInfo
-     * @return
+     * @param loginInfo 用户信息
+     * @return 返回用户封装数据
      */
     @Override
     public Result<SysUserInfoDto> login(SysLoginDto loginInfo) {
         QueryWrapper<SysUser> query = new QueryWrapper<>();
         SysUser user = null;
-        String mes = "";
         if (loginInfo.getLoginType() == 1) {//账号密码登录
             if (StringUtils.isBlank(loginInfo.getUsername()) || StringUtils.isEmpty(loginInfo.getPassword())) {//判断用户名密码不为空
                 RequestCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
@@ -123,10 +121,10 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
                     loginInfo.getValidTime());
             query.eq("email", loginInfo.getEmail()).eq("username", loginInfo.getUsername());
             user = this.getOne(query);
-        }
-        if(user == null){
-            RequestCodeMessage.USER_INFO_CORRECT.throwIt();
-            return null;
+            if(user == null){
+                RequestCodeMessage.USER_INFO_CORRECT.throwIt();
+                return null;
+            }
         }
         StpUtil.login(user.getId(), loginInfo.getRemember());
 
@@ -139,9 +137,9 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     /**
      * 后台管理人员邮箱验证
      *
-     * @param loginInfo
-     * @param request
-     * @return
+     * @param loginInfo 用户验证相关信息
+     * @param request request
+     * @return 返回邮箱验证相关信息
      */
     @Override
     public Result<Map<String,Integer>> emailVerify(EmailVerifyDto loginInfo, HttpServletRequest request) throws Exception {
@@ -168,7 +166,7 @@ public class SysLoginServiceImpl extends ServiceImpl<SysUserMapper, SysUser> imp
     /**
      * 后台管理人员登出
      *
-     * @return
+     * @return 返回成功
      */
     @Override
     public Result<String> logout() {

@@ -58,7 +58,6 @@ public class UserVerifyUtil {
      * @return
      */
     public static void sysUserVerify(SysUser sysUser) {
-        String str = "success";
         if (StringUtils.isEmpty(sysUser.getUsername())) {
             RequestCodeMessage.USERNAME_CANNOT_EMPTY.throwIt();//用户名不能为空
         }

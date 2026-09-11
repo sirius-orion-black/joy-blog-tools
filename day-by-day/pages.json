@@ -37,7 +37,7 @@
 		{
 			"path": "pages/login/agreement",
 			"style": {
-				"navigationBarTitleText": "协议"
+				"navigationStyle": "custom"
 			}
 		}
 	],

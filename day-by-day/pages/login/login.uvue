@@ -1,5 +1,5 @@
 <template>
-	<view class="login-page">
+	<view class="login-body">
 		<!-- ====== 背景装饰层 ====== -->
 		<view class="bg-layer">
 			<view class="bg-gradient"></view>
@@ -8,34 +8,27 @@
 			<view class="orb orb-3"></view>
 		</view>
 
-		<!-- ====== Logo 区域 ====== -->
+		<!-- ====== Logo ====== -->
 		<view class="logo-section">
-			<view class="logo-circle">
-				<text class="logo-emoji">📅</text>
+			<view class="logo-icon">
+				<image src="/static/img/logo.jpg"></image>
 			</view>
-			<text class="app-title">MySchedule</text>
-			<text class="app-subtitle">让每一天都井然有序</text>
+			<text class="app-title">吾家朝夕</text>
+			<text class="app-subtitle">一朝一夕都是你，记录我们每天的日常。</text>
 		</view>
 
 		<!-- ====== 主卡片 ====== -->
-		<view class="glass-card">
-			<!-- Tab 切换器 -->
-			<view class="tab-bar">
-				<view class="tab-track">
-					<view class="tab-indicator" :style="{ left: mode === 'login' ? '0%' : '50%' }"></view>
-				</view>
-				<view class="tab-item" @click="switchMode('login')">
-					<text class="tab-label" :class="{ 'tab-label-active': mode === 'login' }">登录</text>
-				</view>
-				<view class="tab-item" @click="switchMode('register')">
-					<text class="tab-label" :class="{ 'tab-label-active': mode === 'register' }">注册</text>
-				</view>
+		<view class="login-card">
+			<!-- 动态标题（替代 Tab） -->
+			<view class="card-header">
+				<text class="card-title">{{ cardTitle }}</text>
+				<text class="card-desc">{{ cardDesc }}</text>
 			</view>
 
-			<!-- 手机号 -->
-			<view class="field-wrap" :class="{ 'field-focus': focusField === 'phone' }">
+			<!-- 手机号（登录 / 注册） -->
+			<view v-if="mode !== 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'phone' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'phone' }">
-					<text class="field-icon">📱</text>
+					<SvgIcon :svg="phoneIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" type="number" maxlength="11" placeholder="手机号码"
 					placeholder-class="field-placeholder" v-model="formData.phone" @focus="focusField = 'phone'"
@@ -45,46 +38,84 @@
 				</view>
 			</view>
 
-			<!-- 密码 -->
-			<view class="field-wrap" :class="{ 'field-focus': focusField === 'password' }">
-				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'password' }">
-					<text class="field-icon">🔒</text>
+			<!-- 邮箱（注册 / 找回密码） -->
+			<view v-if="mode !== 'login'" class="field-wrap" :class="{ 'field-focus': focusField === 'email' }">
+				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'email' }">
+					<SvgIcon :svg="emailIcon" :size="26" color="#ED317F" />
 				</view>
-				<input class="field-input" :password="!showPwd" placeholder="请输入密码"
-					placeholder-class="field-placeholder" v-model="formData.password"
-					@focus="focusField = 'password'" @blur="focusField = ''" />
+				<input class="field-input" placeholder="请输入邮箱" placeholder-class="field-placeholder"
+					v-model="formData.email" @focus="focusField = 'email'" @blur="focusField = ''" />
+			</view>
+
+			<!-- 邮箱验证码（注册 / 找回密码） -->
+			<view v-if="mode !== 'login'" class="field-wrap code-field"
+				:class="{ 'field-focus': focusField === 'code' }">
+				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'code' }">
+					<SvgIcon :svg="captchaIcon" :size="26" color="#ED317F" />
+				</view>
+				<input class="field-input" maxlength="6" placeholder="邮箱验证码"
+					placeholder-class="field-placeholder" v-model="formData.code" @focus="focusField = 'code'"
+					@blur="focusField = ''" />
+				<view class="sms-btn" :class="{ 'sms-disabled': isSendingCode }" @click="sendEmailCode">
+					<text class="sms-text">{{ codeText }}</text>
+				</view>
+			</view>
+
+			<!-- 密码（登录 / 注册） -->
+			<view v-if="mode !== 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'password' }">
+				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'password' }">
+					<SvgIcon :svg="passwordIcon" :size="26" color="#ED317F" />
+				</view>
+				<input class="field-input" :password="!showPwd"
+					:placeholder="mode === 'login' ? '请输入密码' : '设置密码（8-16位）'" placeholder-class="field-placeholder"
+					v-model="formData.password" @focus="focusField = 'password'" @blur="focusField = ''" />
 				<view class="eye-btn" @click="showPwd = !showPwd">
-					<text class="eye-icon">{{ showPwd ? '🙈' : '👁️' }}</text>
+					<!-- <text class="eye-icon">{{ showPwd ? '🙈' : '👁️' }}</text> -->
+					<SvgIcon :svg="showPwd ? closeEyesIcon : openEyesIcon" :size="26" color="#FFBBD6" />
 				</view>
 			</view>
 
 			<!-- 确认密码（注册） -->
-			<view v-if="mode === 'register'" class="field-wrap"
-				:class="{ 'field-focus': focusField === 'confirm' }">
+			<view v-if="mode === 'register'" class="field-wrap" :class="{ 'field-focus': focusField === 'confirm' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'confirm' }">
-					<text class="field-icon">🔐</text>
+					<SvgIcon :svg="againPasswordIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" :password="!showPwd" placeholder="再次确认密码"
 					placeholder-class="field-placeholder" v-model="formData.confirmPassword"
 					@focus="focusField = 'confirm'" @blur="focusField = ''" />
 			</view>
 
-			<!-- 验证码（注册） -->
-			<view v-if="mode === 'register'" class="field-wrap code-field"
-				:class="{ 'field-focus': focusField === 'code' }">
-				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'code' }">
-					<text class="field-icon">🛡️</text>
+			<!-- 新密码（找回密码） -->
+			<view v-if="mode === 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'newPassword' }">
+				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'newPassword' }">
+					<SvgIcon :svg="newPasswordIcon" :size="26" color="#ED317F" />
 				</view>
-				<input class="field-input" type="number" maxlength="6" placeholder="短信验证码"
-					placeholder-class="field-placeholder" v-model="formData.code" @focus="focusField = 'code'"
-					@blur="focusField = ''" />
-				<view class="sms-btn" :class="{ 'sms-disabled': isSendingCode }" @click="sendCode">
-					<text class="sms-text">{{ codeText }}</text>
+				<input class="field-input" :password="!showPwd" placeholder="新密码（8-16位）"
+					placeholder-class="field-placeholder" v-model="formData.newPassword"
+					@focus="focusField = 'newPassword'" @blur="focusField = ''" />
+				<view class="eye-btn" @click="showPwd = !showPwd">
+					<!-- <text class="eye-icon">{{ showPwd ? '🙈' : '👁️' }}</text> -->
+					<SvgIcon :svg="showPwd ? closeEyesIcon : openEyesIcon" :size="26" color="#FFBBD6" />
 				</view>
 			</view>
 
-			<!-- 协议勾选 -->
-			<view class="agreement-row">
+			<!-- 确认新密码（找回密码） -->
+			<view v-if="mode === 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'confirm' }">
+				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'confirm' }">
+					<SvgIcon :svg="againPasswordIcon" :size="26" color="#ED317F" />
+				</view>
+				<input class="field-input" :password="!showPwd" placeholder="再次确认新密码"
+					placeholder-class="field-placeholder" v-model="formData.confirmPassword"
+					@focus="focusField = 'confirm'" @blur="focusField = ''" />
+			</view>
+
+			<!-- 密码规则提示（注册 / 找回密码） -->
+			<view v-if="mode !== 'login'" class="pwd-tip-row">
+				<text class="pwd-tip">密码需 8-16 位，包含大写字母、小写字母、数字及符号(? @ #)</text>
+			</view>
+
+			<!-- 协议勾选（登录 / 注册） -->
+			<view v-if="mode !== 'forgot'" class="agreement-row">
 				<view class="check-box" :class="{ 'checked': isAgreed }" @click="isAgreed = !isAgreed">
 					<text v-if="isAgreed" class="check-mark">✓</text>
 				</view>
@@ -95,74 +126,146 @@
 			</view>
 
 			<!-- 提交按钮 -->
-			<button class="submit-btn" :class="{ 'btn-disabled': !canSubmit }" :loading="isLoading"
-				@click="handleSubmit">
-				{{ mode === 'login' ? '登 录' : '注 册' }}
+			<button class="submit-btn" :loading="isLoading" @click="handleSubmit">
+				{{ submitText }}
 			</button>
 
-			<!-- 底部辅助链接 -->
+			<!-- 底部切换链接（替代 Tab） -->
 			<view class="footer-links">
-				<text v-if="mode === 'login'" class="link-text" @click="switchMode('register')">还没有账号？立即注册</text>
-				<text v-else class="link-text" @click="switchMode('login')">已有账号？直接登录</text>
-				<text v-if="mode === 'login'" class="link-divider">|</text>
-				<text v-if="mode === 'login'" class="link-text link-accent" @click="handleForgot">忘记密码</text>
+				<template v-if="mode === 'login'">
+					<text class="link-text" @click="switchMode('register')">还没有账号？<tspan class="link-accent">立即注册
+						</tspan></text>
+					<text class="link-divider">|</text>
+					<text class="link-text link-accent" @click="switchMode('forgot')">忘记密码</text>
+				</template>
+				<template v-else-if="mode === 'register'">
+					<text class="link-text" @click="switchMode('login')">已有账号？<tspan class="link-accent">直接登录</tspan>
+					</text>
+				</template>
+				<template v-else>
+					<text class="link-text" @click="switchMode('login')">想起来了？<tspan class="link-accent">返回登录</tspan>
+					</text>
+				</template>
 			</view>
 		</view>
 
 		<!-- 底部版权 -->
-		<text class="copyright">© 2026 MySchedule · 用心记录每一天</text>
+		<text class="copyright">© 2026 DayByDay · 用心记录每一天</text>
 	</view>
 </template>
 
 <script setup lang="uts">
 	import { ref, computed } from 'vue';
-	import { setToken } from '@/utils/auth.uts';
 
-	// ===== 状态 =====
-	const mode = ref<string>('login');
+	import SvgIcon from '@/components/SvgIcon.uvue'
+	import { phoneIcon, passwordIcon, againPasswordIcon, captchaIcon, emailIcon, newPasswordIcon, openEyesIcon, closeEyesIcon } from '@/utils/svg/loginSvg'
+
+	import { setToken } from '@/utils/auth.uts';
+	import {
+		fetchEmailVerifyCode,
+		login,
+		register,
+		resetPassword
+	} from '@/api/authApi.uts';
+	import { isSuccess } from '@/utils/request.uts';
+	import {
+		validatePhone,
+		validateEmail,
+		validatePassword,
+		validateConfirmPassword,
+		validateCode,
+		validateNotEmpty,
+		validateAll
+	} from '@/utils/validator.uts';
+
+	// ==================== 状态 ====================
+	const mode = ref<string>('login'); // login | register | forgot
 	const isLoading = ref<boolean>(false);
 	const showPwd = ref<boolean>(false);
 	const isAgreed = ref<boolean>(false);
 	const focusField = ref<string>('');
 	const codeText = ref<string>('获取验证码');
 	const isSendingCode = ref<boolean>(false);
+	// 服务端返回的验证码有效期，提交时原样回传
+	const validTime = ref<number>(3600);
 
 	const formData = ref({
 		phone: '',
+		email: '',
+		code: '',
 		password: '',
 		confirmPassword: '',
-		code: ''
+		newPassword: ''
 	});
 
-	// ===== 计算属性 =====
-	const canSubmit = computed<boolean>((): boolean => {
-		if (!isAgreed.value) return false;
-		if (formData.value.phone.length !== 11) return false;
-		if (formData.value.password.length < 6) return false;
-		if (mode.value === 'register') {
-			if (formData.value.password !== formData.value.confirmPassword) return false;
-			if (formData.value.code.length !== 6) return false;
-		}
-		return true;
+	// ==================== 计算属性 ====================
+	const cardTitle = computed<string>(() : string => {
+		if (mode.value === 'login') return '欢迎回来';
+		if (mode.value === 'register') return '创建账号';
+		return '找回密码';
 	});
 
-	// ===== 方法 =====
-	const switchMode = (m: string) => {
+	const cardDesc = computed<string>(() : string => {
+		if (mode.value === 'login') return '登录后开启你的高效日程';
+		if (mode.value === 'register') return '注册账号，管理每一天的安排';
+		return '通过邮箱验证码重置你的密码';
+	});
+
+	const submitText = computed<string>(() : string => {
+		if (mode.value === 'login') return '登 录';
+		if (mode.value === 'register') return '注 册';
+		return '重置密码';
+	});
+
+	// ==================== 工具 ====================
+	const toast = (msg : string) => {
+		uni.showToast({ title: msg, icon: 'none' });
+	};
+
+	const switchMode = (m : string) => {
 		mode.value = m;
 		formData.value.password = '';
 		formData.value.confirmPassword = '';
+		formData.value.newPassword = '';
 		formData.value.code = '';
 		showPwd.value = false;
 	};
 
-	const sendCode = () => {
+	const goAgreement = (type : string) => {
+		uni.navigateTo({ url: '/pages/login/agreement?type=' + type });
+	};
+
+	// ==================== 邮箱验证码 ====================
+	const sendEmailCode = async () => {
 		if (isSendingCode.value) return;
-		if (formData.value.phone.length !== 11) {
-			uni.showToast({ title: '请输入正确的手机号', icon: 'none' });
-			return;
-		}
+		const emailErr = validateEmail(formData.value.email);
+		if (emailErr != null) { toast(emailErr); return; }
+
 		isSendingCode.value = true;
-		uni.showToast({ title: '验证码已发送', icon: 'success' });
+		codeText.value = '发送中...';
+
+		try {
+			const res = await fetchEmailVerifyCode(formData.value.email, mode.value);
+			if (isSuccess(res) && res.data != null && res.data.validTime) {
+				validTime.value = res.data!.validTime;
+				toast('验证码已发送至邮箱');
+				startCountdown();
+			} else {
+				toast(res.message !== '' ? res.message : '验证码发送失败');
+				resetCodeBtn();
+			}
+		} catch (_e) {
+			toast('网络异常，请检查网络后重试');
+			resetCodeBtn();
+		}
+	};
+
+	const resetCodeBtn = () => {
+		isSendingCode.value = false;
+		codeText.value = '获取验证码';
+	};
+
+	const startCountdown = () => {
 		let sec = 60;
 		codeText.value = sec.toString() + 's';
 		const timer = setInterval(() => {
@@ -176,433 +279,458 @@
 		}, 1000);
 	};
 
-	const handleSubmit = () => {
-		if (!canSubmit.value) {
-			if (!isAgreed.value) {
-				uni.showToast({ title: '请先同意用户协议与隐私政策', icon: 'none' });
-			} else if (formData.value.phone.length !== 11) {
-				uni.showToast({ title: '请输入11位手机号', icon: 'none' });
-			} else if (formData.value.password.length < 6) {
-				uni.showToast({ title: '密码至少6位', icon: 'none' });
-			} else if (mode.value === 'register' && formData.value.password !== formData.value.confirmPassword) {
-				uni.showToast({ title: '两次密码不一致', icon: 'none' });
-			} else if (mode.value === 'register' && formData.value.code.length !== 6) {
-				uni.showToast({ title: '请输入6位验证码', icon: 'none' });
-			}
-			return;
-		}
+	// ==================== 提交分发 ====================
+	const handleSubmit = async () => {
+		if (isLoading.value) return;
+		if (mode.value === 'login') await doLogin();
+		else if (mode.value === 'register') await doRegister();
+		else await doResetPassword();
+	};
+
+	// ---------- 登录 ----------
+	const doLogin = async () => {
+		if (!isAgreed.value) { toast('请先同意用户协议与隐私政策'); return; }
+		const err = validateAll(
+			validatePhone(formData.value.phone),
+			validateNotEmpty(formData.value.password, '密码')
+		);
+		if (err != null) { toast(err); return; }
 
 		isLoading.value = true;
-		setTimeout(() => {
+		try {
+			const res = await login(formData.value.phone, formData.value.password);
 			isLoading.value = false;
-			setToken('token_' + Date.now().toString());
-			uni.showToast({
-				title: mode.value === 'login' ? '欢迎回来 ✨' : '注册成功 🎉',
-				icon: 'none'
-			});
-			setTimeout(() => {
-				const redirectUrl = uni.getStorageSync('redirect_url') as string;
-				uni.removeStorageSync('redirect_url');
-				if (redirectUrl !== null && redirectUrl !== undefined && redirectUrl !== '') {
-					if (redirectUrl.indexOf('/pages/tab/') !== -1) {
-						uni.switchTab({ url: redirectUrl.split('?')[0] });
-					} else {
-						uni.redirectTo({ url: redirectUrl });
-					}
-				} else {
-					uni.switchTab({ url: '/pages/tab/home/home' });
-				}
-			}, 800);
-		}, 1500);
+			if (isSuccess(res) && res.data != null && res.data.token) {
+				const user = res.data!;
+				setToken(user.token);
+				// 缓存用户基本信息供全局使用
+				uni.setStorageSync('user_info', JSON.stringify(user));
+				toast('欢迎回来 ✨');
+				setTimeout(() => { jumpAfterAuth(); }, 800);
+			} else {
+				toast(res.message !== '' ? res.message : '手机号或密码错误');
+			}
+		} catch (_e) {
+			isLoading.value = false;
+			toast('网络异常，请检查网络后重试');
+		}
 	};
 
-	const handleForgot = () => {
-		uni.showToast({ title: '请联系客服重置密码', icon: 'none' });
+	// ---------- 注册 ----------
+	const doRegister = async () => {
+		if (!isAgreed.value) { toast('请先同意用户协议与隐私政策'); return; }
+		const err = validateAll(
+			validatePhone(formData.value.phone),
+			validateEmail(formData.value.email),
+			validateCode(formData.value.code),
+			validatePassword(formData.value.password),
+			validateConfirmPassword(formData.value.password, formData.value.confirmPassword)
+		);
+		if (err != null) { toast(err); return; }
+
+		isLoading.value = true;
+		try {
+			const res = await register(
+				formData.value.phone,
+				formData.value.email,
+				formData.value.code,
+				formData.value.password,
+				validTime.value
+			);
+			isLoading.value = false;
+			if (isSuccess(res)) {
+				toast('注册成功，请登录 🎉');
+				const keepPhone = formData.value.phone;
+				const keepEmail = formData.value.email;
+				switchMode('login');
+				formData.value.phone = keepPhone;
+				formData.value.email = keepEmail;
+			} else {
+				toast(res.message !== '' ? res.message : '注册失败');
+			}
+		} catch (_e) {
+			isLoading.value = false;
+			toast('网络异常，请检查网络后重试');
+		}
 	};
 
-	const goAgreement = (type: string) => {
-		uni.navigateTo({ url: '/pages/login/agreement?type=' + type });
+	// ---------- 重置密码 ----------
+	const doResetPassword = async () => {
+		const err = validateAll(
+			validateEmail(formData.value.email),
+			validateCode(formData.value.code),
+			validatePassword(formData.value.newPassword),
+			validateConfirmPassword(formData.value.newPassword, formData.value.confirmPassword)
+		);
+		if (err != null) { toast(err); return; }
+
+		isLoading.value = true;
+		try {
+			const res = await resetPassword(
+				formData.value.email,
+				formData.value.code,
+				formData.value.newPassword,
+				validTime.value
+			);
+			isLoading.value = false;
+			if (isSuccess(res)) {
+				toast('密码重置成功，请用新密码登录');
+				const keepEmail = formData.value.email;
+				switchMode('login');
+				formData.value.email = keepEmail;
+			} else {
+				toast(res.message !== '' ? res.message : '密码重置失败');
+			}
+		} catch (_e) {
+			isLoading.value = false;
+			toast('网络异常，请检查网络后重试');
+		}
+	};
+
+	// ---------- 登录成功跳转 ----------
+	const jumpAfterAuth = () => {
+		const redirectUrl = uni.getStorageSync('redirect_url') as string;
+		uni.removeStorageSync('redirect_url');
+		if (redirectUrl != null && redirectUrl !== '') {
+			if (redirectUrl.indexOf('/pages/tab/') !== -1) {
+				uni.switchTab({ url: redirectUrl.split('?')[0] });
+			} else {
+				uni.redirectTo({ url: redirectUrl });
+			}
+		} else {
+			uni.switchTab({ url: '/pages/kitchen/index' });
+		}
 	};
 </script>
 
 <style lang="scss">
-	/* ========== 设计令牌 ========== */
-	$c-primary: #ED317F;
-	$c-primary-dark: #C41E6A;
-	$c-primary-light: #FF6BA6;
-	$c-bg-start: #FFF0F6;
-	$c-bg-end: #FDEEF5;
-	$c-card-bg: rgba(255, 255, 255, 0.92);
-	$c-text: #2D2D2D;
-	$c-text-secondary: #8E8E93;
-	$c-border: #E8E8ED;
-	$c-border-focus: #ED317F;
-	$r-card: 40rpx;
-	$r-input: 20rpx;
-	$r-btn: 52rpx;
 
-	/* ========== 页面容器 ========== */
-	.login-page {
+	.login-body {
 		flex: 1;
 		flex-direction: column;
 		position: relative;
 		overflow: hidden;
-	}
 
-	/* ========== 背景层 ========== */
-	.bg-layer {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 0;
-	}
+		/* ========== 背景层 ========== */
+		.bg-layer {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 0;
 
-	.bg-gradient {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: linear-gradient(160deg, $c-bg-start 0%, #ffffff 40%, $c-bg-end 100%);
-	}
+			.bg-gradient {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: linear-gradient(160deg, $bg-start-hpink 0%, $unify-white 40%, $bg-end-hpink 100%);
+			}
 
-	.orb {
-		position: absolute;
-		border-radius: 999rpx;
-	}
+			.orb {
+				position: absolute;
+				border-radius: 999rpx;
+			}
 
-	.orb-1 {
-		width: 500rpx;
-		height: 500rpx;
-		top: -120rpx;
-		right: -100rpx;
-		background: radial-gradient(circle, rgba(237, 49, 127, 0.12) 0%, transparent 70%);
-	}
+			.orb-1 {
+				width: 500rpx;
+				height: 500rpx;
+				top: -120rpx;
+				right: -100rpx;
+				background: radial-gradient(circle, rgba(237, 49, 127, 0.12) 0%, transparent 70%);
+			}
 
-	.orb-2 {
-		width: 360rpx;
-		height: 360rpx;
-		top: 200rpx;
-		left: -80rpx;
-		background: radial-gradient(circle, rgba(255, 107, 166, 0.10) 0%, transparent 70%);
-	}
+			.orb-2 {
+				width: 360rpx;
+				height: 360rpx;
+				top: 200rpx;
+				left: -80rpx;
+				background: radial-gradient(circle, rgba(255, 107, 166, 0.10) 0%, transparent 70%);
+			}
 
-	.orb-3 {
-		width: 280rpx;
-		height: 280rpx;
-		bottom: 160rpx;
-		right: -40rpx;
-		background: radial-gradient(circle, rgba(237, 49, 127, 0.08) 0%, transparent 70%);
-	}
+			.orb-3 {
+				width: 280rpx;
+				height: 280rpx;
+				bottom: 160rpx;
+				right: -40rpx;
+				background: radial-gradient(circle, rgba(237, 49, 127, 0.08) 0%, transparent 70%);
+			}
+		}
 
-	/* ========== Logo 区域 ========== */
-	.logo-section {
-		align-items: center;
-		padding-top: 140rpx;
-		padding-bottom: 48rpx;
-		z-index: 1;
-	}
+		/* ========== Logo ========== */
+		.logo-section {
+			align-items: center;
+			padding-top: 150rpx;
+			padding-bottom: 52rpx;
+			z-index: 1;
 
-	.logo-circle {
-		width: 120rpx;
-		height: 120rpx;
-		border-radius: 60rpx;
-		background: linear-gradient(135deg, $c-primary 0%, $c-primary-light 100%);
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 24rpx;
-		box-shadow: 0 16rpx 40rpx rgba(237, 49, 127, 0.30);
-	}
+			.logo-icon {
+				width: 120rpx;
+				height: 120rpx;
+				border-radius: 60rpx;
+				background: linear-gradient(135deg, $select-color 0%, $select-color 100%);
+				align-items: center;
+				justify-content: center;
+				margin-bottom: 24rpx;
+				box-shadow: 0 16rpx 40rpx rgba(237, 49, 127, 0.30);
 
-	.logo-emoji {
-		font-size: 56rpx;
-	}
+				image {
+					width: 120rpx;
+					height: 120rpx;
+				}
+			}
 
-	.app-title {
-		font-size: 48rpx;
-		font-weight: 800;
-		color: $c-text;
-		letter-spacing: 2rpx;
-		margin-bottom: 10rpx;
-	}
+			.app-title {
+				font-size: 38rpx;
+				font-weight: 800;
+				color: $unify-black;
+				letter-spacing: 2rpx;
+				margin-bottom: 15rpx;
+			}
 
-	.app-subtitle {
-		font-size: 26rpx;
-		color: $c-text-secondary;
-		letter-spacing: 1rpx;
-	}
+			.app-subtitle {
+				font-size: 24rpx;
+				color: $unify-grey;
+				letter-spacing: 1rpx;
+			}
+		}
 
-	/* ========== 毛玻璃卡片 ========== */
-	.glass-card {
-		margin: 0 40rpx;
-		padding: 44rpx 36rpx 36rpx;
-		background-color: $c-card-bg;
-		border-radius: $r-card;
-		z-index: 1;
-		box-shadow: 0 8rpx 48rpx rgba(0, 0, 0, 0.06);
-		border-width: 1rpx;
-		border-style: solid;
-		border-color: rgba(255, 255, 255, 0.6);
-	}
+		/* ========== 登录卡片 ========== */
+		.login-card {
+			margin: 0 40rpx;
+			padding: 48rpx 36rpx 36rpx;
+			background-color: $bg-white-hbg;
+			border-radius: 40rpx;
+			z-index: 1;
+			box-shadow: 0 8rpx 48rpx rgba(0, 0, 0, 0.06);
+			border-width: 1rpx;
+			border-style: solid;
+			border-color: rgba(255, 255, 255, 0.6);
 
-	/* ========== Tab 切换器 ========== */
-	.tab-bar {
-		flex-direction: row;
-		position: relative;
-		margin-bottom: 40rpx;
-		background-color: #F5F5F7;
-		border-radius: 28rpx;
-		padding: 6rpx;
-	}
+			/* ========== 卡片标题 ========== */
+			.card-header {
+				margin-bottom: 36rpx;
 
-	.tab-track {
-		position: absolute;
-		top: 6rpx;
-		bottom: 6rpx;
-		left: 6rpx;
-		right: 6rpx;
-		flex-direction: row;
-	}
+				.card-title {
+					font-size: 36rpx;
+					font-weight: 800;
+					color: $unify-black;
+					margin-bottom: 15rpx;
+				}
 
-	.tab-indicator {
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		width: 48%;
-		background-color: #ffffff;
-		border-radius: 24rpx;
-		box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
-		transition-property: left;
-		transition-duration: 0.3s;
-		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-	}
+				.card-desc {
+					font-size: 24rpx;
+					color: $unify-grey;
+					letter-spacing: 0.5rpx;
+				}
+			}
 
-	.tab-item {
-		flex: 1;
-		align-items: center;
-		justify-content: center;
-		height: 80rpx;
-		z-index: 2;
-	}
+			/* ========== 输入框 ========== */
+			.field-wrap {
+				flex-direction: row;
+				align-items: center;
+				height: 96rpx;
+				background-color: #F8F8FA;
+				border-radius: 20rpx;
+				padding-left: 24rpx;
+				padding-right: 16rpx;
+				margin-bottom: 20rpx;
+				border-width: 2rpx;
+				border-style: solid;
+				border-color: transparent;
+				transition-property: border-color, background-color;
+				transition-duration: 0.25s;
 
-	.tab-label {
-		font-size: 28rpx;
-		font-weight: 600;
-		color: $c-text-secondary;
-		transition-property: color;
-		transition-duration: 0.3s;
-	}
+				&.field-focus {
+					background-color: $unify-white;
+					border-color: $select-color;
+					box-shadow: 0 0 0 4rpx rgba(237, 49, 127, 0.08);
+				}
 
-	.tab-label-active {
-		color: $c-primary;
-		font-weight: 700;
-	}
+				&.code-field {
+					padding-right: 8rpx;
+				}
 
-	/* ========== 输入框 ========== */
-	.field-wrap {
-		flex-direction: row;
-		align-items: center;
-		height: 100rpx;
-		background-color: #F8F8FA;
-		border-radius: $r-input;
-		padding-left: 24rpx;
-		padding-right: 16rpx;
-		margin-bottom: 20rpx;
-		border-width: 2rpx;
-		border-style: solid;
-		border-color: transparent;
-		transition-property: border-color, background-color;
-		transition-duration: 0.25s;
-	}
+				.field-icon-box {
+					width: 48rpx;
+					align-items: center;
+					justify-content: center;
+					margin-right: 16rpx;
+					opacity: 0.45;
+					transition-property: opacity;
+					transition-duration: 0.25s;
 
-	.field-focus {
-		background-color: #FFFFFF;
-		border-color: $c-border-focus;
-		box-shadow: 0 0 0 4rpx rgba(237, 49, 127, 0.08);
-	}
+					&.icon-active {
+						opacity: 1;
+					}
+				}
 
-	.field-icon-box {
-		width: 48rpx;
-		align-items: center;
-		justify-content: center;
-		margin-right: 16rpx;
-		opacity: 0.45;
-		transition-property: opacity;
-		transition-duration: 0.25s;
-	}
+				.field-input {
+					flex: 1;
+					font-size: 28rpx;
+					color: $unify-black;
+					height: 96rpx;
+					font-weight: 500;
 
-	.icon-active {
-		opacity: 1;
-	}
+					.field-placeholder {
+						color: $unify-grey;
+						font-weight: 400;
+					}
+				}
 
-	.field-icon {
-		font-size: 30rpx;
-	}
+				.clear-btn {
+					width: 44rpx;
+					height: 44rpx;
+					border-radius: 22rpx;
+					background-color: $bg-no-color;
+					align-items: center;
+					justify-content: center;
 
-	.field-input {
-		flex: 1;
-		font-size: 30rpx;
-		color: $c-text;
-		height: 100rpx;
-		font-weight: 500;
-	}
+					.clear-icon {
+						font-size: 18rpx;
+						color: $unify-white;
+						font-weight: bold;
+					}
+				}
 
-	.field-placeholder {
-		color: #C7C7CC;
-		font-weight: 400;
-	}
+				.eye-btn {
+					padding: 12rpx;
 
-	.clear-btn {
-		width: 44rpx;
-		height: 44rpx;
-		border-radius: 22rpx;
-		background-color: #E0E0E5;
-		align-items: center;
-		justify-content: center;
-	}
+					.eye-icon {
+						font-size: 28rpx;
+						opacity: 0.5;
+					}
+				}
 
-	.clear-icon {
-		font-size: 18rpx;
-		color: #ffffff;
-		font-weight: bold;
-	}
+				/* ========== 验证码按钮 ========== */
+				.sms-btn {
+					background: linear-gradient(135deg, $select-color 0%, $select-color 100%);
+					padding: 14rpx 20rpx;
+					border-radius: 16rpx;
 
-	.eye-btn {
-		padding: 12rpx;
-	}
+					&.sms-disabled {
+						opacity: 0.45;
+					}
 
-	.eye-icon {
-		font-size: 28rpx;
-		opacity: 0.5;
-	}
+					.sms-text {
+						font-size: 22rpx;
+						color: $unify-white;
+						font-weight: 700;
+						letter-spacing: 0.5rpx;
+					}
+				}
+			}
 
-	/* ========== 验证码按钮 ========== */
-	.code-field {
-		padding-right: 8rpx;
-	}
+			.pwd-tip-row {
+				.pwd-tip {
+					font-size: 20rpx;
+					color: $unify-grey;
+					line-height: 50rpx;
+				}
+			}
 
-	.sms-btn {
-		background: linear-gradient(135deg, $c-primary 0%, $c-primary-light 100%);
-		padding: 14rpx 24rpx;
-		border-radius: 16rpx;
-	}
+			/* ========== 协议 ========== */
+			.agreement-row {
+				flex-direction: row;
+				flex-wrap: wrap;
+				align-items: center;
+				margin-top: 4rpx;
+				margin-bottom: 28rpx;
 
-	.sms-disabled {
-		opacity: 0.45;
-	}
+				.check-box {
+					width: 30rpx;
+					height: 30rpx;
+					border-radius: 15rpx;
+					border-width: 2rpx;
+					border-style: solid;
+					border-color: $border-color-grey;
+					margin-right: 10rpx;
+					align-items: center;
+					justify-content: center;
+					transition-property: background-color, border-color;
+					transition-duration: 0.2s;
 
-	.sms-text {
-		font-size: 22rpx;
-		color: #ffffff;
-		font-weight: 700;
-		letter-spacing: 0.5rpx;
-	}
+					&.checked {
+						background-color: $select-color;
+						border-color: $select-color;
+					}
+				}
 
-	/* ========== 协议行 ========== */
-	.agreement-row {
-		flex-direction: row;
-		flex-wrap: wrap;
-		align-items: center;
-		margin-top: 8rpx;
-		margin-bottom: 32rpx;
-	}
+				.check-mark {
+					color: $unify-white;
+					font-size: 16rpx;
+					font-weight: 800;
+				}
 
-	.check-box {
-		width: 30rpx;
-		height: 30rpx;
-		border-radius: 15rpx;
-		border-width: 2rpx;
-		border-style: solid;
-		border-color: #D1D1D6;
-		margin-right: 10rpx;
-		align-items: center;
-		justify-content: center;
-		transition-property: background-color, border-color;
-		transition-duration: 0.2s;
-	}
+				.agree-text {
+					font-size: 22rpx;
+					color: $unify-grey;
+					line-height: 32rpx;
+				}
 
-	.checked {
-		background-color: $c-primary;
-		border-color: $c-primary;
-	}
+				.agree-link {
+					font-size: 22rpx;
+					color: $select-color;
+					line-height: 32rpx;
+				}
+			}
 
-	.check-mark {
-		color: #ffffff;
-		font-size: 16rpx;
-		font-weight: 800;
-	}
+			/* ========== 提交按钮 ========== */
+			.submit-btn {
+				height: 96rpx;
+				line-height: 96rpx;
+				border-radius: 52rpx;
+				background: linear-gradient(135deg, $select-color 0%, $select-color 100%);
+				color: $unify-white;
+				font-size: 32rpx;
+				font-weight: 700;
+				letter-spacing: 4rpx;
+				text-align: center;
+				box-shadow: 0 12rpx 32rpx rgba(237, 49, 127, 0.35);
+				border-width: 0;
 
-	.agree-text {
-		font-size: 22rpx;
-		color: $c-text-secondary;
-		line-height: 32rpx;
-	}
+				&:active {
+					opacity: 0.88;
+					transform: scale(0.98);
+				}
+			}
 
-	.agree-link {
-		font-size: 22rpx;
-		color: $c-primary;
-		line-height: 32rpx;
-	}
+			/* ========== 底部切换链接 ========== */
+			.footer-links {
+				flex-direction: row;
+				justify-content: center;
+				align-items: center;
+				margin-top: 28rpx;
 
-	/* ========== 提交按钮 ========== */
-	.submit-btn {
-		height: 100rpx;
-		line-height: 100rpx;
-		border-radius: $r-btn;
-		background: linear-gradient(135deg, $c-primary 0%, $c-primary-light 100%);
-		color: #ffffff;
-		font-size: 32rpx;
-		font-weight: 700;
-		letter-spacing: 4rpx;
-		text-align: center;
-		box-shadow: 0 12rpx 32rpx rgba(237, 49, 127, 0.35);
-		border-width: 0;
-	}
+				.link-text {
+					font-size: 24rpx;
+					color: $unify-grey;
+				}
 
-	.submit-btn:active {
-		opacity: 0.88;
-		transform: scale(0.98);
-	}
+				.link-accent {
+					color: $select-color;
+					font-weight: 600;
+				}
 
-	.btn-disabled {
-		background: linear-gradient(135deg, #C7C7CC 0%, #D1D1D6 100%);
-		box-shadow: none;
-	}
+				.link-divider {
+					font-size: 20rpx;
+					color: $unify-grey;
+					margin: 0 16rpx;
+				}
+			}
+		}
 
-	/* ========== 底部链接 ========== */
-	.footer-links {
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
-		margin-top: 28rpx;
-	}
-
-	.link-text {
-		font-size: 24rpx;
-		color: $c-text-secondary;
-	}
-
-	.link-accent {
-		color: $c-primary;
-	}
-
-	.link-divider {
-		font-size: 20rpx;
-		color: #D1D1D6;
-		margin: 0 16rpx;
-	}
-
-	/* ========== 版权 ========== */
-	.copyright {
-		position: absolute;
-		bottom: 48rpx;
-		width: 750rpx;
-		text-align: center;
-		font-size: 20rpx;
-		color: #C7C7CC;
-		letter-spacing: 1rpx;
-		z-index: 1;
+		/* ========== 版权 ========== */
+		.copyright {
+			margin-top: 48rpx;
+			width: 750rpx;
+			text-align: center;
+			font-size: 20rpx;
+			color: $unify-grey;
+			letter-spacing: 1rpx;
+			z-index: 1;
+		}
 	}
 </style>

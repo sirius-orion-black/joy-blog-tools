@@ -1,0 +1,59 @@
+// utils/validator.uts
+
+/** 密码：8-16位，含大写、小写、数字、符号(?@#) */
+const PWD_REGEX = '^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[?@#]).{8,16}$';
+
+/** 邮箱基础校验 */
+const EMAIL_REGEX = '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$';
+
+/** 手机号校验（11位，1开头） */
+const PHONE_REGEX = '^1\\d{10}$';
+
+/**
+ * 所有校验函数统一约定：
+ * 返回 string → 错误信息；返回 null → 校验通过
+ */
+
+export function validatePhone(phone: string): string | null {
+	const reg = new RegExp(PHONE_REGEX);
+	if (!reg.test(phone)) return '请输入正确的11位手机号';
+	return null;
+}
+
+export function validateEmail(email: string): string | null {
+	const reg = new RegExp(EMAIL_REGEX);
+	if (!reg.test(email)) return '请输入正确的邮箱地址';
+	return null;
+}
+
+export function validatePassword(pwd: string): string | null {
+	if (pwd.length < 8 || pwd.length > 16) return '密码长度需为 8-16 位';
+	const reg = new RegExp(PWD_REGEX);
+	if (!reg.test(pwd)) return '密码须含大写字母、小写字母、数字及符号(?@#)';
+	return null;
+}
+
+export function validateConfirmPassword(pwd: string, confirm: string): string | null {
+	if (pwd !== confirm) return '两次输入的密码不一致';
+	return null;
+}
+
+export function validateCode(code: string): string | null {
+	if (code.length === 0) return '请输入验证码';
+	return null;
+}
+
+export function validateNotEmpty(value: string, label: string): string | null {
+	if (value.length === 0) return '请输入' + label;
+	return null;
+}
+
+/**
+ * 批量校验，返回第一个错误信息；全部通过返回 null
+ */
+export function validateAll(...checks: (string | null)[]): string | null {
+	for (let i = 0; i < checks.length; i++) {
+		if (checks[i] != null) return checks[i]!;
+	}
+	return null;
+}

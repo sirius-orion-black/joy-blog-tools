@@ -29,7 +29,7 @@ public class SysWebConfigServiceImpl extends ServiceImpl<SysConfigMapper,SysConf
 
     /**
      * 获取所有配置
-     * @return
+     * @return 返回配置列表
      */
     @Override
     public Result<Map<String, List<SysConfig>>> getConfig() {
@@ -41,8 +41,8 @@ public class SysWebConfigServiceImpl extends ServiceImpl<SysConfigMapper,SysConf
 
     /**
      * 更新配置
-     * @param config
-     * @return
+     * @param config 配置信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> editConfig(SysConfig config) throws IOException {

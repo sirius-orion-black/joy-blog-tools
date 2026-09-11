@@ -68,7 +68,7 @@
 
 					<!-- 单个菜品卡片 -->
 					<view class="food-card" v-for="(food, fIndex) in 5" :key="fIndex">
-						<image src="/static/food.jpg" class="food-img" mode="aspectFill"></image>
+						<image src="/static/img/logo.jpg" class="food-img" mode="aspectFill"></image>
 						<view class="food-info">
 							<text class="food-name">酸菜炒大肠</text>
 							<text class="food-desc">肥肠、酸菜、姜、干辣椒...</text>
@@ -92,8 +92,6 @@
 				<view class="order-btn">下单</view>
 			</view>
 		</view>
-
-
 
 	</view>
 </template>

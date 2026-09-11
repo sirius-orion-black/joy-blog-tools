@@ -164,11 +164,11 @@ public class VerifyCodeUtil {
     }
 
     /**
-     * 校验验证码
      *
      * @param email 邮箱
+     * @param prefixCode 前缀key
      * @param code  用户输入的验证码
-     * @return null 表示验证通过，否则返回错误提示
+     * @param validTime 有效时间
      */
     public static void verifyCode(String email, String prefixCode, String code, Integer validTime) {
         RedisUtil redis = redis();

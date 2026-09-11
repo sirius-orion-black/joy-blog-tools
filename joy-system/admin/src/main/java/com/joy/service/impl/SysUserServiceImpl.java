@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -47,8 +48,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 获取用户列表
      *
-     * @param userDto
-     * @return
+     * @param userDto 搜索条件
+     * @return 返回用户列表
      */
     @Override
     public Result<Page<SysUser>> getUser(SysUserDto userDto) {
@@ -78,10 +79,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 新增管理人员
      *
-     * @param sysUser
-     * @return
+     * @param sysUser 用户信息
+     * @return 返回是否成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Result<Map<String, String>> addUser(SysUser sysUser) {
         UserVerifyUtil.sysUserVerify(sysUser);//用户信息校验
         if (sysUserMapper.countByUsername(sysUser.getUsername()) > 0) {
@@ -103,8 +105,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 编辑管理人员
      *
-     * @param sysUser
-     * @return
+     * @param sysUser 用户信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> editUser(SysUser sysUser) {
@@ -124,10 +126,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 删除管理人员
      *
-     * @param userIds
-     * @return
+     * @param userIds 用户ids
+     * @return 返回是否成功
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Result<String> delUser(List<Long> userIds) {
         if (userIds.isEmpty())
             return Result.success();
@@ -148,8 +151,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 解封拉黑管理人员
      *
-     * @param users
-     * @return
+     * @param users 用户信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> bannedUser(List<SysUserDto> users) {
@@ -181,8 +184,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 获取管理人员权限
      *
-     * @param users
-     * @return
+     * @param users 用户信息
+     * @return 用户权限
      */
     @Override
     public Result<UserMenuDto> getUserMenu(UserMenuDto users) {
@@ -199,8 +202,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 编辑管理人员权限
      *
-     * @param users
-     * @return
+     * @param users 用户信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> editUserMenu(UserMenuDto users) {
@@ -224,7 +227,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 获取对应的用户菜单列表
      *
-     * @return
+     * @return 返回用户菜单
      */
     @Override
     public Result<List<SysMenu>> menuList() {
@@ -271,8 +274,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 修改密码
      *
-     * @param user
-     * @return
+     * @param user 用户信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> changePassword(SysChangePasswordDto user) {

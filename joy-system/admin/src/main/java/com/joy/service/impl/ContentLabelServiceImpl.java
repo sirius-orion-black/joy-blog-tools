@@ -36,8 +36,8 @@ public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, Con
     /**
      * 获取标签列表
      *
-     * @param params
-     * @return
+     * @param params 搜索条件
+     * @return 返回标签列表
      */
     @Override
     public Result<Page<ContentLabel>> getLabel(SearchParamDto params) {
@@ -55,8 +55,8 @@ public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, Con
     /**
      * 新增标签
      *
-     * @param label
-     * @return
+     * @param label 标签信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> addLabel(ContentLabel label) {
@@ -68,8 +68,8 @@ public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, Con
     /**
      * 修改标签
      *
-     * @param label
-     * @return
+     * @param label 标签信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> editLabel(ContentLabel label) {
@@ -83,8 +83,8 @@ public class ContentLabelServiceImpl extends ServiceImpl<ContentLabelMapper, Con
     /**
      * 删除标签
      *
-     * @param labelIds
-     * @return
+     * @param labelIds 标签ids
+     * @return 返回是否成功
      */
     @Override
     public Result<String> delLabel(List<Long> labelIds) {

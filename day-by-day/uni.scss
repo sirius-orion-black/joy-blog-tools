@@ -79,19 +79,24 @@ $uni-font-size-paragraph:15px;
 /* ========================================== */
 /* 👇 这里我自己的变量 (Myself Theme) 👇 */
 /* ========================================== */
-$unify-white: #ffffff; //背景色
 $bg-color-grey: #f5f5f5; //背景浅灰
 $bg-no-color: #F0CFE3; //背景选中色
 $bg-color-oblack: rgba(0, 0, 0, 0.5); //背景黑半透明
 $bg-un-color: #f7f8fa; //背景青
-
+$bg-white-hbg: rgba(255, 255, 255, 0.9);//背景白1成透明
 
 $select-color: #ED317F; //选中色
+$choice-color: #FFBBD6; //选中粉
 $unify-black: #333333; //黑
 $unify-white: #ffffff; //白
-$unify-grey: #999999;//辅助灰色，如加载更多的提示信息
+$unify-l-black: #666666; //黑
+$unify-grey: #999999; //辅助灰色，如加载更多的提示信息
+$choice-pink: #FF6BA6; //选中粉
 
+$shadow-color-black: 0 8rpx 24rpx rgba(0, 0, 0, 0.2); //黑色透明阴影
 
-$shadow-color-black: 0 8rpx 24rpx rgba(0, 0, 0, 0.2);//黑色透明阴影
+$border-color-grey: #eeeeee; //淡灰
 
-$border-color-grey: #eeeeee;
+$bg-start-hpink: #FFF0F6; //浅粉
+$bg-end-hpink: #FDEEF5; //淡粉
+$bg-color-npink:#FAF7F8; //灰粉

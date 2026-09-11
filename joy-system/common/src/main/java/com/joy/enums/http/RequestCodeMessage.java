@@ -13,7 +13,8 @@ public enum RequestCodeMessage implements HttpCodeMessage {
     USERNAME_PASSWORD_INCORRECT(HttpStatus.OK, "username_password_incorrect"),// 用户名或密码错误
     ACCOUNT_BANNED(HttpStatus.OK, "account_banned"), //账户被禁
     ACCOUNT_EMAIL_INCORRECT(HttpStatus.OK, "account_email_incorrect"), // 用户名或者邮箱不正确
-    USER_INFO_CORRECT(HttpStatus.OK, "user_info_correct"), //用户信息不有误
+    USER_INFO_CORRECT(HttpStatus.OK, "user_info_correct"), //用户信息有误
+    USER_NOT_EXIST(HttpStatus.OK, "user_not_exist"), //用户不存在
     USERNAME_CANNOT_EMPTY(HttpStatus.OK, "username_cannot_empty"), // 用户名不能为空
     EMAIL_FORMAT_INCORRECT(HttpStatus.OK, "email_format_incorrect"), // 邮箱格式不正确
     ENABLE_CLOUD_EMAIL_CONFIG(HttpStatus.OK, "enable_cloud_email_config"), // 是否启用云邮箱未配置
@@ -40,6 +41,7 @@ public enum RequestCodeMessage implements HttpCodeMessage {
     PHONE_CANNOT_EMPTY(HttpStatus.OK, "phone_cannot_empty"),// 手机号不能为空
     PHONE_NUMBER_INCORRECT(HttpStatus.OK, "phone_number_incorrect"),// 手机号格式不正确
     PASSWORD_NUMBER_INCORRECT(HttpStatus.OK, "password_number_incorrect"),// 密码格式不正确
+    NEW_PASSWORD_CANNOT_OLD_PASSWORD(HttpStatus.OK, "new_password_cannot_old_password"),// 新密码不能和旧密码一样
 
 
     DEL_ARTICLES_COLUMNes(HttpStatus.BAD_REQUEST, "DEL_ARTICLES_COLUMNes"); // 删除文章栏目

@@ -22,8 +22,8 @@ public class ContentClassifyServiceImpl extends ServiceImpl<ContentClassifyMappe
 
     /**
      * 获取类型列表
-     * @param params
-     * @return
+     * @param params 搜索条件
+     * @return 返回类型列表
      */
     @Override
     public Result<Page<ContentClassify>> getClassify(SearchParamDto params) {
@@ -37,6 +37,11 @@ public class ContentClassifyServiceImpl extends ServiceImpl<ContentClassifyMappe
         return Result.success(this.page(page,query));
     }
 
+    /**
+     * 新增类型
+     * @param classify 类型信息
+     * @return 返回是否成功
+     */
     @Override
     public Result<String> addClassify(ContentClassify classify) {
         if (StringUtils.isEmpty(classify.getName()))
@@ -46,8 +51,8 @@ public class ContentClassifyServiceImpl extends ServiceImpl<ContentClassifyMappe
 
     /**
      * 修改类型
-     * @param classify
-     * @return
+     * @param classify 类型信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> editClassify(ContentClassify classify) {
@@ -57,8 +62,8 @@ public class ContentClassifyServiceImpl extends ServiceImpl<ContentClassifyMappe
 
     /**
      * 删除类型
-     * @param classifyIds
-     * @return
+     * @param classifyIds 类型id
+     * @return 返回是否成功
      */
     @Override
     public Result<String> delClassify(List<Long> classifyIds) {

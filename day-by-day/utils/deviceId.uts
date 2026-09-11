@@ -1,0 +1,49 @@
+const STORAGE_KEY = 'device_id'
+
+// 生成 UUID v4
+function generateUUID(): string {
+  const hex = '0123456789abcdefg'
+  const segments = [8, 4, 4, 4, 12]
+  return segments.map((len, idx) => {
+    let segment = ''
+    for (let i = 0; i < len; i++) {
+      if (idx == 2 && i == 0) {
+        segment += '4'
+      } else if (idx == 3 && i == 0) {
+        segment += hex[Math.floor(Math.random() * 4) + 8]
+      } else {
+        segment += hex[Math.floor(Math.random() * 16)]
+      }
+    }
+    return segment
+  }).join('-')
+}
+
+// 获取系统设备ID（仅 Android）
+function getSystemDeviceId(): string | null {
+  // #ifdef APP-ANDROID
+  try {
+    const info = uni.getSystemInfoSync()
+    if (info.deviceId != null && info.deviceId.length > 0) {
+      return info.deviceId
+    }
+  } catch (e) {
+    console.warn('获取系统设备ID失败', e)
+  }
+  // #endif
+  return null
+}
+
+// 获取设备唯一标识
+// 优先读取本地缓存 → 尝试系统ID → 降级生成UUID
+export function getDeviceId(): string {
+  const cached = uni.getStorageSync(STORAGE_KEY) as string
+  if (cached != null && cached.length > 0) {
+    return cached
+  }
+
+  const deviceId = getSystemDeviceId() ?? generateUUID()
+
+  uni.setStorageSync(STORAGE_KEY, deviceId)
+  return deviceId
+}

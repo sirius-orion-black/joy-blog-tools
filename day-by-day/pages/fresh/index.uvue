@@ -238,7 +238,7 @@
 						.page-title {
 							font-size: 36rpx;
 							font-weight: 800;
-							color: #ffffff;
+							color: $unify-white;
 							margin-bottom: 8rpx;
 						}
 
@@ -274,7 +274,7 @@
 				.search-bar {
 					flex-direction: row;
 					align-items: center;
-					background-color: #ffffff;
+					background-color: $unify-white;
 					border-radius: 999rpx;
 					padding: 0 28rpx;
 					height: 80rpx;
@@ -376,7 +376,7 @@
 
 						.sold-out-text {
 							font-size: 20rpx;
-							color: #ffffff;
+							color: $unify-white;
 							font-weight: bold;
 						}
 					}

@@ -17,4 +17,7 @@ public class EmailVerifyDto {
     //手机号码
     private String phone;
 
+    //操作
+    private String action = "verify";
+
 }

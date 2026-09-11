@@ -30,8 +30,8 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
 
     /**
      * 获取专栏列表
-     * @param params
-     * @return
+     * @param params 专栏搜索条件
+     * @return 返回专栏列表
      */
     @Override
     public Result<Page<ContentColumn>> getColumn(SearchParamDto params) {
@@ -48,8 +48,8 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
 
     /**
      * 新增专栏
-     * @param column
-     * @return
+     * @param column 专栏数据
+     * @return 返回是否成功
      */
     @Override
     public Result<String> addColumn(ContentColumn column) {
@@ -61,8 +61,8 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
 
     /**
      * 修改专栏
-     * @param column
-     * @return
+     * @param column 专栏数据
+     * @return 返回是否成功
      */
     @Override
     public Result<String> editColumn(ContentColumn column) {
@@ -84,8 +84,8 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
 
     /**
      * 删除专栏
-     * @param column
-     * @return
+     * @param column 专栏id
+     * @return 返回是否成功
      */
     @Override
     public Result<String> delColumn(ContentColumn column) {
@@ -107,8 +107,8 @@ public class ContentColumnServiceImpl extends ServiceImpl<ContentColumnMapper, C
 
     /**
      * 预审专栏
-     * @param column
-     * @return
+     * @param column 专栏数据
+     * @return 返回是否成功
      */
     @Override
     public Result<String> reviewColumn(ContentColumn column) {

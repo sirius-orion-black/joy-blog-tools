@@ -1,61 +1,664 @@
 <template>
-	<view class="page">
-		<scroll-view class="content" scroll-y="true">
-			<text class="title">{{ pageTitle }}</text>
-			<text class="body-text">
-				欢迎使用 MySchedule 日程管理应用。
+	<view class="agreement-body">
+		<!-- 背景 -->
+		<view class="agreement-bg">
+			<view class="bg-grad"></view>
+			<view class="orb orb-a"></view>
+			<view class="orb orb-b"></view>
+		</view>
 
-				在使用本应用之前，请您仔细阅读并充分理解本协议的全部内容。
+		<!-- 顶栏 -->
+		<view class="agreement-header">
+			<view class="back-btn" @click="goBack">
+				<text class="back-arrow">‹</text>
+			</view>
+			<text class="topbar-title">{{ pageTitle }}</text>
+			<view style="width:72rpx;"></view>
+		</view>
 
-				一、服务内容
-				本应用为用户提供日程管理、待办事项、提醒通知等功能。
+		<!-- 内容 -->
+		<scroll-view class="agreement-scroll" scroll-y="true" :show-scrollbar="false" :scroll-into-view="scrollTarget"
+			:scroll-with-animation="true">
 
-				二、用户账号
-				用户需使用真实手机号注册账号，并妥善保管账号信息。
+			<!-- 封面区 -->
+			<view class="cover">
+				<view class="cover-badge">
+					<text class="cover-badge-text">{{ type === 'user' ? 'USER AGREEMENT' : 'PRIVACY POLICY' }}</text>
+				</view>
+				<text class="cover-title">{{ pageTitle }}</text>
+				<text class="cover-meta">{{ docVersion }} · {{ docDate }}</text>
+				<view class="cover-line"></view>
+				<text class="cover-intro">{{ introText }}</text>
+			</view>
 
-				三、隐私保护
-				我们重视用户隐私，不会将用户数据用于任何非法用途。
+			<!-- 正文 -->
+			<view class="main-body">
+				<view v-for="(sec, sIdx) in sections" :key="sIdx" :id="sec.id" class="sec">
+					<view class="sec-head">
+						<text class="sec-num">{{ padNum(sIdx + 1) }}</text>
+						<text class="sec-name">{{ sec.title }}</text>
+					</view>
+					<view v-for="(p, pIdx) in sec.paragraphs" :key="pIdx" class="para"
+						:class="{ 'para-hl': p.highlight }">
+						<text class="para-txt" :class="{ 'para-txt-hl': p.highlight }">{{ p.text }}</text>
+					</view>
+				</view>
+			</view>
 
-				四、免责声明
-				因不可抗力导致的服务中断，本应用不承担责任。
+			<!-- 落款 -->
+			<view class="sign">
+				<view class="sign-line"></view>
+				<text class="sign-tip">如有疑问，请通过 App 内「意见反馈」联系我们</text>
+				<text class="sign-team">DayByDay 团队</text>
+				<text class="sign-date">{{ docDate }}</text>
+			</view>
 
-				五、协议修改
-				本应用有权随时修改本协议，修改后将在应用内通知用户。
-			</text>
-			<view style="height: 60rpx;"></view>
+			<view style="height:160rpx;"></view>
 		</scroll-view>
+
+		<!-- ====== 悬浮目录按钮 ====== -->
+		<view class="agreement-fab" :class="{ 'fab-open': tocVisible }" @click="tocVisible = !tocVisible">
+			<text class="fab-icon">{{ tocVisible ? '✕' : '☰' }}</text>
+		</view>
+
+		<!-- ====== 目录面板（遮罩+侧滑） ====== -->
+		<view v-if="tocVisible" class="toc-mask" @click="tocVisible = false"></view>
+		<view class="agreement-toc" :class="{ 'toc-panel-show': tocVisible }">
+			<view class="toc-header">
+				<text class="toc-title">目录导航</text>
+				<view class="toc-close" @click="tocVisible = false">
+					<text class="toc-close-icon">✕</text>
+				</view>
+			</view>
+			<scroll-view class="toc-scroll" scroll-y="true" :show-scrollbar="false">
+				<view v-for="(item, idx) in tocItems" :key="idx" class="toc-item"
+					:class="{ 'toc-item-active': activeSection === item.id }" @click="jumpTo(item.id)">
+					<text class="toc-item-num">{{ padNum(idx + 1) }}</text>
+					<text class="toc-item-name"
+						:class="{ 'toc-item-name-active': activeSection === item.id }">{{ item.title }}</text>
+				</view>
+			</scroll-view>
+		</view>
+
+		<!-- 底部按钮 -->
+		<view class="agreement-bottom">
+			<button class="btn" @click="handleAgree">我已阅读并同意</button>
+		</view>
 	</view>
 </template>
 
-<script setup lang="ts">
-	import { ref } from 'vue';
+<script setup lang="uts">
+	import { ref, computed } from 'vue';
 
-	const pageTitle = ref<string>('用户协议');
+	const type = ref<string>('user');
+	const scrollTarget = ref<string>('');
+	const activeSection = ref<string>('');
+	const tocVisible = ref<boolean>(false);
 
+	onLoad((options : OnLoadOptions) => {
+		const t = options['type'];
+		if (t != null) {
+			type.value = t;
+		}
+	});
+
+	// ===================== 类型 & 数据 =====================
+	type Para = { text : string; highlight ?: boolean };
+	type Sec = { id : string; title : string; paragraphs : Para[] };
+	type Toc = { id : string; title : string };
+
+	const userSecs : Sec[] = [
+		{
+
+			id: 's1', title: '服务介绍与接受', paragraphs: [
+				{ text: '欢迎使用 DayByDay（以下简称"本应用"）。本应用是一款个人日程管理工具，旨在帮助用户高效规划和管理每日事务。' },
+				{ text: '您在使用本应用前，应当充分阅读、理解并接受本协议的全部内容。一旦您注册、登录或使用本应用，即视为您已完全理解并同意本协议所有条款。', highlight: true },
+				{ text: '如您不同意本协议的任何条款，请立即停止使用本应用并注销账号。' }
+			]
+
+		},
+		{
+
+			id: 's2', title: '账号注册与安全', paragraphs: [
+				{ text: '您需要提供真实有效的手机号码和邮箱地址完成注册，并确保信息的准确性。因信息不实导致的任何后果由您自行承担。' },
+				{ text: '您应妥善保管账号密码及验证码，不得将账号转让、出借或与他人共享。因账号保管不善造成的损失由您自行承担。', highlight: true },
+				{ text: '如发现账号被盗用或存在异常登录，请立即通过 App 内反馈渠道联系我们，我们将协助您进行安全处理。' }
+			]
+
+		},
+		{
+
+			id: 's3', title: '服务内容说明', paragraphs: [
+				{ text: '本应用提供的核心功能包括但不限于：日程创建与编辑、提醒通知设置、日程分类标签、数据统计概览等。' },
+				{ text: '我们有权根据业务发展需要，对服务内容进行更新、调整或暂停部分功能，并将通过 App 内公告提前通知用户。' },
+				{ text: '本应用为免费工具类产品，我们不承诺服务的永久可用性，但会尽最大努力保障服务的稳定性。' }
+			]
+
+		},
+		{
+
+			id: 's4', title: '用户行为规范', paragraphs: [
+				{ text: '您在使用本应用时，应遵守中华人民共和国相关法律法规，不得利用本应用从事任何违法违规活动。' },
+				{ text: '禁止行为包括但不限于：发布虚假/违法/色情/暴力内容；恶意攻击服务器或干扰其他用户正常使用；利用技术手段批量注册或爬取数据。', highlight: true },
+				{ text: '如违反上述规定，我们有权立即终止您的账号及服务访问权限，且不承担任何赔偿责任。' }
+			]
+
+		},
+		{
+
+			id: 's5', title: '知识产权声明', paragraphs: [
+				{ text: '本应用的所有界面设计、图标、文案、代码等内容的知识产权均归 DayByDay 团队所有，受《中华人民共和国著作权法》保护。' },
+				{ text: '未经书面授权，任何个人或组织不得以任何形式复制、修改、传播、商业化使用本应用的任何内容。' }
+			]
+
+		},
+		{
+
+			id: 's6', title: '免责声明', paragraphs: [
+				{ text: '因不可抗力（自然灾害、政策变更、网络故障等）导致的服务中断或数据丢失，我们不承担责任。' },
+				{ text: '因用户自身操作失误、设备故障、第三方服务异常等原因造成的数据问题，由用户自行负责。' },
+				{ text: '本应用不对用户存储的日程数据的商业价值做任何担保，建议重要事项做好多渠道备份。', highlight: true }
+			]
+
+		},
+		{
+
+			id: 's7', title: '协议变更与终止', paragraphs: [
+				{ text: '我们保留随时修改本协议的权利，修改后的协议将通过 App 内弹窗或公告方式通知用户。' },
+				{ text: '如您继续使用本应用，即视为接受修改后的协议；如不接受，请停止使用并注销账号。' },
+				{ text: '当您注销账号后，本协议自动终止，但涉及历史数据处理及法律责任的条款仍然有效。' }
+			]
+
+		}
+	];
+
+	const privacySecs : Sec[] = [
+		{
+
+			id: 's1', title: '信息收集范围', paragraphs: [
+				{ text: '为提供核心服务，我们会收集以下必要信息：手机号码（用于账号验证）、邮箱地址（用于验证码发送和密码找回）、设备标识符（用于安全风控）。' },
+				{ text: '您主动填写的日程标题、备注、标签等内容属于用户生成内容，仅存储于您的账号下，我们不会主动读取或分析其语义。', highlight: true },
+				{ text: '我们不会收集您的通讯录、短信、通话记录、位置信息等敏感权限数据，除非您主动授权且明确用于特定功能。' }
+			]
+
+		},
+		{
+
+			id: 's2', title: '信息使用目的', paragraphs: [
+				{ text: '收集的信息仅用于以下目的：账号注册与身份验证、日程数据同步与备份、推送提醒通知、安全风控与反作弊、服务质量改进。' },
+				{ text: '我们不会将您的个人信息用于广告投放、用户画像营销或向第三方出售。', highlight: true }
+			]
+
+		},
+		{
+
+			id: 's3', title: '信息存储与保护', paragraphs: [
+				{ text: '您的数据以加密形式存储于国内合规云服务器，传输过程全程 HTTPS 加密。' },
+				{ text: '密码采用 bcrypt 加盐哈希存储，即使数据库泄露也无法还原明文密码。', highlight: true },
+				{ text: '我们定期进行安全审计和渗透测试，发现漏洞将在 72 小时内修复。' }
+			]
+
+		},
+		{
+
+			id: 's4', title: '信息共享与披露', paragraphs: [
+				{ text: '除以下情形外，我们不会向任何第三方共享您的个人信息：获得您明确授权同意；法律法规要求或司法机关依法调取；保护我们或用户的合法权益所必需。' },
+				{ text: '如涉及第三方服务商（如短信网关、邮件服务），我们会签署严格的数据保密协议，并确保其符合国内数据安全标准。', highlight: true }
+			]
+
+		},
+		{
+
+			id: 's5', title: '用户权利', paragraphs: [
+				{ text: '您享有以下权利：查阅、更正、删除您的个人信息；撤回已授权的权限；注销账号并删除全部数据；对我们的数据处理行为提出投诉或举报。' },
+				{ text: '注销账号后，我们将在 15 个工作日内彻底删除您的所有数据，且不可恢复。', highlight: true }
+			]
+
+		},
+		{
+
+			id: 's6', title: '未成年人保护', paragraphs: [
+				{ text: '本应用主要面向成年用户。如您未满 18 周岁，请在监护人陪同下阅读本政策并取得监护人同意后再使用。' },
+				{ text: '若我们发现用户在未获监护人同意的情况下提供了个人信息，将立即删除相关数据并限制账号功能。' }
+			]
+
+		},
+		{
+
+			id: 's7', title: '政策更新与联系', paragraphs: [
+				{ text: '本隐私政策可能随法律法规变化或服务升级而更新，重大变更将通过 App 内弹窗单独征求您的同意。' },
+				{ text: '如您对本政策有任何疑问或建议，请通过 App 内「意见反馈」提交，我们将在 3 个工作日内回复。' }
+			]
+
+		}
+	];
+
+	// ===================== 计算 =====================
+	const isUser = computed<boolean>(() : boolean => type.value === 'user');
+	const pageTitle = computed<string>(() : string => isUser.value ? '用户服务协议' : '隐私保护政策');
+	const docVersion = computed<string>(() : string => isUser.value ? 'v2.1.0' : 'v2.0.3');
+	const docDate = computed<string>(() : string => '2026年8月15日');
+	const introText = computed<string>(() : string =>
+		isUser.value
+			? '请您务必审慎阅读各条款内容，特别是免除或限制责任的条款。高亮内容与您有重大利害关系，请重点关注。'
+			: '我们深知个人信息对您的重要性。本政策帮助您了解我们如何收集、使用、存储和保护您的个人信息。'
+	);
+	const sections = computed<Sec[]>(() : Sec[] => isUser.value ? userSecs : privacySecs);
+	const tocItems = computed<Toc[]>(() : Toc[] => sections.value.map((s) : Toc => ({ id: s.id, title: s.title })));
+
+	const padNum = (n : number) : string => n < 10 ? '0' + n.toString() : n.toString();
+
+	// ===================== 方法 =====================
+	const goBack = () => uni.navigateBack({ delta: 1 });
+
+	const jumpTo = (id : string) => {
+		tocVisible.value = false;
+		activeSection.value = id;
+		scrollTarget.value = '';
+		setTimeout(() => { scrollTarget.value = id; }, 80);
+	};
+
+	const handleAgree = () => {
+		uni.showToast({ title: '已同意', icon: 'success' });
+		setTimeout(() => uni.navigateBack({ delta: 1 }), 600);
+	};
 </script>
 
 <style lang="scss">
-	.page {
+	.agreement-body {
 		flex: 1;
 		flex-direction: column;
-		background-color: #ffffff;
-	}
+		position: relative;
+		overflow: hidden;
 
-	.content {
-		flex: 1;
-		padding: 40rpx;
-	}
+		/* ===== 背景 ===== */
+		.agreement-bg {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 0;
 
-	.title {
-		font-size: 40rpx;
-		font-weight: bold;
-		color: #333333;
-		margin-bottom: 30rpx;
-	}
+			.bg-grad {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: linear-gradient(170deg, $bg-start-hpink 0%, $unify-white 35%, $bg-end-hpink 100%);
+			}
 
-	.body-text {
-		font-size: 28rpx;
-		color: #666666;
-		line-height: 48rpx;
+			.orb {
+				position: absolute;
+				border-radius: 999rpx;
+
+				&.orb-a {
+					width: 480rpx;
+					height: 480rpx;
+					top: -100rpx;
+					right: -120rpx;
+					background: radial-gradient(circle, rgba(237, 49, 127, 0.08) 0%, transparent 70%);
+				}
+
+				&.orb-b {
+					width: 320rpx;
+					height: 320rpx;
+					bottom: 200rpx;
+					left: -60rpx;
+					background: radial-gradient(circle, rgba(255, 107, 166, 0.06) 0%, transparent 70%);
+				}
+			}
+		}
+
+		/* ===== 顶栏 ===== */
+		.agreement-header {
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			height: 96rpx;
+			padding: 0 24rpx;
+			padding-top: env(safe-area-inset-top);
+			z-index: 10;
+
+			.back-btn {
+				width: 72rpx;
+				height: 72rpx;
+				border-radius: 36rpx;
+				align-items: center;
+				justify-content: center;
+				.back-arrow {
+					font-size: 44rpx;
+					color: $unify-black;
+					font-weight: 300;
+					margin-top: -4rpx;
+				}
+			}
+
+			.topbar-title {
+				font-size: 30rpx;
+				font-weight: 700;
+				color: $unify-black;
+				letter-spacing: 1rpx;
+			}
+		}
+
+		/* ===== 滚动区 ===== */
+		.agreement-scroll {
+			flex: 1;
+			z-index: 1;
+
+			/* ===== 封面 ===== */
+			.cover {
+				align-items: center;
+				padding: 48rpx 56rpx 40rpx;
+
+				.cover-badge {
+					background: linear-gradient(135deg, $select-color 0%, $choice-pink 100%);
+					border-radius: 20rpx;
+					padding: 8rpx 24rpx;
+					margin-bottom: 24rpx;
+
+					.cover-badge-text {
+						font-size: 18rpx;
+						font-weight: 800;
+						color: #FFF;
+						letter-spacing: 3rpx;
+					}
+				}
+			}
+
+			.cover-title {
+				font-size: 48rpx;
+				font-weight: 800;
+				color: $unify-black;
+				text-align: center;
+				margin-bottom: 12rpx;
+				line-height: 60rpx;
+			}
+
+			.cover-meta {
+				font-size: 22rpx;
+				color: $unify-grey;
+				margin-bottom: 28rpx;
+				letter-spacing: 1rpx;
+			}
+
+			.cover-line {
+				width: 64rpx;
+				height: 4rpx;
+				border-radius: 2rpx;
+				background: linear-gradient(90deg, $select-color, $choice-pink);
+				margin-bottom: 28rpx;
+			}
+
+			.cover-intro {
+				font-size: 24rpx;
+				color: $unify-l-black;
+				line-height: 40rpx;
+				text-align: center;
+			}
+		}
+
+		/* ===== 正文 ===== */
+		.main-body {
+			padding: 0 40rpx;
+
+			.sec {
+				margin-bottom: 40rpx;
+
+				.sec-head {
+					flex-direction: row;
+					align-items: baseline;
+					margin-bottom: 20rpx;
+
+					.sec-num {
+						font-size: 52rpx;
+						font-weight: 900;
+						color: $choice-pink;
+						margin-right: 16rpx;
+						line-height: 56rpx;
+						font-family: 'Georgia', serif;
+					}
+
+					.sec-name {
+						font-size: 30rpx;
+						font-weight: 700;
+						color: $unify-black;
+						flex: 1;
+						line-height: 40rpx;
+					}
+				}
+
+				.para {
+					margin-bottom: 18rpx;
+					padding: 0 8rpx;
+					border-radius: 12rpx;
+					transition-property: background-color;
+					transition-duration: 0.2s;
+
+					&.para-hl {
+						background-color: $bg-start-hpink;
+						padding: 12rpx 16rpx;
+						border-left-width: 4rpx;
+						border-left-style: solid;
+						border-left-color: $select-color;
+					}
+
+					.para-txt {
+						font-size: 26rpx;
+						color: $unify-l-black;
+						line-height: 44rpx;
+
+						&.para-txt-hl {
+							color: $select-color;
+							font-weight: 600;
+						}
+					}
+
+
+				}
+			}
+		}
+
+		/* ===== 落款 ===== */
+		.sign {
+			align-items: center;
+			padding: 48rpx 60rpx 0;
+
+			.sign-line {
+				width: 80rpx;
+				height: 2rpx;
+				background-color: rgba(0, 0, 0, 0.06);
+				margin-bottom: 32rpx;
+			}
+
+			.sign-tip {
+				font-size: 22rpx;
+				color: $unify-grey;
+				text-align: center;
+				line-height: 34rpx;
+				margin-bottom: 24rpx;
+			}
+
+			.sign-team {
+				font-size: 28rpx;
+				font-weight: 700;
+				color: $unify-black;
+				margin-bottom: 8rpx;
+			}
+
+			.sign-date {
+				font-size: 22rpx;
+				color: $unify-grey;
+			}
+		}
+
+		/* ===== 悬浮目录按钮 ===== */
+		.agreement-fab {
+			position: absolute;
+			right: 32rpx;
+			bottom: 200rpx;
+			z-index: 20;
+			width: 88rpx;
+			height: 88rpx;
+			border-radius: 44rpx;
+			background: linear-gradient(135deg, $select-color 0%, $choice-pink 100%);
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0 8rpx 28rpx rgba(237, 49, 127, 0.35);
+			transition-property: transform, box-shadow;
+			transition-duration: 0.3s;
+
+			&:active {
+				transform: scale(0.90);
+			}
+
+			&.fab-open {
+				transform: rotate(90deg);
+			}
+
+			.fab-icon {
+				font-size: 36rpx;
+				color: $unify-white;
+				font-weight: 700;
+			}
+
+		}
+
+		/* ===== 目录遮罩 ===== */
+		.toc-mask {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 25;
+			background-color: rgba(0, 0, 0, 0.25);
+		}
+
+		/* ===== 目录面板 ===== */
+		.agreement-toc {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 30;
+			width: 520rpx;
+			background-color: $unify-white;
+			border-top-left-radius: 32rpx;
+			border-bottom-left-radius: 32rpx;
+			box-shadow: -8rpx 0 40rpx rgba(0, 0, 0, 0.08);
+			flex-direction: column;
+			transform: translateX(520rpx);
+			transition-property: transform;
+			transition-duration: 0.3s;
+			padding-top: env(safe-area-inset-top);
+
+			&.toc-panel-show {
+				transform: translateX(0);
+			}
+
+			.toc-header {
+				flex-direction: row;
+				align-items: center;
+				justify-content: space-between;
+				padding: 32rpx 32rpx 24rpx;
+				border-bottom-width: 1rpx;
+				border-bottom-style: solid;
+				border-bottom-color: $bg-un-color;
+
+				.toc-title {
+					font-size: 30rpx;
+					font-weight: 800;
+					color: $unify-black;
+				}
+
+				.toc-close {
+					width: 56rpx;
+					height: 56rpx;
+					border-radius: 28rpx;
+					align-items: center;
+					justify-content: center;
+
+					.toc-close-icon {
+						font-size: 24rpx;
+						color: $unify-l-black;
+						font-weight: 700;
+					}
+				}
+			}
+
+			.toc-scroll {
+				flex: 1;
+				padding: 16rpx 0;
+
+				.toc-item {
+					flex-direction: row;
+					align-items: center;
+					padding: 24rpx 32rpx;
+					transition-property: background-color;
+					transition-duration: 0.2s;
+
+					&:active {
+						background-color: #F8F8FA;
+					}
+
+					&.toc-item-active {
+						background-color: $bg-start-hpink;
+					}
+
+					.toc-item-num {
+						font-size: 22rpx;
+						font-weight: 800;
+						color: $choice-pink;
+						width: 48rpx;
+						margin-right: 12rpx;
+						font-family: 'Georgia', serif;
+					}
+
+					.toc-item-name {
+						font-size: 26rpx;
+						color: $unify-l-black;
+						font-weight: 500;
+						flex: 1;
+						line-height: 36rpx;
+
+						&.toc-item-name-active {
+							color: $select-color;
+							font-weight: 700;
+						}
+					}
+				}
+			}
+		}
+
+		/* ===== 底部按钮 ===== */
+		.agreement-bottom {
+			padding: 20rpx 40rpx;
+			padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+			background: linear-gradient(0deg, $unify-white 60%, rgba(255, 255, 255, 0));
+			z-index: 10;
+
+			.btn {
+				height: 92rpx;
+				line-height: 92rpx;
+				border-radius: 46rpx;
+				background: linear-gradient(135deg, $select-color 0%, $choice-pink 100%);
+				color: #FFF;
+				font-size: 30rpx;
+				font-weight: 700;
+				letter-spacing: 6rpx;
+				text-align: center;
+				box-shadow: 0 12rpx 32rpx rgba(237, 49, 127, 0.28);
+				border-width: 0;
+			}
+
+			&:active {
+				opacity: 0.85;
+				transform: scale(0.97);
+			}
+		}
+
 	}
 </style>

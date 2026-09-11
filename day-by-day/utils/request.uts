@@ -1,0 +1,283 @@
+// utils/request.uts
+import { getToken, removeToken } from '@/utils/auth.uts';
+
+import { getDeviceId } from './deviceId'
+
+// ======================== 配置 ========================
+const BASE_URL = 'http://127.0.0.1:8081/api/infra/';
+const TIMEOUT = 15000;
+const MAX_RETRY = 2;
+const SUCCESS_CODE = 200;
+const SUCCESS_STATE = 'OK';
+const TOKEN_EXPIRED_CODE = 401;
+
+// ======================== 统一响应类型 ========================
+export type ApiResponse<T> = {
+	code: number;
+	state: string;
+	message: string;
+	data: T | null;
+};
+
+export type RequestOptions = {
+	showLoading?: boolean;
+	loadingText?: string;
+	withToken?: boolean;
+	autoToast?: boolean;
+	autoRedirectLogin?: boolean;
+};
+
+// ======================== 内部状态 ========================
+let isRedirectingToLogin = false;
+
+// ======================== Header 构建（避免 Object.keys） ========================
+function buildHeader(withToken: boolean): UTSJSONObject {
+	const header: UTSJSONObject = {
+		'Content-Type': 'application/json',
+		'X-Timestamp': Date.now(),
+		'X-Device-Id': getDeviceId()
+	} as UTSJSONObject;
+
+	if (withToken) {
+		const token = getToken();
+		if (token != null && token !== '') {
+			header['X-Auth-Token'] = token;
+		}
+	}
+	return header;
+}
+
+// ======================== 核心请求 ========================
+function request<T>(
+	method: string,
+	path: string,
+	data: UTSJSONObject | null,
+	options: RequestOptions
+): Promise<ApiResponse<T>> {
+	const showLoading = options.showLoading ?? false;
+	const loadingText = options.loadingText ?? '加载中...';
+	const withToken = options.withToken ?? true;
+	const autoToast = options.autoToast ?? true;
+	const autoRedirect = options.autoRedirectLogin ?? true;
+
+	return new Promise<ApiResponse<T>>((resolve, reject) => {
+		if (showLoading) {
+			uni.showLoading({ title: loadingText, mask: true });
+		}
+
+		const header = buildHeader(withToken);
+
+		uni.request({
+			url: BASE_URL + path,
+			method: method as any,
+			data: data,
+			header: header,
+			timeout: TIMEOUT,
+			success: (res) => {
+				if (showLoading) uni.hideLoading();
+
+				// ⚠️ uni.request 不传泛型时 res.data 为 any，需手动断言
+				const body = res.data as ApiResponse<T> | null;
+
+				if (body == null) {
+					if (autoToast) uni.showToast({ title: '服务器无响应', icon: 'none' });
+					reject(new Error('服务器无响应'));
+					return;
+				}
+
+				// ✅ 业务成功
+				if (isSuccess(body)) {
+					resolve(body);
+					return;
+				}
+
+				// ⚠️ Token 过期
+				if (body.code == TOKEN_EXPIRED_CODE) {
+					removeToken();
+					if (autoRedirect && !isRedirectingToLogin) {
+						isRedirectingToLogin = true;
+						uni.showToast({
+							title: body.message !== '' ? body.message : '登录已过期，请重新登录',
+							icon: 'none'
+						});
+						setTimeout(() => {
+							uni.navigateTo({ url: '/pages/login/login' });
+							isRedirectingToLogin = false;
+						}, 1200);
+					}
+					reject(new Error(body.message));
+					return;
+				}
+
+				// ❌ 其他业务错误
+				if (autoToast) {
+					uni.showToast({
+						title: body.message !== '' ? body.message : '请求失败',
+						icon: 'none'
+					});
+				}
+				reject(new Error(body.message));
+			},
+			fail: (err) => {
+				if (showLoading) uni.hideLoading();
+				if (autoToast) {
+					uni.showToast({ title: '网络异常，请检查网络', icon: 'none' });
+				}
+				reject(err);
+			}
+		});
+	});
+}
+
+// ======================== GET 重试 ========================
+function requestWithRetry<T>(
+	path: string,
+	data: UTSJSONObject | null,
+	options: RequestOptions,
+	retryCount: number
+): Promise<ApiResponse<T>> {
+	return new Promise<ApiResponse<T>>((resolve, reject) => {
+		request<T>('GET', path, data, options).then(resolve).catch((err: Error) => {
+			if (retryCount < MAX_RETRY) {
+				console.warn('[Request] GET 重试第 ' + (retryCount + 1).toString() + ' 次: ' + path);
+				requestWithRetry<T>(path, data, options, retryCount + 1).then(resolve).catch(reject);
+			} else {
+				reject(err);
+			}
+		});
+	});
+}
+
+// ======================== 对外快捷方法 ========================
+export function get<T>(
+	path: string,
+	data?: UTSJSONObject | null,
+	options?: RequestOptions
+): Promise<ApiResponse<T>> {
+	return requestWithRetry<T>(path, data ?? null, options ?? ({} as RequestOptions), 0);
+}
+
+export function post<T>(
+	path: string,
+	data: UTSJSONObject,
+	options?: RequestOptions
+): Promise<ApiResponse<T>> {
+	return request<T>('POST', path, data, options ?? ({} as RequestOptions));
+}
+
+export function put<T>(
+	path: string,
+	data: UTSJSONObject,
+	options?: RequestOptions
+): Promise<ApiResponse<T>> {
+	return request<T>('PUT', path, data, options ?? ({} as RequestOptions));
+}
+
+export function del<T>(
+	path: string,
+	data?: UTSJSONObject | null,
+	options?: RequestOptions
+): Promise<ApiResponse<T>> {
+	return request<T>('DELETE', path, data ?? null, options ?? ({} as RequestOptions));
+}
+
+// ======================== Upload（修复泛型 + string 赋值问题） ========================
+export function upload<T>(
+	path: string,
+	filePath: string,
+	name: string,
+	formData?: UTSJSONObject | null,
+	options?: RequestOptions
+): Promise<ApiResponse<T>> {
+	const showLoading = options?.showLoading ?? true;
+	const loadingText = options?.loadingText ?? '上传中...';
+	const withToken = options?.withToken ?? true;
+
+	return new Promise<ApiResponse<T>>((resolve, reject) => {
+		if (showLoading) uni.showLoading({ title: loadingText, mask: true });
+
+		const header = buildHeader(withToken);
+
+		// ⚠️ uni.uploadFile 不支持泛型参数，去掉 <ApiResponse<T>>
+		uni.uploadFile({
+			url: BASE_URL + path,
+			filePath: filePath,
+			name: name,
+			formData: formData ?? undefined,
+			header: header,
+			success: (res) => {
+				if (showLoading) uni.hideLoading();
+
+				// ⚠️ res.data 是 string，需手动 JSON.parse 再断言
+				let body: ApiResponse<T> | null = null;
+				try {
+					body = JSON.parse(res.data) as ApiResponse<T>;
+				} catch (_e) {
+					uni.showToast({ title: '上传响应解析失败', icon: 'none' });
+					reject(new Error('上传响应解析失败'));
+					return;
+				}
+
+				if (body != null && isSuccess(body)) {
+					resolve(body);
+				} else {
+					const msg = body != null ? body.message : '上传失败';
+					uni.showToast({ title: msg, icon: 'none' });
+					reject(new Error(msg));
+				}
+			},
+			fail: (err) => {
+				if (showLoading) uni.hideLoading();
+				uni.showToast({ title: '上传失败，请重试', icon: 'none' });
+				reject(err);
+			}
+		});
+	});
+}
+
+// ======================== Download（修复 string 赋值问题） ========================
+export function download(
+	path: string,
+	options?: RequestOptions
+): Promise<string> {
+	const showLoading = options?.showLoading ?? true;
+	const loadingText = options?.loadingText ?? '下载中...';
+	const withToken = options?.withToken ?? true;
+
+	return new Promise<string>((resolve, reject) => {
+		if (showLoading) uni.showLoading({ title: loadingText, mask: true });
+
+		const header = buildHeader(withToken);
+
+		uni.downloadFile({
+			url: BASE_URL + path,
+			header: header,
+			success: (res) => {
+				if (showLoading) uni.hideLoading();
+				if (res.statusCode == 200) {
+					// ⚠️ tempFilePath 本身就是 string，直接 resolve
+					resolve(res.tempFilePath);
+				} else {
+					uni.showToast({ title: '下载失败', icon: 'none' });
+					reject(new Error('下载失败: ' + res.statusCode.toString()));
+				}
+			},
+			fail: (err) => {
+				if (showLoading) uni.hideLoading();
+				uni.showToast({ title: '下载失败，请重试', icon: 'none' });
+				reject(err);
+			}
+		});
+	});
+}
+
+// ======================== 工具函数 ========================
+/** 统一成功判断：code==200 && state=="OK" */
+export function isSuccess<T>(res: ApiResponse<T>): boolean {
+	return res.code == SUCCESS_CODE && res.state == SUCCESS_STATE;
+}
+
+/** 拼接完整资源 URL */
+export function fullUrl(path: string): string {
+	return BASE_URL + path;
+}

@@ -1,11 +1,17 @@
 package com.joy.service.impl;
 
+import cn.dev33.satoken.secure.BCrypt;
+import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.auth.EmailVerifyDto;
+import com.joy.dto.user.LoginDto;
+import com.joy.dto.user.RegisterDto;
+import com.joy.dto.user.ResetPasswordDto;
+import com.joy.dto.user.UserInfoDto;
 import com.joy.entity.sysConfig.SysCloudMail;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysConfigMail;
@@ -24,9 +30,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -75,7 +84,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
                             .last("LIMIT 1"));
             if (config == null) {
                 RequestCodeMessage.ENABLE_CLOUD_EMAIL_CONFIG.throwIt();
-                return  null;
+                return null;
             }
 
             cachedConfig = config;
@@ -147,12 +156,11 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
     }
 
     /**
-     *
      * @param loginInfo 登录信息
-     * @param key redis key
+     * @param key       redis key
      */
     @Override
-    public Result<Map<String,Integer>> emailInfo(EmailVerifyDto loginInfo, String key) throws Exception {
+    public Result<Map<String, Integer>> emailInfo(EmailVerifyDto loginInfo, String key) throws Exception {
         //获取是否启用云邮箱配置
         SysConfig cloudEmail = this.getMailConfig();
         // 生成验证码
@@ -163,7 +171,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             //云邮箱我这里用了阿里云邮箱推送
             SysCloudMail mail = this.getCloudMail();
             //发送邮件
-            bl = VerifyCodeUtil.sendCloudEmail(verificationCode,loginInfo.getEmail(),mail);
+            bl = VerifyCodeUtil.sendCloudEmail(verificationCode, loginInfo.getEmail(), mail);
             validTime = mail.getValidTime();
         } else {
             //获取配置邮箱，这里我用的是139邮箱
@@ -182,22 +190,20 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             VerifyCodeUtil.markSent(loginInfo.getEmail());
             VerifyCodeUtil.saveCodeAsync(loginInfo.getEmail(), key, verificationCode, validTime);
         }
-        Map<String,Integer> result = new HashMap<>();
-        result.put("validTime",validTime);
-        return Result.success(result,message);
+        Map<String, Integer> result = new HashMap<>();
+        result.put("validTime", validTime);
+        return Result.success(result, message);
     }
+
     /**
-     * 后台管理人员邮箱验证
+     * 邮箱验证
      *
-     * @param loginInfo
-     * @param request
-     * @return
+     * @param loginInfo 用户信息
+     * @param request request
+     * @return 返回验证码相关信息
      */
     @Override
-    public Result<Map<String,Integer>> emailCode(EmailVerifyDto loginInfo, HttpServletRequest request) throws Exception {
-        if (StringUtils.isBlank(loginInfo.getUsername())) {//判断用户名
-            RequestCodeMessage.USERNAME_CANNOT_EMPTY.throwIt();
-        }
+    public Result<Map<String, Integer>> emailCode(EmailVerifyDto loginInfo, HttpServletRequest request) throws Exception {
         if (StringUtils.isBlank(loginInfo.getEmail()) || !UserVerifyUtil.emailFormat(loginInfo.getEmail())) {//判断邮箱
             RequestCodeMessage.EMAIL_FORMAT_INCORRECT.throwIt();
         }
@@ -205,15 +211,144 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
 
         //查验邮箱发送速率，并标记
         VerifyCodeUtil.checkSendAllowed(loginInfo.getEmail(), ip);
-        //校验邮箱或者账户是否存在
-        QueryWrapper<User> query = new QueryWrapper<>();
-        query.eq("email", loginInfo.getEmail()).eq("username", loginInfo.getUsername());
-        User user = this.getOne(query);
-        if (user == null) {
-            RequestCodeMessage.ACCOUNT_EMAIL_INCORRECT.throwIt();
+        if(!loginInfo.getAction().equals("register")){
+
+            //校验邮箱或者账户是否存在
+            QueryWrapper<User> query = new QueryWrapper<>();
+            query.eq("email", loginInfo.getEmail());
+            User user = this.getOne(query);
+            if (user == null) {
+                RequestCodeMessage.ACCOUNT_EMAIL_INCORRECT.throwIt();
+            }
+            log.info("user=>>>>>>>>>{}", JSON.toJSONString(user));
         }
-        log.info("user=>>>>>>>>>{}", JSON.toJSONString(user));
-        return this.emailInfo(loginInfo, "vc:vf:mini:login:code:");
+        return this.emailInfo(loginInfo, "vc:vf:mini:email:code:");
+    }
+
+    /**
+     * 用户注册
+     * @param user 用户注册信息
+     * @return 返回是否成功
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<String> register(RegisterDto user) {
+        if (!UserVerifyUtil.phoneFormat(user.getPhone())) {
+            RequestCodeMessage.PHONE_NUMBER_INCORRECT.throwIt();//手机号格式不正确
+        }
+        if (!UserVerifyUtil.passwordFormat(user.getPassword())) {
+            RequestCodeMessage.PASSWORD_NUMBER_INCORRECT.throwIt();//密码格式不正确
+        }
+
+        VerifyCodeUtil.verifyCode(user.getEmail(), "vc:vf:mini:email:code:", user.getCode(), user.getValidTime());
+        List<User> existUsers = this.list(
+                new LambdaQueryWrapper<User>()
+                        .eq(User::getPhone, user.getPhone())
+                        .or()
+                        .eq(User::getEmail, user.getEmail())
+                        .select(User::getPhone, User::getEmail)
+        );
+        if (!existUsers.isEmpty()) {
+            // 遍历结果精确判断是哪个重复
+            for (User u : existUsers) {
+                if (user.getPhone().equals(u.getPhone())) {
+                    RequestCodeMessage.USERNAME_ALREADY_EXISTS.throwIt();
+                }
+                if (user.getEmail().equals(u.getEmail())) {
+                    RequestCodeMessage.EMAIL_ALREADY_EXISTS.throwIt();
+                }
+            }
+        }
+        // 构建用户
+        User regUser = new User();
+        regUser.setPhone(user.getPhone());
+        regUser.setEmail(user.getEmail());
+        regUser.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+        regUser.setNickname("用户" + user.getPhone().substring(7));
+        regUser.setSex(3); // 默认未知
+        regUser.setState(1); // 正常（因为邮箱验证码已通过，视为已验证）
+        regUser.setEmailVerifiedTime(new Date());
+        regUser.setCreateTime(new Date());
+        regUser.setUpdateTime(new Date());
+        this.save(regUser);
+        return Result.success();
+    }
+
+    /**
+     * 用户登录
+     * @param loginInfo 用户登录信息
+     * @return 返回用户基础信息
+     */
+    @Override
+    public Result<UserInfoDto> login(LoginDto loginInfo) {
+        if (StringUtils.isBlank(loginInfo.getPhone()) || StringUtils.isEmpty(loginInfo.getPassword())) {//判断用户名密码不为空
+            RequestCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
+        }
+        if (!UserVerifyUtil.passwordFormat(loginInfo.getPassword())) {
+            RequestCodeMessage.PASSWORD_NUMBER_INCORRECT.throwIt();//密码格式不正确
+        }
+        User user = this.getOne(
+                new LambdaQueryWrapper<User>().eq(User::getPhone, loginInfo.getPhone())
+        );
+        loginVerify(loginInfo, user);
+
+        StpUtil.login(user.getId());
+        StpUtil.getSession().set("userInfo", user);
+        //拼装用户信息
+        UserInfoDto userInfo = new UserInfoDto();
+        userInfo.setToken(StpUtil.getTokenValue());
+        userInfo.setId(user.getId());
+        userInfo.setNickname(user.getNickname());
+        userInfo.setAvatar(user.getAvatar());
+        userInfo.setPhone(user.getPhone());
+        userInfo.setEmail(user.getEmail());
+        userInfo.setSex(user.getSex());
+        userInfo.setState(user.getState());
+
+        return Result.success(userInfo);
+    }
+
+    /**
+     * 重置密码
+     * @param user 用户信息
+     * @return 返回是否成功
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<String> resetPassword(ResetPasswordDto user) {
+        if (!UserVerifyUtil.passwordFormat(user.getNewPassword())) {
+            RequestCodeMessage.PASSWORD_NUMBER_INCORRECT.throwIt();//密码格式不正确
+        }
+        VerifyCodeUtil.verifyCode(user.getEmail(), "vc:vf:mini:email:code:", user.getCode(), user.getValidTime());
+        User existUsers = this.getOne(
+                new LambdaQueryWrapper<User>().eq(User::getEmail, user.getEmail())
+        );
+        if (existUsers == null) {
+            RequestCodeMessage.USER_NOT_EXIST.throwIt();
+        }
+        if(BCrypt.checkpw(user.getNewPassword(), existUsers.getPassword())){
+            RequestCodeMessage.NEW_PASSWORD_CANNOT_OLD_PASSWORD.throwIt();
+        }
+        existUsers.setPassword(BCrypt.hashpw(user.getNewPassword(), BCrypt.gensalt()));
+        existUsers.setUpdateTime(new Date());
+        this.updateById(existUsers);
+        StpUtil.logout(existUsers.getId());
+        return Result.success();
+    }
+
+    /**
+     * 登录校验
+     *
+     * @param loginInfo 用户登录信息
+     * @param user 用户信息
+     */
+    private void loginVerify(LoginDto loginInfo, User user) {
+        if (user == null || !BCrypt.checkpw(loginInfo.getPassword(), user.getPassword())){
+            RequestCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
+            return;
+        }
+        if (user.getState().equals(2))
+            RequestCodeMessage.ACCOUNT_BANNED.throwIt();
     }
 
 }

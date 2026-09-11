@@ -194,17 +194,13 @@
 </script>
 
 <style lang="scss">
-	$primary: #ED317F;
-	$primary-light: #FDEEF5;
-	$text-main: #333333;
-	$text-sub: #999999;
 
 	.common-flex-body {
-		background-color: #FAF7F8;
+		background-color: $bg-color-npink;
 
 		/* --- 顶栏 --- */
 		.serenity-header {
-			background: linear-gradient(180deg, #FADCE6 0%, #FAF7F8 100%);
+			background: linear-gradient(180deg, $bg-end-hpink 0%, $bg-color-npink 100%);
 			padding: 0 30rpx 36rpx;
 			overflow: hidden;
 
@@ -226,7 +222,7 @@
 				.header-title {
 					font-size: 32rpx;
 					font-weight: bold;
-					color: #333333;
+					color: $unify-black;
 				}
 
 				.today-btn {
@@ -236,7 +232,7 @@
 
 					.today-btn-text {
 						font-size: 24rpx;
-						color: #333333;
+						color: $unify-black;
 						font-weight: bold;
 					}
 				}
@@ -257,7 +253,7 @@
 					.month-text {
 						font-size: 32rpx;
 						font-weight: bold;
-						color: #333333;
+						color: $unify-black;
 						margin-right: 8rpx;
 					}
 
@@ -271,7 +267,7 @@
 
 		/* --- 悬浮日历卡片（无阴影、纯净白） --- */
 		.serenity-calendar {
-			background-color: #ffffff;
+			background-color: $unify-white;
 			border-radius: 28rpx;
 			margin: -36rpx 24rpx 24rpx;
 			padding: 28rpx 12rpx 20rpx;
@@ -284,11 +280,11 @@
 					flex: 1;
 					text-align: center;
 					font-size: 24rpx;
-					color: $text-sub;
+					color: $unify-grey;
 				}
 
 				.weekend {
-					color: $primary;
+					color: $select-color;
 				}
 			}
 
@@ -305,13 +301,13 @@
 
 					.day-num {
 						font-size: 28rpx;
-						color: $text-main;
+						color: $unify-black;
 						z-index: 2;
 					}
 
 					/* 今日 */
 					.today-num {
-						color: $primary;
+						color: $select-color;
 						font-weight: bold;
 					}
 
@@ -320,7 +316,7 @@
 						width: 56rpx;
 						height: 56rpx;
 						border-radius: 28rpx;
-						border: 2rpx solid $primary;
+						border: 2rpx solid $select-color;
 						z-index: 1;
 					}
 
@@ -330,12 +326,12 @@
 						width: 56rpx;
 						height: 56rpx;
 						border-radius: 28rpx;
-						background-color: $primary;
+						background-color: $select-color;
 						z-index: 1;
 					}
 
 					.selected-num {
-						color: #ffffff !important;
+						color: $unify-white !important;
 						font-weight: bold;
 					}
 
@@ -346,13 +342,13 @@
 						width: 6rpx;
 						height: 6rpx;
 						border-radius: 3rpx;
-						background-color: $primary;
+						background-color: $select-color;
 						z-index: 2;
 					}
 				}
 
 				.other-month .day-num {
-					color: #dddddd;
+					color: $border-color-grey;
 				}
 			}
 
@@ -375,12 +371,12 @@
 			.schedule-date {
 				font-size: 32rpx;
 				font-weight: bold;
-				color: $text-main;
+				color: $unify-black;
 			}
 
 			.schedule-count {
 				font-size: 24rpx;
-				color: $text-sub;
+				color: $unify-grey;
 			}
 
 		}
@@ -389,7 +385,7 @@
 			.event-card {
 				flex-direction: row;
 				align-items: center;
-				background-color: #ffffff;
+				background-color: $unify-white;
 				border-radius: 20rpx;
 				padding: 24rpx;
 				margin-bottom: 16rpx;
@@ -398,7 +394,7 @@
 					width: 72rpx;
 					height: 72rpx;
 					border-radius: 36rpx;
-					background-color: $primary-light;
+					background-color: $bg-no-color;
 					align-items: center;
 					justify-content: center;
 					margin-right: 20rpx;
@@ -415,20 +411,20 @@
 					.event-title {
 						font-size: 28rpx;
 						font-weight: bold;
-						color: $text-main;
+						color: $unify-black;
 						margin-bottom: 6rpx;
 					}
 
 					.event-desc {
 						font-size: 22rpx;
-						color: $text-sub;
+						color: $unify-grey;
 						line-height: 32rpx;
 					}
 				}
 
 				.event-time {
 					font-size: 24rpx;
-					color: $primary;
+					color: $select-color;
 					font-weight: bold;
 					margin-left: 12rpx;
 				}
@@ -449,13 +445,13 @@
 
 			.empty-text {
 				font-size: 28rpx;
-				color: $text-sub;
+				color: $unify-grey;
 				margin-bottom: 8rpx;
 			}
 
 			.empty-sub {
 				font-size: 22rpx;
-				color: #cccccc;
+				color: $bg-color-grey;
 			}
 		}
 	}

@@ -160,7 +160,7 @@
 					width: 100rpx;
 					height: 100rpx;
 					border-radius: 50rpx;
-					background-color: #ffffff;
+					background-color: $unify-white;
 					border: 4rpx solid rgba(255, 255, 255, 0.6);
 					box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
 				}

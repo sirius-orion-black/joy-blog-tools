@@ -61,8 +61,8 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
     /**
      * 获取朋友圈列表
      *
-     * @param params
-     * @return
+     * @param params 搜索条件
+     * @return 返回朋友圈列表
      */
     @Override
     public Result<Page<ContentMoments>> getMoments(SearchParamDto params) {
@@ -124,9 +124,9 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
     /**
      * 发表朋友圈
      *
-     * @param request
-     * @param moments
-     * @return
+     * @param request request
+     * @param moments 朋友圈信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> createMoments(HttpServletRequest request, ContentMoments moments) throws IOException {
@@ -161,9 +161,9 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
     /**
      * 更新朋友圈状态
      *
-     * @param moments
-     * @param action
-     * @return
+     * @param moments 朋友圈信息
+     * @param action 操作
+     * @return 返回是否成功
      */
     @Override
     public Result<String> updMoments(ContentMoments moments, String action) throws IOException {
@@ -185,7 +185,7 @@ public class ContentMomentsServiceImpl extends ServiceImpl<ContentMomentsMapper,
     /**
      * 获取标签
      *
-     * @return
+     * @return 朋友圈标签列表
      */
     @Override
     public Result<List<ContentLabel>> getMomentsLabel() {

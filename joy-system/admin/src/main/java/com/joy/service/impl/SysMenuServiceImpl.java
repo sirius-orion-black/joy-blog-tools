@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
-import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysMenu;
 import com.joy.entity.sysConfig.SysMenuIcon;
 import com.joy.enums.http.CommonCodeMessage;
@@ -33,7 +32,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 获取菜单
      *
-     * @return
+     * @return 返回菜单
      */
     @Override
     public Result<List<SysMenu>> getMenu() {
@@ -59,8 +58,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 新增menu
      *
-     * @param menu
-     * @return
+     * @param menu 菜单信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> addMenu(SysMenu menu) {
@@ -82,8 +81,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 修改menu
      *
-     * @param menu
-     * @return
+     * @param menu 菜单信息
+     * @return 返回是否成功
      */
     @Override
     public Result<String> edit(SysMenu menu) {
@@ -106,8 +105,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 删除菜单
      *
-     * @param menuIds
-     * @return
+     * @param menuIds 菜单ids
+     * @return 返回是否成功
      */
     @Override
     public Result<String> delMenu(List<Long> menuIds) {
@@ -142,7 +141,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 获取icons
      *
-     * @return
+     * @return 返回菜单icons
      */
     @Override
     public Result<List<SysMenuIcon>> getIcons() {

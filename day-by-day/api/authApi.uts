@@ -1,0 +1,85 @@
+// api/authApi.uts
+
+import { post, type ApiResponse, type RequestOptions } from '@/utils/request.uts';
+
+// ======================== 响应数据类型 ========================
+
+/** 邮箱验证码返回 */
+export type VerifyCodeData = {
+	validTime: number;
+};
+
+/** 登录 / 注册返回的用户数据 */
+export type UserData = {
+	id: number;
+	email: string;
+	phone: string;
+	nickname: string;
+	avatar: string | null;
+	ip: string | null;
+	device: string | null;
+	region: string | null;
+	state: number;
+	signature: string | null;
+	birthday: string | null;
+	token: string;
+	createTime: string | null;
+};
+
+// ======================== 接口函数 ========================
+
+/** POST auth/email/verifyCode — 获取邮箱验证码 */
+export function fetchEmailVerifyCode(email: string, action:string): Promise<ApiResponse<VerifyCodeData>> {
+	return post<VerifyCodeData>('auth/email/verifyCode', {
+		email: email,
+		action
+	} as UTSJSONObject, {
+		autoToast: false
+	} as RequestOptions);
+}
+
+/** POST auth/login — 登录 */
+export function login(phone: string, password: string): Promise<ApiResponse<UserData>> {
+	return post<UserData>('auth/login', {
+		phone: phone,
+		password: password
+	} as UTSJSONObject, {
+		autoToast: false
+	} as RequestOptions);
+}
+
+/** POST auth/register — 注册 */
+export function register(
+	phone: string,
+	email: string,
+	code: string,
+	password: string,
+	validTime: number
+): Promise<ApiResponse<UserData>> {
+	return post<UserData>('auth/register', {
+		phone: phone,
+		email: email,
+		code: code,
+		password: password,
+		validTime: validTime
+	} as UTSJSONObject, {
+		autoToast: false
+	} as RequestOptions);
+}
+
+/** POST auth/reset/password — 重置密码 */
+export function resetPassword(
+	email: string,
+	code: string,
+	newPassword: string,
+	validTime: number
+): Promise<ApiResponse<null>> {
+	return post<null>('auth/reset/password', {
+		email: email,
+		code: code,
+		newPassword: newPassword,
+		validTime: validTime
+	} as UTSJSONObject, {
+		autoToast: false
+	} as RequestOptions);
+}
