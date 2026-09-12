@@ -44,17 +44,17 @@ _——毕竟这个用头发换代码的地方，该有它的星图_
 #### 技术栈
 
 
-| 客户端(小程序，app) | 客户端(pc)  | 管理端         | 服务端       |
-| ------------------- | ----------- | -------------- | ------------ |
-| Uni-app x           | React       | Vue3           | Spring boot  |
-|                     | Zustand     | Vite           | JDK 1.8      |
-|                     | Next        | TS             | Sa-Token     |
-|                     | Next-Intl   | Pinia          | Redis        |
-|                     | TS          | Vue-i18n       | knife4j      |
-|                     | React Query | Vue-router     | MyBatis Plus |
-|                     |             | Ant-design-vue | MySQL        |
-|                     |             | Axios          |              |
-|                     |             | Scss           |              |
+| 客户端(小程序，app) | 客户端(pc)  | 管理端         | 服务端            |
+| ------------------- | ----------- | -------------- | ----------------- |
+| Uni-app x           | React       | Vue3           | Spring boot 3.4.9 |
+|                     | Zustand     | Vite           | JDK 17            |
+|                     | Next        | TS             | Sa-Token          |
+|                     | Next-Intl   | Pinia          | Redis             |
+|                     | TS          | Vue-i18n       | knife4j           |
+|                     | React Query | Vue-router     | MyBatis Plus      |
+|                     |             | Ant-design-vue | MySQL             |
+|                     |             | Axios          |                   |
+|                     |             | Scss           |                   |
 
 #### 安装教程
 

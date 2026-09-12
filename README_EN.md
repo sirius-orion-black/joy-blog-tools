@@ -45,17 +45,17 @@ No need for flowers or applause. Just a tap of your finger, lighting up the tech
 #### Tech Stack
 
 
-| Client (Mini-program, App) | Client (PC) | Admin Panel    | Server       |
-| :------------------------- | :---------- | :------------- | :----------- |
-| Uni-app x                  | React       | Vue3           | Spring boot  |
-|                            | Zustand     | Vite           | JDK 1.8      |
-|                            | Next        | TS             | Sa-Token     |
-|                            | Next-Intl   | Pinia          | Redis        |
-|                            | TS          | Vue-i18n       | knife4j      |
-|                            | React Query | Vue-router     | MyBatis Plus |
-|                            |             | Ant-design-vue | MySQL        |
-|                            |             | Axios          |              |
-|                            |             | Scss           |              |
+| Client (Mini-program, App) | Client (PC) | Admin Panel    | Server            |
+| :------------------------- | :---------- | :------------- | :---------------- |
+| Uni-app x                  | React       | Vue3           | Spring boot 3.4.9 |
+|                            | Zustand     | Vite           | JDK 17            |
+|                            | Next        | TS             | Sa-Token          |
+|                            | Next-Intl   | Pinia          | Redis             |
+|                            | TS          | Vue-i18n       | knife4j           |
+|                            | React Query | Vue-router     | MyBatis Plus      |
+|                            |             | Ant-design-vue | MySQL             |
+|                            |             | Axios          |                   |
+|                            |             | Scss           |                   |
 
 #### Installation Guide
 
