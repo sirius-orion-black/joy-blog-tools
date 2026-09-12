@@ -3,14 +3,15 @@ package com.joy.config.Interceptor;
 import com.joy.enums.http.GatewayCodeMessage;
 import com.joy.utils.IpRegionUtil;
 import com.joy.utils.RedisUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
+
 
 @Slf4j
 @Component

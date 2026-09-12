@@ -18,14 +18,13 @@
         <file>${LOG_PATH}/${APP_NAME}.log</file>
         <encoder>
             <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
         </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}/${APP_NAME}-%d{HH}.%i.log</fileNamePattern>
-            <maxHistory>365</maxHistory>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/%d{yyyy-MM-dd}/${APP_NAME}.%i.log</fileNamePattern>
+            <maxFileSize>6MB</maxFileSize>
+            <maxHistory>90</maxHistory>
             <totalSizeCap>10GB</totalSizeCap>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>6MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
     </appender>
 
@@ -34,6 +33,7 @@
         <appender-ref ref="FILE"/>
         <queueSize>512</queueSize>
         <neverBlock>true</neverBlock>
+        <discardingThreshold>0</discardingThreshold>
     </appender>
 
     <!-- 根日志配置 -->

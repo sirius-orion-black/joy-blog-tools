@@ -8,10 +8,10 @@ import com.joy.entity.blog.message.ContentMessageComment;
 import com.joy.mapper.blog.message.ContentMessageCommentMapper;
 import com.joy.service.MessageService;
 import com.joy.utils.IpRegionUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;

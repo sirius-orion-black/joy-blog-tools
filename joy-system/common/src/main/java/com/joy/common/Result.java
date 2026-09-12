@@ -1,28 +1,29 @@
 package com.joy.common;
 
 import com.joy.utils.EnhancedEmptyObjectUtil;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import io.swagger.annotations.ApiModelProperty;
 import org.springframework.http.HttpStatus;
 
 /**
  * 统一响应结果类
  *
- * @param <T>
+ * @param <T> 响应数据类型
  */
 @Data
+@Schema(description = "统一响应结果")
 public class Result<T> {
 
-    @ApiModelProperty(value = "HTTP状态码", example = "200")
+    @Schema(description = "HTTP状态码", example = "200")
     private Integer code;
 
-    @ApiModelProperty(value = "HTTP状态描述", example = "OK")
+    @Schema(description = "HTTP状态描述", example = "OK")
     private String state;
 
-    @ApiModelProperty(value = "业务消息码", example = "success")
+    @Schema(description = "业务消息码", example = "success")
     private String message;
 
-    @ApiModelProperty(value = "响应数据")
+    @Schema(description = "响应数据")
     private T data;
 
     /**
@@ -126,7 +127,6 @@ public class Result<T> {
     }
 
     public static <D> Result<D> error(HttpStatus httpStatus, String message, D data) {
-//        return new Result<>(httpStatus, message, data);
         return of(httpStatus, message, data);
     }
 }

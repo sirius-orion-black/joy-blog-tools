@@ -6,8 +6,8 @@ import com.joy.dto.user.LoginDto;
 import com.joy.dto.user.RegisterDto;
 import com.joy.dto.user.ResetPasswordDto;
 import com.joy.dto.user.UserInfoDto;
+import jakarta.servlet.http.HttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
 

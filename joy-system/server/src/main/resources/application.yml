@@ -62,20 +62,6 @@ mybatis-plus:
     cache-enabled: false
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-
-#==============================knife4j配置=======================================
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-  api-docs:
-    path: /v3/api-docs
-  group-configs:
-    - group: 'default'
-      paths-to-match: '/**'
-      packages-to-scan: com.joy.controller
-
 #==============================Logj配置=======================================
 logging:
   level:
@@ -83,11 +69,6 @@ logging:
     com.joy: DEBUG
     org.springframework: WARN
   file:
-    name: logs/app.log
+    path: logs/app.log    # ✅ 修改：file.name → file.path
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-  logback:
-    rolling-policy:
-      max-file-size: 6MB
-      max-history: 365
-      total-size-cap: 10GB
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

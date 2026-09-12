@@ -9,12 +9,12 @@ import org.apache.ibatis.annotations.Select;
 public interface ContentMessageCommentMapper extends BaseMapper<ContentMessageComment> {
 
     @Select("SELECT c.*, u.nickname " +
-            "FROM message_comment c " +
+            "FROM content_message_comment c " +
             "LEFT JOIN user u ON c.user_id = u.id " +
             "WHERE c.state = #{state} " +
             "AND c.state != 5 " +
             "AND (c.parent_id = 0 " +
-            "     OR (SELECT p.state FROM message_comment p WHERE p.id = c.parent_id) != 5) " +
+            "     OR (SELECT p.state FROM content_message_comment p WHERE p.id = c.parent_id) != 5) " +
             "ORDER BY c.create_time DESC")
     Page<ContentMessageComment> selectCommentPage(@Param("state") Integer state, Page<?> page);
 

@@ -4,6 +4,7 @@ import com.joy.config.apiPrefix.ApiPrefixInfraRestController;
 import com.joy.dto.stat.StatTrackDTO;
 import com.joy.service.StatService;
 import com.joy.utils.DeviceInfoUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 import java.util.Map;

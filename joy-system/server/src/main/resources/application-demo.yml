@@ -9,37 +9,37 @@ spring:
       max-file-size: 3MB
       max-request-size: 10MB
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/name?characterEncoding=UTF-8&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://127.0.0.1:3306/dbname?characterEncoding=UTF-8&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&tinyInt1isBit=false&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: name
     password: pwd
     hikari:
-      maxLifetime: 1200000  # 20 分钟
-      validationTimeout: 5000  # 5 秒
-      connectionTestQuery: SELECT 1
+      max-lifetime: 1200000
+      validation-timeout: 5000
+      connection-test-query: SELECT 1
       maximum-pool-size: 10
       minimum-idle: 5
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    timeout: 5000
-    database: 6
-    password: pwd
-    lettuce:
-      pool:
-        max-active: 20
-        max-idle: 8
-        min-idle: 0
-        max-wait: -1ms
-      shutdown-timeout: 100ms
-    keep-alive: true # 发送心跳保活
+  data:                                    # ✅ 修改：spring.redis → spring.data.redis
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      timeout: 5000
+      database: 6
+      password: pwd
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 8
+          min-idle: 0
+          max-wait: 10000ms                # ✅ 建议修改：-1ms → 10000ms
+        shutdown-timeout: 100ms
+      keep-alive: true
 
-  #==============================邮箱配置==============================
   mail:
-    host: you email host
-    port: you port
-    username: username
-    password: password
+    host: 你的邮箱SMTP服务器地址
+    port: 你的端口号
+    username: 你的邮箱账号
+    password: 你的邮箱授权码
     protocol: smtp
     properties:
       mail:
@@ -53,7 +53,16 @@ spring:
           timeout: 5000
           writetimeout: 5000
         debug: false
+
 #==============================knife4j配置==============================
+springdoc:
+  swagger-ui:
+    path: swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
 knife4j:
   enable: true
   basic:
@@ -63,14 +72,13 @@ knife4j:
   openapi:
     title: 徐徐乐之博客接口文档
     description: 一个专注于技术分享的博客平台
-    # aaa"
     email: 248954763@qq.com
-    concat: 徐徐乐之
-    url: https://www.lexujia.com
+    contact:
+      name: 徐徐乐之
+      url: https://www.lexujia.com
     version: v1.0
-    group:
-      test1:
-        group-name: 分组名称
-        api-rule: package
-        api-rule-resources:
-          - com.joy
+  group:                    # ✅ 与 openapi 同级
+    test1:
+      group-name: 分组名称
+      api-rule: package
+      api-rule-resources:

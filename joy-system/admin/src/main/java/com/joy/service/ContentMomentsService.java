@@ -5,8 +5,8 @@ import com.joy.common.Result;
 import com.joy.dto.blog.content.SearchParamDto;
 import com.joy.entity.blog.content.ContentLabel;
 import com.joy.entity.blog.content.ContentMoments;
+import jakarta.servlet.http.HttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 

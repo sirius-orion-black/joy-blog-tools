@@ -10,7 +10,7 @@ import java.util.Map;
 public interface StatDailyTrafficMapper extends BaseMapper<StatDailyTraffic> {
     //所有的求和
     @Select("SELECT " +
-            "(SELECT COUNT(*) FROM message_comment WHERE state in (1,2)) as messages, " +
+            "(SELECT COUNT(*) FROM content_message_comment WHERE state in (1,2)) as messages, " +
             "(SELECT COUNT(*) FROM content_moments WHERE state=1) as moments, " +
             "(SELECT COUNT(*) FROM user WHERE state in (1,2)) as users, " +
             "(SELECT SUM(`uv`) FROM stat_daily_traffic WHERE page_path = \"global\") as vists, " +

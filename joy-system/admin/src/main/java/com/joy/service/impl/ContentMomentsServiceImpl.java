@@ -22,13 +22,13 @@ import com.joy.mapper.user.UserMapper;
 import com.joy.service.ContentMomentsService;
 import com.joy.service.GenerateJsonService;
 import com.joy.utils.IpRegionUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
