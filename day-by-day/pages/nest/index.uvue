@@ -35,26 +35,25 @@
 		<scroll-view class="nest-scroll" scroll-y="true">
 
 			<!-- 模块一：出行向导 -->
-			<view class="nest-card">
+			<!-- <view class="nest-card">
 				<text class="card-title">灶下鲜踪</text>
 				<view class="grid-container">
 					<view class="grid-item" v-for="(item, index) in guideList" :key="index">
 						<view class="icon-box">
-							<!-- 实际开发请替换为 image -->
-							<text class="icon-text">{{ item.icon }}</text>
+							<SvgIcon :svg="item.icon" :size="30" color="#333333" />
 						</view>
 						<text class="grid-label">{{ item.name }}</text>
 					</view>
 				</view>
-			</view>
+			</view> -->
 
 			<!-- 模块二：常用功能 -->
 			<view class="nest-card">
 				<text class="card-title">智办小集</text>
 				<view class="grid-container">
-					<view class="grid-item" v-for="(item, index) in funcList" :key="index">
+					<view class="grid-item" v-for="(item, index) in funcList" :key="index" @click="handleItemClick(item)">
 						<view class="icon-box">
-							<text class="icon-text">{{ item.icon }}</text>
+							<SvgIcon :svg="item.icon" :size="30" color="#333333" />
 							<!-- 角标 -->
 							<text v-if="item.badge" class="badge">{{ item.badge }}</text>
 						</view>
@@ -71,37 +70,27 @@
 
 <script setup>
 	import { ref } from 'vue';
-
+	
+	import SvgIcon from '@/components/SvgIcon.uvue'
+	import { recipeIcon, idPhotoIcon,statementIcon,  setupIcon } from '@/utils/svg/nestSvg'
 	// 定义响应式数据
 	// 模拟数据：出行向导
 	const guideList = ref([
-		{ name: '车站大屏', icon: '📺' },
-		{ name: '时刻表', icon: '🕒' },
-		{ name: '起售时间', icon: '⏰' },
-		{ name: '正晚点查询', icon: '🚉' },
-		{ name: '票价查询', icon: '💰' },
-		{ name: '换乘时间', icon: '🔄' },
-		{ name: '代售点查询', icon: '🏠' },
+		{ name: '食谱', icon: recipeIcon },
 		{ name: '更多', icon: '...' }
 	]);
 
 	// 模拟数据：常用功能
 	const funcList = ref([
-		{ name: '人证核验', icon: '👤' },
-		{ name: '指纹登录', icon: '', badge: '去开启' },
-		{ name: '修改密码', icon: '🔒' },
-		{ name: '修改手机号', icon: '📱' },
-		{ name: '通知设置', icon: '🔔' },
-		{ name: '敬老版', icon: '❤️' },
-		{ name: '快捷退票', icon: '🎫' },
-		{ name: '学生资质核验', icon: '🎓' },
-		{ name: '电子发票', icon: '🧾' }
+		{ name: '证件照', icon: idPhotoIcon,url:'/pagesUtility/photo/index' },
+		{ name: '开支', icon: statementIcon },
+		{ name: '设置', icon: setupIcon },
+		// { name: '指纹登录', icon: statementIcon, badge: '231' },
 	]);
 
 	// 如果有点击事件，可以直接在这里定义函数
 	const handleItemClick = (item) => {
-		console.log('点击了:', item.name);
-		// uni.showToast({ title: item.name });
+		uni.navigateTo({url:item.url})
 	};
 </script>
 
@@ -119,7 +108,7 @@
 			position: relative;
 
 			&.header-bg-style {
-				background-image: linear-gradient(135deg, rgba($select-color, 0.85) 0%, rgba($bg-no-color, 0.85) 100%), url('/static/img/nest/home_bg.jpg');
+				background-image: linear-gradient(135deg, rgba($select-color, 0.85) 0%, rgba($bg-no-color, 0.85) 100%), url('https://joyimg.lexujia.com/day-by-day/bg/nest_home_bg_0071.jpg');
 				background-size: cover;
 				background-position: center;
 				border-bottom-left-radius: 40rpx;
@@ -251,11 +240,6 @@
 							justify-content: center;
 							margin-bottom: 16rpx;
 							position: relative;
-
-							.icon-text {
-								font-size: 48rpx;
-							}
-
 
 							.badge {
 								position: absolute;

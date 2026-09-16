@@ -1,4 +1,4 @@
-package com.joy.entity.files;
+package com.joy.entity.infra;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

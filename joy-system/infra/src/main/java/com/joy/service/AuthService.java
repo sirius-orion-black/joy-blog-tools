@@ -2,10 +2,7 @@ package com.joy.service;
 
 import com.joy.common.Result;
 import com.joy.dto.auth.EmailVerifyDto;
-import com.joy.dto.user.LoginDto;
-import com.joy.dto.user.RegisterDto;
-import com.joy.dto.user.ResetPasswordDto;
-import com.joy.dto.user.UserInfoDto;
+import com.joy.dto.user.*;
 import jakarta.servlet.http.HttpServletRequest;
 
 import javax.validation.Valid;
@@ -22,4 +19,8 @@ public interface AuthService {
     Result<UserInfoDto> login(@Valid LoginDto user);
 
     Result<String> resetPassword(@Valid ResetPasswordDto user);
+
+    Result<UserInfoDto> wxLogin(Map<String, String> req);
+
+    Result<UserInfoDto> wxBind(@Valid WxBindDto req);
 }

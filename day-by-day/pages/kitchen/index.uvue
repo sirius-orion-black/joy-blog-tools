@@ -101,7 +101,8 @@
 
 	import SvgIcon from '@/components/SvgIcon.uvue'
 
-	import { searchIcon, shopCardIcon } from '@/utils/svg/kitchenSvg'
+	import { shopCardIcon } from '@/utils/svg/kitchenSvg'
+	import { searchIcon } from '@/utils/svg/commonSvg'
 
 	const scrollViewId = ref("")
 	const currentCategoryIndex = ref(0)

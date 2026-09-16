@@ -92,6 +92,9 @@ $unify-white: #ffffff; //白
 $unify-l-black: #666666; //黑
 $unify-grey: #999999; //辅助灰色，如加载更多的提示信息
 $choice-pink: #FF6BA6; //选中粉
+$select-color-blue: #89CFFD; //蓝色背景
+$choice-color-blue: #47B5FF; //蓝色背景
+
 
 $shadow-color-black: 0 8rpx 24rpx rgba(0, 0, 0, 0.2); //黑色透明阴影
 
@@ -100,3 +103,25 @@ $border-color-grey: #eeeeee; //淡灰
 $bg-start-hpink: #FFF0F6; //浅粉
 $bg-end-hpink: #FDEEF5; //淡粉
 $bg-color-npink:#FAF7F8; //灰粉
+
+
+
+/* ===== 全局设计令牌 ===== */
+$primary: #ED317F;
+$primary-light: #FF6B9D;
+$primary-bg: #FFF0F5;
+$accent: #FFBBD6;
+$bg: #F7F8FC;
+$card: #FFFFFF;
+$text-main: #1A1A2E;
+$text-sub: #6B7280;
+$text-hint: #9CA3AF;
+$border: #F0F0F5;
+$radius-sm: 16rpx;
+$radius-md: 24rpx;
+$radius-lg: 36rpx;
+$radius-full: 999rpx;
+$shadow-card: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
+$shadow-btn: 0 8rpx 32rpx rgba(237, 49, 127, 0.30);
+$gradient-primary: linear-gradient(135deg, #ED317F 0%, #FF6B9D 100%);
+$gradient-hero: linear-gradient(160deg, #ED317F 0%, #FF6B9D 40%, #FFBBD6 100%);

@@ -20,7 +20,9 @@
 					</view>
 					<!-- 右侧小图标装饰 -->
 					<view class="header-icon-badge">
-						<text class="header-icon-text">🍳</text>
+						<text class="header-icon-text">
+							<SvgIcon :svg="addIcon" :size="24" />
+						</text>
 					</view>
 				</view>
 
@@ -40,10 +42,16 @@
 		<view class="fresh-tab-bar">
 			<view class="tab-capsule">
 				<view class="tab-item" :class="{ active: currentTab === 0 }" @click="currentTab = 0">
-					<text class="tab-text">🥬 配菜</text>
+					<text class="tab-text">
+						<SvgIcon :svg="sideDishIcon" :size="24" color="#2e8b57" />
+						配菜
+					</text>
 				</view>
 				<view class="tab-item" :class="{ active: currentTab === 1 }" @click="currentTab = 1">
-					<text class="tab-text">🧂 调料</text>
+					<text class="tab-text">
+						<SvgIcon :svg="condimentIcon" :size="24" />
+						调料
+					</text>
 				</view>
 			</view>
 		</view>
@@ -122,7 +130,8 @@
 
 	import SvgIcon from '@/components/SvgIcon.uvue'
 
-	import { searchIcon } from '@/utils/svg/kitchenSvg'
+	import { searchIcon,addIcon } from '@/utils/svg/commonSvg'
+	import { sideDishIcon,condimentIcon } from '@/utils/svg/freshSvg'
 
 	interface IngredientItem {
 		name : string;

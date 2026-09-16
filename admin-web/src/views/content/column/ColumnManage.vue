@@ -274,7 +274,7 @@ const customRequest: UploadProps['customRequest'] = async (options) => {
     const formData = new FormData()
     // 添加文件和其他参数
     formData.append('file', file as File)
-    formData.append('type', 'cover-images')
+    formData.append('type', 'article-cover')
     formData.append('platform', '1')
     const res = await filesManage.singUpliad(formData, {
       onUploadProgress: (e) => {

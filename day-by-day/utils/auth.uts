@@ -1,6 +1,4 @@
-// utils/auth.uts
-
-/** 设置 Token */
+/* 设置 Token */
 export function setToken(token: string) {
 	uni.setStorageSync('token', token);
 }

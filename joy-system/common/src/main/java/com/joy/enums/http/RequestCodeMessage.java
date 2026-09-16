@@ -13,6 +13,8 @@ public enum RequestCodeMessage implements HttpCodeMessage {
     USERNAME_PASSWORD_INCORRECT(HttpStatus.OK, "username_password_incorrect"),// 用户名或密码错误
     ACCOUNT_BANNED(HttpStatus.OK, "account_banned"), //账户被禁
     ACCOUNT_EMAIL_INCORRECT(HttpStatus.OK, "account_email_incorrect"), // 用户名或者邮箱不正确
+    PHONE_EMAIL_INCORRECT(HttpStatus.OK, "phone_email_incorrect"), // 手机号码或者邮箱不正确
+    PHONE_EMAIL_BIND(HttpStatus.OK, "phone_email_bind"), // 手机号码或者邮箱已经绑定，请直接登陆或重新绑定新手机号码或者邮箱
     USER_INFO_CORRECT(HttpStatus.OK, "user_info_correct"), //用户信息有误
     USER_NOT_EXIST(HttpStatus.OK, "user_not_exist"), //用户不存在
     USERNAME_CANNOT_EMPTY(HttpStatus.OK, "username_cannot_empty"), // 用户名不能为空
@@ -22,6 +24,7 @@ public enum RequestCodeMessage implements HttpCodeMessage {
     VERIFICATION_CODE_SENT_AGAIN(HttpStatus.OK, "verification_code_sent_again"), // 验证码发送失败，请重试
     VERIFICATION_CODE_SENT(HttpStatus.OK, "verification_code_sent"), // 验证码已发送
     VERIFICATION_CODE_EXPIRED(HttpStatus.OK, "verification_code_expired"), // 验证码已失效
+    ONE_CLICK_CODE_EXPIRED(HttpStatus.OK, "one_click_code_expired"), // 一键登录码已失效
     VERIFICATION_FAILED_PUZZLE_GAP(HttpStatus.OK, "verification_failed_puzzle_gap"), // 验证失败，请控制拼图对齐缺口
     FAILED_OBTAIN_PUZZLE_RESOURCES(HttpStatus.OK, "failed_obtain_puzzle_resources"), //获取拼图资源失败
     IMAGE_CONVERSION_BASE64_FAILED(HttpStatus.OK, "image_conversion_base64_failed"), // 图片资源转换BASE64失败
@@ -33,9 +36,11 @@ public enum RequestCodeMessage implements HttpCodeMessage {
     NETWORK_REQUESTS_FREQUENT_HOUR(HttpStatus.OK, "network_requests_frequent_hour"), // 当前网络请求过于频繁，请1小时后再试
     NETWORK_REQUESTS_FREQUENT_TODAY(HttpStatus.OK, "network_requests_frequent_today"), // 当前网络今日请求次数已达上限，请明天再试
     VERIFICATION_CODE_ATTEMPTS(HttpStatus.OK, "verification_code_attempts"), // 验证码错误，剩余尝试次数：{}
+    CODE_CANNOT_EMPTY(HttpStatus.OK, "code_cannot_empty"), // code 不能为空
 
     USERNAME_ALREADY_EXISTS(HttpStatus.OK, "username_already_exists"), // 用户名已经存在
     EMAIL_ALREADY_EXISTS(HttpStatus.OK, "email_already_exists"), // 邮箱已经存在
+    PHONE_ALREADY_EXISTS(HttpStatus.OK, "email_already_exists"), // 手机号已经存在
     USERNAME_BETWEEN(HttpStatus.OK, "username_between_5_16"), //用户名为5-16个大小写字母
     EMAIL_CANNOT_EMPTY(HttpStatus.OK, "email_cannot_empty"), // 邮箱不能为空
     PHONE_CANNOT_EMPTY(HttpStatus.OK, "phone_cannot_empty"),// 手机号不能为空

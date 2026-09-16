@@ -1,36 +1,13 @@
-// api/authApi.uts
-
 import { post, type ApiResponse, type RequestOptions } from '@/utils/request.uts';
 
-// ======================== 响应数据类型 ========================
+import { LoginResult,VerifyCodeData } from '@/types/userType.uts';
 
-/** 邮箱验证码返回 */
-export type VerifyCodeData = {
-	validTime: number;
-};
-
-/** 登录 / 注册返回的用户数据 */
-export type UserData = {
-	id: number;
-	email: string;
-	phone: string;
-	nickname: string;
-	avatar: string | null;
-	ip: string | null;
-	device: string | null;
-	region: string | null;
-	state: number;
-	signature: string | null;
-	birthday: string | null;
-	token: string;
-	createTime: string | null;
-};
 
 // ======================== 接口函数 ========================
 
-/** POST auth/email/verifyCode — 获取邮箱验证码 */
-export function fetchEmailVerifyCode(email: string, action:string): Promise<ApiResponse<VerifyCodeData>> {
-	return post<VerifyCodeData>('auth/email/verifyCode', {
+/** 获取邮箱验证码 */
+export function fetchEmailVerifyCode(email : string, action : string) : Promise<ApiResponse<VerifyCodeData>> {
+	return post<VerifyCodeData>('infra/auth/email/verifyCode', {
 		email: email,
 		action
 	} as UTSJSONObject, {
@@ -38,9 +15,9 @@ export function fetchEmailVerifyCode(email: string, action:string): Promise<ApiR
 	} as RequestOptions);
 }
 
-/** POST auth/login — 登录 */
-export function login(phone: string, password: string): Promise<ApiResponse<UserData>> {
-	return post<UserData>('auth/login', {
+/** 登录 */
+export function login(phone : string, password : string) : Promise<ApiResponse<LoginResult>> {
+	return post<LoginResult>('infra/auth/login', {
 		phone: phone,
 		password: password
 	} as UTSJSONObject, {
@@ -48,15 +25,15 @@ export function login(phone: string, password: string): Promise<ApiResponse<User
 	} as RequestOptions);
 }
 
-/** POST auth/register — 注册 */
+/** 注册 */
 export function register(
-	phone: string,
-	email: string,
-	code: string,
-	password: string,
-	validTime: number
-): Promise<ApiResponse<UserData>> {
-	return post<UserData>('auth/register', {
+	phone : string,
+	email : string,
+	code : string,
+	password : string,
+	validTime : number
+) : Promise<ApiResponse<LoginResult>> {
+	return post<LoginResult>('infra/auth/register', {
 		phone: phone,
 		email: email,
 		code: code,
@@ -67,18 +44,45 @@ export function register(
 	} as RequestOptions);
 }
 
-/** POST auth/reset/password — 重置密码 */
+/** 重置密码 */
 export function resetPassword(
-	email: string,
-	code: string,
-	newPassword: string,
-	validTime: number
-): Promise<ApiResponse<null>> {
-	return post<null>('auth/reset/password', {
+	email : string,
+	code : string,
+	newPassword : string,
+	validTime : number
+) : Promise<ApiResponse<null>> {
+	return post<null>('infra/auth/reset/password', {
 		email: email,
 		code: code,
 		newPassword: newPassword,
 		validTime: validTime
+	} as UTSJSONObject, {
+		autoToast: false
+	} as RequestOptions);
+}
+
+export function oneClickLogin(code : string) : Promise<ApiResponse<LoginResult>> {
+	return post<LoginResult>('infra/auth/wxLogin', {
+		code: code
+	} as UTSJSONObject, {
+		autoToast: false
+	} as RequestOptions);
+}
+
+/** 微信绑定 */
+export function wxBind(
+	phone : string,
+	email : string,
+	code : string,
+	validTime : number,
+	wxToken : string
+) : Promise<ApiResponse<LoginResult>> {
+	return post<LoginResult>('infra/auth/wxBind', {
+		phone: phone,
+		email: email,
+		code: code,
+		validTime: validTime,
+		wxToken: wxToken
 	} as UTSJSONObject, {
 		autoToast: false
 	} as RequestOptions);

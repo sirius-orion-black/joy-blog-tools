@@ -2,25 +2,27 @@ package com.joy.service.impl;
 
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
 import com.joy.dto.auth.EmailVerifyDto;
-import com.joy.dto.user.LoginDto;
-import com.joy.dto.user.RegisterDto;
-import com.joy.dto.user.ResetPasswordDto;
-import com.joy.dto.user.UserInfoDto;
+import com.joy.dto.user.*;
+import com.joy.entity.common.miniProgram.MiniProgramInfo;
 import com.joy.entity.sysConfig.SysCloudMail;
 import com.joy.entity.sysConfig.SysConfig;
 import com.joy.entity.sysConfig.SysConfigMail;
-import com.joy.entity.user.User;
+import com.joy.entity.common.user.User;
 import com.joy.enums.http.RequestCodeMessage;
+import com.joy.mapper.common.miniProgram.MiniProgramInfoMapper;
 import com.joy.mapper.sysConfig.SysCloudMailMapper;
 import com.joy.mapper.sysConfig.SysConfigMailMapper;
 import com.joy.mapper.sysConfig.SysConfigMapper;
-import com.joy.mapper.user.UserMapper;
+import com.joy.mapper.common.user.UserMapper;
 import com.joy.service.AuthService;
 import com.joy.utils.IpRegionUtil;
 import com.joy.utils.UserVerifyUtil;
@@ -30,15 +32,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static com.joy.enums.http.RequestCodeMessage.PHONE_EMAIL_INCORRECT;
 
 @Slf4j
 @Service
@@ -52,6 +54,10 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
 
     @Autowired
     private SysCloudMailMapper cloudMailMapper;
+
+    @Autowired
+    private MiniProgramInfoMapper programMapper;
+
 
     //邮箱配置
     private volatile SysConfig cachedConfig;
@@ -156,11 +162,11 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
     }
 
     /**
-     * @param loginInfo 登录信息
-     * @param key       redis key
+     * @param loginInfo  登录信息
+     * @param prefixCode redis prefixCode
      */
     @Override
-    public Result<Map<String, Integer>> emailInfo(EmailVerifyDto loginInfo, String key) throws Exception {
+    public Result<Map<String, Integer>> emailInfo(EmailVerifyDto loginInfo, String prefixCode) throws Exception {
         //获取是否启用云邮箱配置
         SysConfig cloudEmail = this.getMailConfig();
         // 生成验证码
@@ -188,7 +194,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         if (bl) {
             message = RequestCodeMessage.VERIFICATION_CODE_SENT.getMessage();
             VerifyCodeUtil.markSent(loginInfo.getEmail());
-            VerifyCodeUtil.saveCodeAsync(loginInfo.getEmail(), key, verificationCode, validTime);
+            VerifyCodeUtil.saveCodeAsync(loginInfo.getEmail(), prefixCode, verificationCode, validTime);
         }
         Map<String, Integer> result = new HashMap<>();
         result.put("validTime", validTime);
@@ -199,7 +205,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
      * 邮箱验证
      *
      * @param loginInfo 用户信息
-     * @param request request
+     * @param request   request
      * @return 返回验证码相关信息
      */
     @Override
@@ -211,7 +217,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
 
         //查验邮箱发送速率，并标记
         VerifyCodeUtil.checkSendAllowed(loginInfo.getEmail(), ip);
-        if(!loginInfo.getAction().equals("register")){
+        if (!loginInfo.getAction().equals("register")) {
 
             //校验邮箱或者账户是否存在
             QueryWrapper<User> query = new QueryWrapper<>();
@@ -227,6 +233,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
 
     /**
      * 用户注册
+     *
      * @param user 用户注册信息
      * @return 返回是否成功
      */
@@ -252,7 +259,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             // 遍历结果精确判断是哪个重复
             for (User u : existUsers) {
                 if (user.getPhone().equals(u.getPhone())) {
-                    RequestCodeMessage.USERNAME_ALREADY_EXISTS.throwIt();
+                    RequestCodeMessage.PHONE_ALREADY_EXISTS.throwIt();
                 }
                 if (user.getEmail().equals(u.getEmail())) {
                     RequestCodeMessage.EMAIL_ALREADY_EXISTS.throwIt();
@@ -276,6 +283,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
 
     /**
      * 用户登录
+     *
      * @param loginInfo 用户登录信息
      * @return 返回用户基础信息
      */
@@ -294,7 +302,11 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
 
         StpUtil.login(user.getId());
         StpUtil.getSession().set("userInfo", user);
-        //拼装用户信息
+
+        return Result.success(getUserInfoDto(user));
+    }
+
+    private UserInfoDto getUserInfoDto(User user) {//拼装用户信息
         UserInfoDto userInfo = new UserInfoDto();
         userInfo.setToken(StpUtil.getTokenValue());
         userInfo.setId(user.getId());
@@ -304,12 +316,12 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         userInfo.setEmail(user.getEmail());
         userInfo.setSex(user.getSex());
         userInfo.setState(user.getState());
-
-        return Result.success(userInfo);
+        return userInfo;
     }
 
     /**
      * 重置密码
+     *
      * @param user 用户信息
      * @return 返回是否成功
      */
@@ -326,7 +338,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         if (existUsers == null) {
             RequestCodeMessage.USER_NOT_EXIST.throwIt();
         }
-        if(BCrypt.checkpw(user.getNewPassword(), existUsers.getPassword())){
+        if (BCrypt.checkpw(user.getNewPassword(), existUsers.getPassword())) {
             RequestCodeMessage.NEW_PASSWORD_CANNOT_OLD_PASSWORD.throwIt();
         }
         existUsers.setPassword(BCrypt.hashpw(user.getNewPassword(), BCrypt.gensalt()));
@@ -340,15 +352,104 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
      * 登录校验
      *
      * @param loginInfo 用户登录信息
-     * @param user 用户信息
+     * @param user      用户信息
      */
     private void loginVerify(LoginDto loginInfo, User user) {
-        if (user == null || !BCrypt.checkpw(loginInfo.getPassword(), user.getPassword())){
+        if (user == null || !BCrypt.checkpw(loginInfo.getPassword(), user.getPassword())) {
             RequestCodeMessage.USERNAME_PASSWORD_INCORRECT.throwIt();
             return;
         }
         if (user.getState().equals(2))
             RequestCodeMessage.ACCOUNT_BANNED.throwIt();
+    }
+
+
+    /**
+     * 微信一键登录
+     *
+     * @param req //微信回传code
+     * @return 返回是否需要绑定或者用户信息
+     */
+    @Override
+    public Result<UserInfoDto> wxLogin(Map<String, String> req) {
+        String code = req.get("code");
+        if (code == null || code.isBlank())
+            RequestCodeMessage.CODE_CANNOT_EMPTY.throwIt();
+
+        MiniProgramInfo programInfo = programMapper.selectOne(new LambdaQueryWrapper<MiniProgramInfo>().eq(MiniProgramInfo::getType, 1).eq(MiniProgramInfo::getIsDeleted, 0));
+        if (programInfo == null)
+            RequestCodeMessage.INVALID_OPERATION.throwIt();
+        String url = String.format(
+                "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+                programInfo.getAppId(), programInfo.getAppSecret(), code);
+        JSONObject json = JSONUtil.parseObj(HttpUtil.get(url));
+        String openid = json.getStr("openid");
+
+
+        log.info("微信登录结果查看,{}", openid);
+        if (openid == null || openid.isBlank()) {
+            log.error("微信登录失败: {}", json);
+            return Result.fail(HttpStatus.NOT_ACCEPTABLE, "微信登录失败");
+        }
+        User user = this.getOne(new LambdaQueryWrapper<User>().eq(User::getOpenid, openid));
+
+        if (user != null) {
+            // 已绑定，直接生成 Token 登录
+            StpUtil.login(user.getId());
+            StpUtil.getSession().set("userInfo", user);
+            return Result.success(getUserInfoDto(user));
+        } else {
+            String wxToken = UUID.randomUUID().toString().replace("-", "");
+            VerifyCodeUtil.saveCodeAsync(wxToken, "vc:vf:wx:bind:code:", openid, 600);
+            UserInfoDto userInfo = new UserInfoDto();
+            userInfo.setToken(wxToken);
+            userInfo.setNeedBind(true);
+            return Result.success(userInfo);
+        }
+    }
+
+    /**
+     * 微信用户绑定
+     *
+     * @param req 微信用户与用户绑定
+     * @return 返回用户信息
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Result<UserInfoDto> wxBind(WxBindDto req) {
+        if (!UserVerifyUtil.phoneFormat(req.getPhone())) {
+            RequestCodeMessage.PHONE_NUMBER_INCORRECT.throwIt();//手机号格式不正确
+        }
+        String redisKey = "vc:vf:wx:bind:code:" + req.getWxToken();
+        String openid = VerifyCodeUtil.getValue(redisKey);
+        VerifyCodeUtil.verifyCode(req.getEmail(), "vc:vf:mini:email:code:", req.getCode(), req.getValidTime());
+        List<User> list = this.list(new LambdaQueryWrapper<User>().eq(User::getEmail, req.getEmail()).or().eq(User::getPhone, req.getPhone()));
+        User user = null;
+        if (list.isEmpty()) {
+            user = new User();
+            user.setPhone(req.getPhone());
+            user.setEmail(req.getEmail());
+            user.setNickname("用户" + req.getPhone().substring(7));
+            user.setSex(3); // 默认未知
+            user.setState(1); // 正常（因为邮箱验证码已通过，视为已验证）
+            user.setEmailVerifiedTime(new Date());
+            user.setCreateTime(new Date());
+            user.setUpdateTime(new Date());
+            user.setOpenid(openid);
+            this.save(user);
+        }
+        else if (list.size() > 1)
+            PHONE_EMAIL_INCORRECT.throwIt();
+        else {
+            user = list.get(0);
+            if(!user.getEmail().equals(req.getEmail()) || !user.getPhone().equals(req.getPhone()))
+                RequestCodeMessage.PHONE_EMAIL_BIND.throwIt();
+            user.setOpenid(openid);
+            this.updateById(user);
+        }
+        StpUtil.login(user.getId());
+        StpUtil.getSession().set("userInfo", user);
+        return Result.success(getUserInfoDto(user));
     }
 
 }

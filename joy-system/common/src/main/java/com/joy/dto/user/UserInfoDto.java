@@ -2,6 +2,10 @@ package com.joy.dto.user;
 
 import lombok.Data;
 
+
+/**
+ * 用户信息
+ */
 @Data
 public class UserInfoDto {
     //token
@@ -27,4 +31,7 @@ public class UserInfoDto {
 
     //状态
     private Integer state;
+
+    //需要绑定
+    private Boolean needBind = false;
 }

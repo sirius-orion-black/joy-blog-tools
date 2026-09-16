@@ -1,0 +1,2 @@
+/** 证件照尺码 */
+export type SizeItem = { name: string; code: string }

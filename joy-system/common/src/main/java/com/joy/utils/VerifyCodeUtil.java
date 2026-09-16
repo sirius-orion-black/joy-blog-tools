@@ -130,35 +130,35 @@ public class VerifyCodeUtil {
     }
 
     /**
-     * 保存验证码到Redis（5分钟有效期）
+     * 保存验证码到Redis
      */
-    public static void saveCode(String email, String prefixCode, String code, Integer validTime) {
+    public static void saveCode(String key, String prefixCode, String code, Integer validTime) {
         RedisUtil redis = redis();
-        redis.setex(prefixCode + email, code, validTime);
-        redis.del(PREFIX_ERROR + email); // 重置错误次数
+        redis.setex(prefixCode + key, code, validTime);
+        redis.del(PREFIX_ERROR + key); // 重置错误次数
     }
 
     /**
      * 异步保存验证码（不阻塞主线程）
      */
-    public static void saveCodeAsync(String email, String prefixCode, String code, Integer validTime) {
+    public static void saveCodeAsync(String key, String prefixCode, String code, Integer validTime) {
         ThreadPoolTaskExecutor executor;
         try {
             executor = BeanUtil.getBean("verifyCodeExecutor", ThreadPoolTaskExecutor.class); // 拿到 verifyCodeExecutor
         } catch (Exception e) {
             // 万一拿不到线程池，降级为同步保存
             log.warn("获取线程池失败，降级为同步保存验证码", e);
-            saveCode(email, prefixCode, code, validTime);
+            saveCode(key, prefixCode, code, validTime);
             return;
         }
         executor.execute(() -> {
             try {
                 RedisUtil redis = redis();
-                redis.setex(prefixCode + email, code, validTime);
-                redis.del(PREFIX_ERROR + email);  // 重置错误次数
-                log.debug("验证码异步保存成功，邮箱：{}", email);
+                redis.setex(prefixCode + key, code, validTime);
+                redis.del(PREFIX_ERROR + key);  // 重置错误次数
+                log.debug("验证码异步保存成功，邮箱：{}", key);
             } catch (Exception e) {
-                log.error("异步保存验证码失败，邮箱：{}", email, e);
+                log.error("异步保存验证码失败，邮箱：{}", key, e);
             }
         });
     }
@@ -200,6 +200,22 @@ public class VerifyCodeUtil {
         // 4. 验证成功，清除验证码和错误计数
         redis.del(prefixCode + email);
         redis.del(PREFIX_ERROR + email);
+    }
+
+    /**
+     * 获取相应redis key value
+     * @param key redis key
+     * @return 返回value
+     */
+    public static String getValue(String key){
+        RedisUtil redis = redis();
+        Object savedObj = redis.get(key);
+        if (savedObj == null) {
+            RequestCodeMessage.ONE_CLICK_CODE_EXPIRED.throwIt();
+            return null;
+        }
+        redis.del(key);
+        return savedObj.toString();
     }
 
     /**

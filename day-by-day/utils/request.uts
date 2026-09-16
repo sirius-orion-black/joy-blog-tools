@@ -1,10 +1,9 @@
-// utils/request.uts
 import { getToken, removeToken } from '@/utils/auth.uts';
 
 import { getDeviceId } from './deviceId'
 
 // ======================== 配置 ========================
-const BASE_URL = 'http://127.0.0.1:8081/api/infra/';
+const BASE_URL = 'http://192.168.10.52:8081/api/';//joyapi.lexujia.com 127.0.0.1:8081
 const TIMEOUT = 15000;
 const MAX_RETRY = 2;
 const SUCCESS_CODE = 200;

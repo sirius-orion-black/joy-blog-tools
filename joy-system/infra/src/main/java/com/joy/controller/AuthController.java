@@ -4,10 +4,7 @@ import com.joy.common.Result;
 import com.joy.config.annotation.RateLimiter;
 import com.joy.config.apiPrefix.ApiPrefixInfraRestController;
 import com.joy.dto.auth.EmailVerifyDto;
-import com.joy.dto.user.LoginDto;
-import com.joy.dto.user.RegisterDto;
-import com.joy.dto.user.ResetPasswordDto;
-import com.joy.dto.user.UserInfoDto;
+import com.joy.dto.user.*;
 import com.joy.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -68,5 +65,27 @@ public class AuthController {
     public Result<String> resetPassword(@Valid @RequestBody ResetPasswordDto user) {
         return  authService.resetPassword(user);
     }
+
+    /**
+     * 微信一键登录
+     * @param req //微信回传code
+     * @return 返回是否需要绑定或者用户信息
+     */
+    @PostMapping("/wxLogin")
+    public Result<UserInfoDto> wxLogin(@RequestBody Map<String, String> req) {
+        return  authService.wxLogin(req);
+    }
+
+    /**
+     *
+     * 微信用户绑定
+     * @param req 微信用户与用户绑定
+     * @return 返回用户信息
+     */
+    @PostMapping("/wxBind")
+    public Result<UserInfoDto> wxBind(@Valid @RequestBody WxBindDto req) {
+        return  authService.wxBind(req);
+    }
+
 
 }

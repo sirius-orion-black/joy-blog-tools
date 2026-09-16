@@ -19,13 +19,12 @@
 
 		<!-- ====== 主卡片 ====== -->
 		<view class="login-card">
-			<!-- 动态标题（替代 Tab） -->
 			<view class="card-header">
 				<text class="card-title">{{ cardTitle }}</text>
 				<text class="card-desc">{{ cardDesc }}</text>
 			</view>
 
-			<!-- 手机号（登录 / 注册） -->
+			<!-- 手机号（登录 / 注册 / 绑定） -->
 			<view v-if="mode !== 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'phone' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'phone' }">
 					<SvgIcon :svg="phoneIcon" :size="26" color="#ED317F" />
@@ -38,7 +37,7 @@
 				</view>
 			</view>
 
-			<!-- 邮箱（注册 / 找回密码） -->
+			<!-- 邮箱（注册 / 找回密码 / 绑定） -->
 			<view v-if="mode !== 'login'" class="field-wrap" :class="{ 'field-focus': focusField === 'email' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'email' }">
 					<SvgIcon :svg="emailIcon" :size="26" color="#ED317F" />
@@ -47,22 +46,21 @@
 					v-model="formData.email" @focus="focusField = 'email'" @blur="focusField = ''" />
 			</view>
 
-			<!-- 邮箱验证码（注册 / 找回密码） -->
+			<!-- 邮箱验证码（注册 / 找回密码 / 绑定） -->
 			<view v-if="mode !== 'login'" class="field-wrap code-field"
 				:class="{ 'field-focus': focusField === 'code' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'code' }">
 					<SvgIcon :svg="captchaIcon" :size="26" color="#ED317F" />
 				</view>
-				<input class="field-input" maxlength="6" placeholder="邮箱验证码"
-					placeholder-class="field-placeholder" v-model="formData.code" @focus="focusField = 'code'"
-					@blur="focusField = ''" />
+				<input class="field-input" maxlength="6" placeholder="邮箱验证码" placeholder-class="field-placeholder"
+					v-model="formData.code" @focus="focusField = 'code'" @blur="focusField = ''" />
 				<view class="sms-btn" :class="{ 'sms-disabled': isSendingCode }" @click="sendEmailCode">
 					<text class="sms-text">{{ codeText }}</text>
 				</view>
 			</view>
 
-			<!-- 密码（登录 / 注册） -->
-			<view v-if="mode !== 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'password' }">
+			<!-- 密码（登录 / 注册 ） -->
+			<view v-if="mode !== 'forgot' && mode !== 'needbind'" class="field-wrap" :class="{ 'field-focus': focusField === 'password' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'password' }">
 					<SvgIcon :svg="passwordIcon" :size="26" color="#ED317F" />
 				</view>
@@ -70,13 +68,13 @@
 					:placeholder="mode === 'login' ? '请输入密码' : '设置密码（8-16位）'" placeholder-class="field-placeholder"
 					v-model="formData.password" @focus="focusField = 'password'" @blur="focusField = ''" />
 				<view class="eye-btn" @click="showPwd = !showPwd">
-					<!-- <text class="eye-icon">{{ showPwd ? '🙈' : '👁️' }}</text> -->
 					<SvgIcon :svg="showPwd ? closeEyesIcon : openEyesIcon" :size="26" color="#FFBBD6" />
 				</view>
 			</view>
 
 			<!-- 确认密码（注册） -->
-			<view v-if="mode === 'register'" class="field-wrap" :class="{ 'field-focus': focusField === 'confirm' }">
+			<view v-if="mode === 'register'" class="field-wrap"
+				:class="{ 'field-focus': focusField === 'confirm' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'confirm' }">
 					<SvgIcon :svg="againPasswordIcon" :size="26" color="#ED317F" />
 				</view>
@@ -94,7 +92,6 @@
 					placeholder-class="field-placeholder" v-model="formData.newPassword"
 					@focus="focusField = 'newPassword'" @blur="focusField = ''" />
 				<view class="eye-btn" @click="showPwd = !showPwd">
-					<!-- <text class="eye-icon">{{ showPwd ? '🙈' : '👁️' }}</text> -->
 					<SvgIcon :svg="showPwd ? closeEyesIcon : openEyesIcon" :size="26" color="#FFBBD6" />
 				</view>
 			</view>
@@ -130,6 +127,13 @@
 				{{ submitText }}
 			</button>
 
+			// #ifdef MP-WEIXIN
+			<button v-if="mode === 'login'" class="one-click-btn" :loading="isLoading" @click="oneClickDoLogin">
+				一键登录
+			</button>
+			// #endif
+
+
 			<!-- 底部切换链接（替代 Tab） -->
 			<view class="footer-links">
 				<template v-if="mode === 'login'">
@@ -142,6 +146,7 @@
 					<text class="link-text" @click="switchMode('login')">已有账号？<tspan class="link-accent">直接登录</tspan>
 					</text>
 				</template>
+				<template v-else-if="mode === 'needbind'"></template>
 				<template v-else>
 					<text class="link-text" @click="switchMode('login')">想起来了？<tspan class="link-accent">返回登录</tspan>
 					</text>
@@ -158,14 +163,25 @@
 	import { ref, computed } from 'vue';
 
 	import SvgIcon from '@/components/SvgIcon.uvue'
-	import { phoneIcon, passwordIcon, againPasswordIcon, captchaIcon, emailIcon, newPasswordIcon, openEyesIcon, closeEyesIcon } from '@/utils/svg/loginSvg'
+	import {
+		phoneIcon,
+		passwordIcon,
+		againPasswordIcon,
+		captchaIcon,
+		emailIcon,
+		newPasswordIcon,
+		openEyesIcon,
+		closeEyesIcon,
+	} from '@/utils/svg/loginSvg'
 
 	import { setToken } from '@/utils/auth.uts';
 	import {
 		fetchEmailVerifyCode,
 		login,
 		register,
-		resetPassword
+		resetPassword,
+		oneClickLogin,
+		wxBind
 	} from '@/api/authApi.uts';
 	import { isSuccess } from '@/utils/request.uts';
 	import {
@@ -177,6 +193,7 @@
 		validateNotEmpty,
 		validateAll
 	} from '@/utils/validator.uts';
+	import { LoginResult } from '@/types/userType.uts';
 
 	// ==================== 状态 ====================
 	const mode = ref<string>('login'); // login | register | forgot
@@ -202,18 +219,21 @@
 	const cardTitle = computed<string>(() : string => {
 		if (mode.value === 'login') return '欢迎回来';
 		if (mode.value === 'register') return '创建账号';
+		if (mode.value === 'needbind') return '绑定账号';
 		return '找回密码';
 	});
 
 	const cardDesc = computed<string>(() : string => {
 		if (mode.value === 'login') return '登录后开启你的高效日程';
 		if (mode.value === 'register') return '注册账号，管理每一天的安排';
+		if (mode.value === 'needbind') return '绑定账号，管理每一天的安排';
 		return '通过邮箱验证码重置你的密码';
 	});
 
 	const submitText = computed<string>(() : string => {
 		if (mode.value === 'login') return '登 录';
 		if (mode.value === 'register') return '注 册';
+		if (mode.value === 'needbind') return '绑 定';
 		return '重置密码';
 	});
 
@@ -284,6 +304,7 @@
 		if (isLoading.value) return;
 		if (mode.value === 'login') await doLogin();
 		else if (mode.value === 'register') await doRegister();
+		else if (mode.value === 'needbind') await wxBindUser();
 		else await doResetPassword();
 	};
 
@@ -301,7 +322,7 @@
 			const res = await login(formData.value.phone, formData.value.password);
 			isLoading.value = false;
 			if (isSuccess(res) && res.data != null && res.data.token) {
-				const user = res.data!;
+				const user = res.data! as LoginResult;
 				setToken(user.token);
 				// 缓存用户基本信息供全局使用
 				uni.setStorageSync('user_info', JSON.stringify(user));
@@ -315,6 +336,82 @@
 			toast('网络异常，请检查网络后重试');
 		}
 	};
+
+	// ---------- 微信一键登录 ----------
+	const wxToken = ref<string>('')
+	const oneClickDoLogin = async () => {
+		if (!isAgreed.value) { toast('请先同意用户协议与隐私政策'); return; }
+		isLoading.value = true;
+		uni.login({
+			provider: 'weixin',
+			success: async (loginRes) => {
+				const code = loginRes.code
+				console.log(code, "loooking code !!!!!")
+				if (code == null || code.length == 0) return
+				const res = await oneClickLogin(code);
+				isLoading.value = false;
+				try {
+					if (isSuccess(res) && res.data != null) {
+						const user = res.data! as LoginResult;
+						if (user.needBind) {
+							switchMode('needbind');
+							wxToken.value = user.token;
+						}
+						else {
+							setToken(user.token);
+							// 缓存用户基本信息供全局使用
+							uni.setStorageSync('user_info', JSON.stringify(user));
+							toast('欢迎回来 ✨');
+							setTimeout(() => { jumpAfterAuth(); }, 800);
+						}
+					} else {
+						uni.showToast({ title: res.msg, icon: 'none' })
+					}
+				}
+				catch (_e) {
+					uni.showToast({ title: '网络错误', icon: 'none' })
+				}
+			},
+			fail: () => { uni.showToast({ title: '微信登录失败', icon: 'none' }) }
+		} as LoginOptions)
+	}
+
+	// ---------- 微信绑定用户 ----------
+	const wxBindUser = async () => {
+		if (!isAgreed.value) { toast('请先同意用户协议与隐私政策'); return; }
+		const err = validateAll(
+			validatePhone(formData.value.phone),
+			validateEmail(formData.value.email),
+			validateCode(formData.value.code)
+		);
+		if (err != null) { toast(err); return; }
+		isLoading.value = true;
+		try {
+			const res = await wxBind(
+				formData.value.phone,
+				formData.value.email,
+				formData.value.code,
+				validTime.value,
+				wxToken.value
+			);
+			isLoading.value = false;
+			if (isSuccess(res) && res.data != null && res.data.token) {
+				const user = res.data! as LoginResult;
+				setToken(user.token);
+				// 缓存用户基本信息供全局使用
+				uni.setStorageSync('user_info', JSON.stringify(user));
+				toast('绑定成功，欢迎回来 ✨');
+				setTimeout(() => { jumpAfterAuth(); }, 800);
+			} else {
+				switchMode('login');
+				toast(res.message !== '' ? res.message : '绑定失败');
+			}
+		} catch (_e) {
+			isLoading.value = false;
+			switchMode('login');
+			toast('网络异常，请检查网络后重试');
+		}
+	}
 
 	// ---------- 注册 ----------
 	const doRegister = async () => {
@@ -398,13 +495,12 @@
 				uni.redirectTo({ url: redirectUrl });
 			}
 		} else {
-			uni.switchTab({ url: '/pages/kitchen/index' });
+			uni.switchTab({ url: '/pages/nest/index' });
 		}
 	};
 </script>
 
 <style lang="scss">
-
 	.login-body {
 		flex: 1;
 		flex-direction: column;
@@ -636,8 +732,8 @@
 				flex-direction: row;
 				flex-wrap: wrap;
 				align-items: center;
-				margin-top: 4rpx;
-				margin-bottom: 28rpx;
+				margin-top: 10rpx;
+				margin-bottom: 32rpx;
 
 				.check-box {
 					width: 30rpx;
@@ -678,23 +774,33 @@
 			}
 
 			/* ========== 提交按钮 ========== */
-			.submit-btn {
+			.submit-btn,
+			.one-click-btn {
 				height: 96rpx;
 				line-height: 96rpx;
 				border-radius: 52rpx;
-				background: linear-gradient(135deg, $select-color 0%, $select-color 100%);
 				color: $unify-white;
 				font-size: 32rpx;
 				font-weight: 700;
 				letter-spacing: 4rpx;
 				text-align: center;
-				box-shadow: 0 12rpx 32rpx rgba(237, 49, 127, 0.35);
 				border-width: 0;
 
 				&:active {
 					opacity: 0.88;
 					transform: scale(0.98);
 				}
+			}
+
+			.submit-btn {
+				background: linear-gradient(135deg, $select-color 0%, $choice-pink 100%);
+				box-shadow: 0 12rpx 32rpx rgba(237, 49, 127, 0.35);
+			}
+
+			.one-click-btn {
+				margin-top: 36rpx;
+				background: linear-gradient(135deg, $select-color-blue 0%, $choice-color-blue 100%);
+				box-shadow: 0 12rpx 32rpx rgba(117, 199, 254, 0.35);
 			}
 
 			/* ========== 底部切换链接 ========== */

@@ -1,4 +1,4 @@
-package com.joy.entity.user;
+package com.joy.entity.common.user;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -48,13 +48,13 @@ public class User {
     @TableField
     private String phone;
 
-    //微信号
+    //微信openid
     @TableField
-    private String wechat;
+    private String openid;
 
-    //QQ号
+    //微信unionId
     @TableField
-    private String qq;
+    private String unionId;
 
     //状态：1 正常，2 冻结，3 封号，4 注销，5 邮箱或手机号码未验证
     @TableField
