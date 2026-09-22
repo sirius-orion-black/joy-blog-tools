@@ -46,18 +46,27 @@
 	"subPackages": [{
 		"root": "pagesUtility",
 		"pages": [{
-			"path": "photo/index",
-			"style": {
-				"navigationBarTitleText": "智能证件照"
+				"path": "photo/index",
+				"style": {
+					"navigationStyle": "custom",
+					"disableScroll": true
+				}
+			},
+			{
+				"path": "photo/history",
+				"style": {
+					"navigationStyle": "custom",
+					"disableScroll": true
+				}
+			},
+			{
+				"path": "photo/edit",
+				"style": {
+					"navigationStyle": "custom",
+					"disableScroll": true
+				}
 			}
-		},
-		{
-			"path": "photo/history",
-			"style": {
-				"navigationBarTitleText": ""
-			}
-		}
-	]
+		]
 	}],
 
 	"tabBar": {
@@ -98,5 +107,9 @@
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
 	},
-	"uniIdRouter": {}
+	"uniIdRouter": {},
+	"easycom": {
+	    "autoscan": true,
+	    "custom": {}
+	  }
 }

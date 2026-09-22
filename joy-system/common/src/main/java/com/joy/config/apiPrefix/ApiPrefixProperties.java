@@ -12,4 +12,5 @@ public class ApiPrefixProperties {
     private String blog = "/blog";
     private String file = "/infra";
     private String admin = "/admin";
+    private String day = "/day";
 }

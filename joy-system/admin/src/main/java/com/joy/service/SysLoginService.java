@@ -1,10 +1,10 @@
 package com.joy.service;
 
 import com.joy.common.Result;
-import com.joy.dto.auth.CaptchaDto;
-import com.joy.dto.auth.EmailVerifyDto;
-import com.joy.dto.sysUser.SysLoginDto;
-import com.joy.dto.sysUser.SysUserInfoDto;
+import com.joy.dto.common.auth.CaptchaDto;
+import com.joy.dto.common.auth.EmailVerifyDto;
+import com.joy.dto.admin.sysUser.SysLoginDto;
+import com.joy.dto.admin.sysUser.SysUserInfoDto;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Map;

@@ -27,7 +27,7 @@
 			<!-- 手机号（登录 / 注册 / 绑定） -->
 			<view v-if="mode !== 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'phone' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'phone' }">
-					<SvgIcon :svg="phoneIcon" :size="26" color="#ED317F" />
+					<svg-icon :svg="phoneIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" type="number" maxlength="11" placeholder="手机号码"
 					placeholder-class="field-placeholder" v-model="formData.phone" @focus="focusField = 'phone'"
@@ -40,7 +40,7 @@
 			<!-- 邮箱（注册 / 找回密码 / 绑定） -->
 			<view v-if="mode !== 'login'" class="field-wrap" :class="{ 'field-focus': focusField === 'email' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'email' }">
-					<SvgIcon :svg="emailIcon" :size="26" color="#ED317F" />
+					<svg-icon :svg="emailIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" placeholder="请输入邮箱" placeholder-class="field-placeholder"
 					v-model="formData.email" @focus="focusField = 'email'" @blur="focusField = ''" />
@@ -50,7 +50,7 @@
 			<view v-if="mode !== 'login'" class="field-wrap code-field"
 				:class="{ 'field-focus': focusField === 'code' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'code' }">
-					<SvgIcon :svg="captchaIcon" :size="26" color="#ED317F" />
+					<svg-icon :svg="captchaIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" maxlength="6" placeholder="邮箱验证码" placeholder-class="field-placeholder"
 					v-model="formData.code" @focus="focusField = 'code'" @blur="focusField = ''" />
@@ -62,13 +62,13 @@
 			<!-- 密码（登录 / 注册 ） -->
 			<view v-if="mode !== 'forgot' && mode !== 'needbind'" class="field-wrap" :class="{ 'field-focus': focusField === 'password' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'password' }">
-					<SvgIcon :svg="passwordIcon" :size="26" color="#ED317F" />
+					<svg-icon :svg="passwordIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" :password="!showPwd"
 					:placeholder="mode === 'login' ? '请输入密码' : '设置密码（8-16位）'" placeholder-class="field-placeholder"
 					v-model="formData.password" @focus="focusField = 'password'" @blur="focusField = ''" />
 				<view class="eye-btn" @click="showPwd = !showPwd">
-					<SvgIcon :svg="showPwd ? closeEyesIcon : openEyesIcon" :size="26" color="#FFBBD6" />
+					<svg-icon :svg="showPwd ? closeEyesIcon : openEyesIcon" :size="26" color="#FFBBD6" />
 				</view>
 			</view>
 
@@ -76,7 +76,7 @@
 			<view v-if="mode === 'register'" class="field-wrap"
 				:class="{ 'field-focus': focusField === 'confirm' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'confirm' }">
-					<SvgIcon :svg="againPasswordIcon" :size="26" color="#ED317F" />
+					<svg-icon :svg="againPasswordIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" :password="!showPwd" placeholder="再次确认密码"
 					placeholder-class="field-placeholder" v-model="formData.confirmPassword"
@@ -86,20 +86,20 @@
 			<!-- 新密码（找回密码） -->
 			<view v-if="mode === 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'newPassword' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'newPassword' }">
-					<SvgIcon :svg="newPasswordIcon" :size="26" color="#ED317F" />
+					<svg-icon :svg="newPasswordIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" :password="!showPwd" placeholder="新密码（8-16位）"
 					placeholder-class="field-placeholder" v-model="formData.newPassword"
 					@focus="focusField = 'newPassword'" @blur="focusField = ''" />
 				<view class="eye-btn" @click="showPwd = !showPwd">
-					<SvgIcon :svg="showPwd ? closeEyesIcon : openEyesIcon" :size="26" color="#FFBBD6" />
+					<svg-icon :svg="showPwd ? closeEyesIcon : openEyesIcon" :size="26" color="#FFBBD6" />
 				</view>
 			</view>
 
 			<!-- 确认新密码（找回密码） -->
 			<view v-if="mode === 'forgot'" class="field-wrap" :class="{ 'field-focus': focusField === 'confirm' }">
 				<view class="field-icon-box" :class="{ 'icon-active': focusField === 'confirm' }">
-					<SvgIcon :svg="againPasswordIcon" :size="26" color="#ED317F" />
+					<svg-icon :svg="againPasswordIcon" :size="26" color="#ED317F" />
 				</view>
 				<input class="field-input" :password="!showPwd" placeholder="再次确认新密码"
 					placeholder-class="field-placeholder" v-model="formData.confirmPassword"

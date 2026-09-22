@@ -14,5 +14,5 @@ export type LoginResult = {
 
 /** 邮箱验证码返回 */
 export type VerifyCodeData = {
-	validTime : string;
+	validTime : number;
 };

@@ -2,7 +2,7 @@ package com.joy.controller;
 
 import com.joy.common.Result;
 import com.joy.config.apiPrefix.ApiPrefixAdminRestController;
-import com.joy.entity.sysConfig.SysConfig;
+import com.joy.entity.admin.sysConfig.SysConfig;
 import com.joy.service.SysWebConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

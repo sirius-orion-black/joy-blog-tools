@@ -21,7 +21,7 @@
 					<!-- 右侧小图标装饰 -->
 					<view class="header-icon-badge">
 						<text class="header-icon-text">
-							<SvgIcon :svg="addIcon" :size="24" />
+							<svg-icon :svg="addIcon" :size="24" />
 						</text>
 					</view>
 				</view>
@@ -29,7 +29,7 @@
 				<!-- 实底搜索框（在纯色背景上永远清晰） -->
 				<view class="search-bar">
 					<view class="search-icon">
-						<SvgIcon :svg="searchIcon" :size="24" />
+						<svg-icon :svg="searchIcon" :size="24" />
 					</view>
 					<input class="search-input" type="text" placeholder="搜五花肉、生抽、土豆..."
 						placeholder-style="color: #b0b8c4; font-size: 26rpx;" confirm-type="search"
@@ -43,13 +43,13 @@
 			<view class="tab-capsule">
 				<view class="tab-item" :class="{ active: currentTab === 0 }" @click="currentTab = 0">
 					<text class="tab-text">
-						<SvgIcon :svg="sideDishIcon" :size="24" color="#2e8b57" />
+						<svg-icon :svg="sideDishIcon" :size="24" color="#2e8b57" />
 						配菜
 					</text>
 				</view>
 				<view class="tab-item" :class="{ active: currentTab === 1 }" @click="currentTab = 1">
 					<text class="tab-text">
-						<SvgIcon :svg="condimentIcon" :size="24" />
+						<svg-icon :svg="condimentIcon" :size="24" />
 						调料
 					</text>
 				</view>

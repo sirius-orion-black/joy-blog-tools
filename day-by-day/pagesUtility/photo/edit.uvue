@@ -1,0 +1,945 @@
+<template>
+	<view class="page">
+		<CustomNavBar title="编辑证件照" />
+
+		<scroll-view class="content" direction="vertical" :show-scrollbar="false">
+			<!-- 预览区：左右并排 -->
+			<view class="preview-area">
+				<view class="preview-col">
+					<text class="preview-label">原图</text>
+					<view class="preview-frame">
+						<image class="preview-img" :src="filePath" mode="aspectFit"></image>
+						<view class="preview-badge"><text class="badge-text">{{ curSizeName }}</text></view>
+					</view>
+				</view>
+				<view class="preview-col">
+					<text class="preview-label">效果预览</text>
+					<!-- 核心：用 view + image，通过 CSS 实现换底+美颜近似 -->
+					<view class="preview-frame" :style="{ backgroundColor: curBg }">
+						<image v-if="cutoutSrc.length > 0" class="preview-img cutout-img" :src="cutoutSrc"
+							mode="aspectFit" :style="previewFilterStyle"></image>
+						<view v-else class="loading-mask">
+							<text class="loading-text">AI抠图中...</text>
+						</view>
+						<view class="preview-tip" v-if="beautyOn && (faceThin > 0 || eyeEnlarge > 0)">
+							<text class="tip-text">脸型调整以AI为准</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+			<!-- 1. 尺寸选择 -->
+			<view class="panel">
+				<text class="panel-title">📐 选择尺寸</text>
+				<view class="chip-scroll" direction="horizontal" :show-scrollbar="true">
+					<view class="chip-list">
+						<view class="chip" :class="{ 'chip-active': curSizeCode == (size['code'] as string) }"
+							v-for="(size, idx) in sizeList" :key="idx" @click="selSize(size)">
+							<text class="chip-text"
+								:class="{ 'chip-text-active': curSizeCode == (size['code'] as string) }">{{ size['name'] }}</text>
+						</view>
+					</view>
+				</view>
+
+				<view class="custom-row" v-if="curSizeCode == 'custom'">
+					<view class="input-group">
+						<text class="input-label">宽(px)</text>
+						<input class="input-box" type="number" v-model="customW" placeholder="295" />
+					</view>
+					<text class="input-x">×</text>
+					<view class="input-group">
+						<text class="input-label">高(px)</text>
+						<input class="input-box" type="number" v-model="customH" placeholder="413" />
+					</view>
+				</view>
+			</view>
+
+			<!-- 2. 底色选择 -->
+			<view class="panel">
+				<text class="panel-title">🎨 选择底色</text>
+				<view class="color-grid">
+					<view class="color-opt" v-for="(c, idx) in colors" :key="idx" @click="selColor(c)">
+						<view class="swatch" :class="{ 'swatch-active': curBg == (c['hex'] as string) }"
+							:style="{ backgroundColor: c['hex'] as string }">
+							<text v-if="curBg == (c['hex'] as string)" class="check-mark"
+								:style="{ color: (c['hex'] as string) == '#FFFFFF' ? '#ED317F' : '#FFFFFF' }">✓</text>
+						</view>
+						<text class="color-label">{{ c['name'] }}</text>
+					</view>
+				</view>
+
+				<view class="custom-color-bar">
+					<text class="cc-label">自定义</text>
+					<view class="cc-input-wrap">
+						<text class="cc-hash">#</text>
+						<input class="cc-input" v-model="customHex" placeholder="FF5733" maxlength="6" />
+					</view>
+					<view class="cc-apply" @click="applyCustomColor"><text class="cc-apply-text">应用</text></view>
+				</view>
+			</view>
+
+			<!-- 3. 智能美颜 -->
+			<view class="panel">
+				<view class="panel-header">
+					<text class="panel-title">💄 智能美颜</text>
+					<view class="toggle" :class="{ 'toggle-on': beautyOn }" @click="beautyOn = !beautyOn">
+						<view class="toggle-knob"></view>
+					</view>
+				</view>
+				<text class="panel-tip" v-if="!beautyOn">可选功能，开启后AI自动美肤美颜</text>
+
+				<view class="beauty-box" v-if="beautyOn">
+					<view class="slider-row">
+						<text class="slider-label">✨ 磨皮</text>
+						<slider class="slider" :value="skinSmooth" :min="0" :max="100" activeColor="#ED317F"
+							backgroundColor="#F0F0F5" :block-size="20" @change="onSmooth" />
+						<text class="slider-val">{{ skinSmooth }}</text>
+					</view>
+					<view class="slider-row">
+						<text class="slider-label">🌟 美白</text>
+						<slider class="slider" :value="skinWhiten" :min="0" :max="100" activeColor="#ED317F"
+							backgroundColor="#F0F0F5" :block-size="20" @change="onWhiten" />
+						<text class="slider-val">{{ skinWhiten }}</text>
+					</view>
+					<view class="slider-row">
+						<text class="slider-label">😊 瘦脸</text>
+						<slider class="slider" :value="faceThin" :min="0" :max="100" activeColor="#ED317F"
+							backgroundColor="#F0F0F5" :block-size="20" @change="onThin" />
+						<text class="slider-val">{{ faceThin }}</text>
+					</view>
+					<view class="slider-row">
+						<text class="slider-label">👁 大眼</text>
+						<slider class="slider" :value="eyeEnlarge" :min="0" :max="100" activeColor="#ED317F"
+							backgroundColor="#F0F0F5" :block-size="20" @change="onEye" />
+						<text class="slider-val">{{ eyeEnlarge }}</text>
+					</view>
+
+					<view class="preset-row">
+						<view class="preset-chip" @click="applyPreset('light')"><text class="preset-text">轻美颜</text>
+						</view>
+						<view class="preset-chip" @click="applyPreset('normal')"><text class="preset-text">自然</text>
+						</view>
+						<view class="preset-chip" @click="applyPreset('strong')"><text class="preset-text">精致</text>
+						</view>
+						<view class="preset-chip" @click="applyPreset('off')"><text class="preset-text">重置</text></view>
+					</view>
+				</view>
+			</view>
+
+			<!-- 4. 智能换装 -->
+			<view class="panel">
+				<view class="panel-header">
+					<text class="panel-title">👔 智能换装</text>
+					<view class="toggle" :class="{ 'toggle-on': suitOn }" @click="toggleSuit">
+						<view class="toggle-knob"></view>
+					</view>
+				</view>
+				<text class="panel-tip" v-if="!suitOn">可选功能，一键换上西装/衬衫/学士服</text>
+
+				<view class="suit-box" v-if="suitOn">
+					<view class="gender-row">
+						<view class="gender-chip" :class="{ 'gender-active': genderSel == 1 }" @click="genderSel = 1">
+							<text class="gender-text" :class="{ 'gender-text-active': genderSel == 1 }">👨 男装</text>
+						</view>
+						<view class="gender-chip" :class="{ 'gender-active': genderSel == 2 }" @click="genderSel = 2">
+							<text class="gender-text" :class="{ 'gender-text-active': genderSel == 2 }">👩 女装</text>
+						</view>
+					</view>
+
+					<scroll-view class="suit-scroll" direction="horizontal" :show-scrollbar="false">
+						<view class="suit-list">
+							<view class="suit-card" v-for="(suit, idx) in filteredSuits" :key="idx"
+								:class="{ 'suit-card-active': selSuitId == (suit['id'] as number) }"
+								@click="selSuit(suit)">
+								<image class="suit-thumb" :src="suit['thumbUrl'] as string" mode="aspectFit"></image>
+								<text class="suit-name"
+									:class="{ 'suit-name-active': selSuitId == (suit['id'] as number) }">{{ suit['name'] }}</text>
+							</view>
+						</view>
+					</scroll-view>
+				</view>
+			</view>
+
+			<!-- 输出设置 -->
+			<view class="panel">
+				<text class="panel-title">⚙️ 输出设置</text>
+				<view class="setting-row">
+					<text class="setting-label">DPI 分辨率</text>
+					<view class="dpi-chips">
+						<view class="dpi-chip" :class="{ 'dpi-active': curDpi == 300 }" @click="curDpi = 300">
+							<text class="dpi-text" :class="{ 'dpi-text-active': curDpi == 300 }">300</text>
+						</view>
+						<view class="dpi-chip" :class="{ 'dpi-active': curDpi == 350 }" @click="curDpi = 350">
+							<text class="dpi-text" :class="{ 'dpi-text-active': curDpi == 350 }">350</text>
+						</view>
+						<view class="dpi-chip" :class="{ 'dpi-active': curDpi == 600 }" @click="curDpi = 600">
+							<text class="dpi-text" :class="{ 'dpi-text-active': curDpi == 600 }">600</text>
+						</view>
+					</view>
+				</view>
+				<view class="setting-row">
+					<text class="setting-label">文件格式</text>
+					<view class="dpi-chips">
+						<view class="dpi-chip" :class="{ 'dpi-active': curFmt == 'jpg' }" @click="curFmt = 'jpg'">
+							<text class="dpi-text" :class="{ 'dpi-text-active': curFmt == 'jpg' }">JPG</text>
+						</view>
+						<view class="dpi-chip" :class="{ 'dpi-active': curFmt == 'png' }" @click="curFmt = 'png'">
+							<text class="dpi-text" :class="{ 'dpi-text-active': curFmt == 'png' }">PNG</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+			<view style="height: 180rpx;"></view>
+		</scroll-view>
+
+		<view class="bottom-bar">
+			<view class="submit-btn" :class="{ 'submit-disabled': busy }" @click="submit">
+				<text class="submit-text">{{ busy ? '处理中...' : '✨ 开始制作' }}</text>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script setup lang="uts">
+	import { ref, computed, watch } from 'vue'
+
+	import { getSizes, getSuits } from '@/api/idPhotoApi'
+	import { isSuccess } from '@/utils/request.uts';
+	import { get, upload } from '@/utils/request.uts'
+	import { getToken } from '@/utils/auth.uts'
+	import CustomNavBar from '@/components/CustomNavBar.uvue'
+
+	const filePath = ref('')
+	// 新增：存储后端返回的透明底抠图路径
+	const cutoutSrc = ref('')
+	const sizeList = ref([] as UTSJSONObject[])
+	const curSizeCode = ref('one_inch')
+	const curSizeName = ref('一寸')
+	const customW = ref('295')
+	const customH = ref('413')
+
+	const colors = ref([
+		{ name: '白底', hex: '#FFFFFF' }, { name: '蓝底', hex: '#438EDB' },
+		{ name: '红底', hex: '#FF0000' }, { name: '浅蓝', hex: '#73B8EA' },
+		{ name: '渐变蓝', hex: '#4A90D9' }, { name: '灰底', hex: '#CCCCCC' }
+	] as UTSJSONObject[])
+	const curBg = ref('#FFFFFF')
+	const curBgName = ref('白底')
+	const customHex = ref('')
+
+	const beautyOn = ref(false)
+	const skinSmooth = ref(30)
+	const skinWhiten = ref(20)
+	const faceThin = ref(15)
+	const eyeEnlarge = ref(10)
+
+	const suitOn = ref(false)
+	const genderSel = ref(1)
+	const allSuits = ref([] as UTSJSONObject[])
+	const selSuitId = ref(-1)
+
+	const curDpi = ref(300)
+	const curFmt = ref('jpg')
+	const busy = ref(false)
+
+	const filteredSuits = computed(() : UTSJSONObject[] => {
+		const gender = genderSel.value
+		return allSuits.value.filter((suit : UTSJSONObject) : boolean => {
+			const rawGender = suit['gender']
+			let sg = 0
+			if (rawGender != null) {
+				sg = rawGender as number
+			}
+			return sg == 0 || sg == gender
+		})
+	})
+
+	// 核心：用 computed 生成 CSS filter 字符串，完全避开 Canvas API 坑
+	const previewFilterStyle = computed(() : UTSJSONObject => {
+		if (!beautyOn.value) return {} as UTSJSONObject
+
+		const brightness = 1 + (skinWhiten.value / 200)
+		const contrast = 1 + (skinWhiten.value / 400)
+		const blur = skinSmooth.value / 20
+
+		let filterVal = 'brightness(' + brightness.toString() + ') contrast(' + contrast.toString() + ')'
+		if (blur > 0) {
+			filterVal += ' blur(' + blur.toString() + 'px)'
+		}
+
+		return { filter: filterVal } as UTSJSONObject
+	})
+
+	// 进入页面时自动获取透明底抠图（仅抠图，不调美颜/换装，成本极低）
+	function fetchCutout() {
+		if (filePath.value.length == 0) return
+
+		const fd : UTSJSONObject = { onlyCutout: '1' }
+		// upload('/photo/cutout', filePath.value, fd, getToken()).then((res) => {
+		//   if (res.code == 200 && res.data != null) {
+		//     const data = res.data as UTSJSONObject
+		//     const url = data['cutoutUrl']
+		//     if (url != null) {
+		//       cutoutSrc.value = url as string
+		//     }
+		//   }
+		// }).catch((_e: any | null) => {
+		//   // 抠图失败不影响主流程，右侧仅不显示预览而已
+		// })
+	}
+
+	const loadSizes = async () => {
+		const res = await getSizes();
+		if (isSuccess(res) && res.data != null && res.data.length > 0) {
+			sizeList.value = res.data as UTSJSONObject[]
+			sizeList.value.push({ name: '自定义', code: 'custom' } as UTSJSONObject)
+			syncSizeName()
+		}
+	}
+
+	const loadSuits = async () => {
+		const res = await getSuits();
+		if (isSuccess(res) && res.data != null && res.data.length > 0) {
+			allSuits.value = res.data as UTSJSONObject[]
+		}
+	}
+
+	function selSize(s : UTSJSONObject) {
+		curSizeCode.value = s['code'] as string
+		syncSizeName()
+	}
+
+	function syncSizeName() {
+		for (let i = 0; i < sizeList.value.length; i++) {
+			if ((sizeList.value[i]['code'] as string) == curSizeCode.value) {
+				curSizeName.value = sizeList.value[i]['name'] as string
+				break
+			}
+		}
+	}
+
+	function selColor(c : UTSJSONObject) {
+		curBg.value = c['hex'] as string
+		curBgName.value = c['name'] as string
+	}
+
+	function applyCustomColor() {
+		if (customHex.value.length == 6) {
+			curBg.value = '#' + customHex.value
+			curBgName.value = '自定义'
+		} else {
+			uni.showToast({ title: '请输入6位颜色值', icon: 'none' })
+		}
+	}
+
+	function onSmooth(e : UniSliderChangeEvent) { skinSmooth.value = e.detail.value }
+	function onWhiten(e : UniSliderChangeEvent) { skinWhiten.value = e.detail.value }
+	function onThin(e : UniSliderChangeEvent) { faceThin.value = e.detail.value }
+	function onEye(e : UniSliderChangeEvent) { eyeEnlarge.value = e.detail.value }
+
+	function applyPreset(p : string) {
+		if (p == 'light') { skinSmooth.value = 20; skinWhiten.value = 10; faceThin.value = 5; eyeEnlarge.value = 5 }
+		else if (p == 'normal') { skinSmooth.value = 40; skinWhiten.value = 25; faceThin.value = 15; eyeEnlarge.value = 10 }
+		else if (p == 'strong') { skinSmooth.value = 65; skinWhiten.value = 45; faceThin.value = 30; eyeEnlarge.value = 25 }
+		else { skinSmooth.value = 0; skinWhiten.value = 0; faceThin.value = 0; eyeEnlarge.value = 0 }
+	}
+
+	function toggleSuit() {
+		suitOn.value = !suitOn.value
+		if (suitOn.value && allSuits.value.length == 0) loadSuits()
+	}
+
+	function selSuit(s : UTSJSONObject) {
+		const id = s['id'] as number
+		selSuitId.value = (selSuitId.value == id) ? -1 : id
+	}
+
+	function submit() {
+		if (busy.value) return
+		if (getToken().length == 0) { uni.showToast({ title: '请先登录', icon: 'none' }); return }
+		if (suitOn.value && selSuitId.value < 0) { uni.showToast({ title: '请选择一套服装', icon: 'none' }); return }
+
+		busy.value = true
+		const fd : UTSJSONObject = {
+			sizeCode: curSizeCode.value, bgColor: curBg.value, bgColorName: curBgName.value,
+			format: curFmt.value, dpi: '' + curDpi.value,
+			beautyEnable: beautyOn.value ? '1' : '0',
+			skinSmooth: '' + skinSmooth.value, skinWhiten: '' + skinWhiten.value,
+			faceThin: '' + faceThin.value, eyeEnlarge: '' + eyeEnlarge.value,
+			suitEnable: (suitOn.value && selSuitId.value >= 0) ? '1' : '0',
+			suitId: '' + selSuitId.value
+		}
+		if (curSizeCode.value == 'custom') {
+			fd['widthPx'] = customW.value
+			fd['heightPx'] = customH.value
+		}
+
+		uni.showLoading({ title: 'AI处理中...' })
+		// 修复：移除 as UniNamespace.UploadFileOptions，直接使用对象字面量
+		uni.uploadFile({
+			url: '/photo/process',
+			filePath: filePath.value,
+			name: 'file',
+			formData: fd,
+			header: { 'Authorization': 'Bearer ' + getToken() },
+			success: (res) => {
+				uni.hideLoading(); busy.value = false
+				const d = JSON.parse(res.data) as UTSJSONObject
+				const code = d['code']
+				if (code != null && (code as number) == 200) {
+					const rec = d['data'] as UTSJSONObject
+					const recId = rec['id']
+					if (recId != null) {
+						uni.redirectTo({ url: '/pages/result/result?id=' + (recId as number) })
+					}
+				} else {
+					const msg = d['msg']
+					uni.showToast({ title: (msg != null ? msg as string : '处理失败'), icon: 'none' })
+				}
+			},
+			fail: () => {
+				uni.hideLoading(); busy.value = false
+				uni.showToast({ title: '网络错误', icon: 'none' })
+			}
+		})
+	}
+
+	onLoad((options : OnLoadOptions) => {
+		const fp = options['fp']
+		if (fp != null) filePath.value = decodeURIComponent(fp as string)
+
+		const sc = options['sc']
+		if (sc != null) curSizeCode.value = sc as string
+
+		const bc = options['bc']
+		if (bc != null) {
+			curBg.value = bc as string
+			const bn = options['bn']
+			curBgName.value = (bn != null ? bn as string : '自定义')
+		}
+
+		loadSizes()
+		loadSuits()
+		// 自动获取透明底用于右侧预览
+		fetchCutout()
+	})
+</script>
+
+<style lang="scss">
+	.page {
+		min-height: 100vh;
+		background-color: #F7F8FA;
+	}
+
+	.content {
+		min-height: 100vh;
+	}
+
+	.preview-area {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		gap: 20rpx;
+		padding: 30rpx 20rpx 10rpx;
+	}
+
+	.preview-col {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.preview-label {
+		font-size: 24rpx;
+		color: $text-sub;
+		margin-bottom: 12rpx;
+		font-weight: 600;
+	}
+
+	.preview-frame {
+		width: 320rpx;
+		height: 440rpx;
+		border-radius: $radius-md;
+		overflow: hidden;
+		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
+		position: relative;
+		border: 3rpx solid #fff;
+	}
+
+	.preview-img {
+		width: 320rpx;
+		height: 440rpx;
+	}
+
+	// 抠图图片需要支持 CSS filter
+	.cutout-img {
+		transition: filter 0.15s ease;
+	}
+
+	.loading-mask {
+		width: 320rpx;
+		height: 440rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: #f0f0f5;
+	}
+
+	.loading-text {
+		font-size: 24rpx;
+		color: $text-hint;
+	}
+
+	.preview-badge {
+		position: absolute;
+		top: 12rpx;
+		right: 12rpx;
+		background-color: rgba($primary, 0.92);
+		border-radius: 12rpx;
+		padding: 4rpx 14rpx;
+	}
+
+	.badge-text {
+		font-size: 20rpx;
+		color: #fff;
+		font-weight: 600;
+	}
+
+	.preview-tip {
+		position: absolute;
+		bottom: 12rpx;
+		left: 0;
+		right: 0;
+		background-color: rgba(0, 0, 0, 0.6);
+		padding: 6rpx 0;
+	}
+
+	.tip-text {
+		font-size: 20rpx;
+		color: #fff;
+		text-align: center;
+	}
+
+	.panel {
+		padding: 28rpx 30rpx 12rpx;
+	}
+
+	.panel-title {
+		font-size: 30rpx;
+		font-weight: 700;
+		color: $text-main;
+		display: block;
+	}
+
+	.panel-header {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.panel-tip {
+		font-size: 22rpx;
+		color: $text-hint;
+		display: block;
+		margin-top: 8rpx;
+	}
+
+	.chip-scroll {
+		width: 690rpx;
+		margin-top: 20rpx;
+	}
+
+	.chip-list {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 12rpx;
+	}
+
+	.chip {
+		background-color: #fff;
+		border: 2rpx solid $border;
+		border-radius: $radius-full;
+		padding: 16rpx 32rpx;
+	}
+
+	.chip-active {
+		background-color: $primary;
+		border-color: $primary;
+	}
+
+	.chip-text {
+		font-size: 26rpx;
+		color: $text-sub;
+	}
+
+	.chip-text-active {
+		color: #fff;
+		font-weight: 600;
+	}
+
+	.custom-row {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 16rpx;
+		margin-top: 20rpx;
+	}
+
+	.input-group {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 8rpx;
+	}
+
+	.input-label {
+		font-size: 22rpx;
+		color: $text-hint;
+	}
+
+	.input-box {
+		background-color: #fff;
+		border: 2rpx solid $border;
+		border-radius: 16rpx;
+		padding: 16rpx;
+		font-size: 28rpx;
+		color: $text-main;
+		text-align: center;
+	}
+
+	.input-x {
+		font-size: 32rpx;
+		color: $text-hint;
+		margin-top: 26rpx;
+	}
+
+	.color-grid {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 26rpx;
+		margin-top: 20rpx;
+	}
+
+	.color-opt {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 92rpx;
+	}
+
+	.swatch {
+		width: 76rpx;
+		height: 76rpx;
+		border-radius: 50%;
+		border: 4rpx solid $border;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.swatch-active {
+		border-color: $primary;
+		border-width: 6rpx;
+		box-shadow: 0 4rpx 20rpx rgba($primary, 0.3);
+	}
+
+	.check-mark {
+		font-size: 30rpx;
+		font-weight: bold;
+	}
+
+	.color-label {
+		font-size: 22rpx;
+		color: $text-sub;
+		margin-top: 10rpx;
+	}
+
+	.custom-color-bar {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 12rpx;
+		margin-top: 24rpx;
+		background-color: #fff;
+		border-radius: 16rpx;
+		padding: 14rpx 20rpx;
+	}
+
+	.cc-label {
+		font-size: 26rpx;
+		color: $text-sub;
+	}
+
+	.cc-input-wrap {
+		flex: 1;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		background-color: $bg;
+		border-radius: 12rpx;
+		padding: 8rpx 16rpx;
+	}
+
+	.cc-hash {
+		font-size: 28rpx;
+		color: $text-hint;
+		margin-right: 4rpx;
+	}
+
+	.cc-input {
+		font-size: 28rpx;
+		color: $text-main;
+		flex: 1;
+	}
+
+	.cc-apply {
+		background-image: $gradient-primary;
+		border-radius: 12rpx;
+		padding: 10rpx 24rpx;
+	}
+
+	.cc-apply-text {
+		font-size: 24rpx;
+		color: #fff;
+		font-weight: 600;
+	}
+
+	.toggle {
+		width: 92rpx;
+		height: 52rpx;
+		border-radius: $radius-full;
+		background-color: #E5E7EB;
+		position: relative;
+	}
+
+	.toggle-on {
+		background-color: $primary;
+	}
+
+	.toggle-knob {
+		width: 44rpx;
+		height: 44rpx;
+		border-radius: 50%;
+		background-color: #fff;
+		position: absolute;
+		top: 4rpx;
+		left: 4rpx;
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+	}
+
+	.toggle-on .toggle-knob {
+		left: 44rpx;
+	}
+
+	.beauty-box {
+		margin-top: 20rpx;
+		display: flex;
+		flex-direction: column;
+		gap: 20rpx;
+	}
+
+	.slider-row {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 12rpx;
+	}
+
+	.slider-label {
+		font-size: 25rpx;
+		color: $text-sub;
+		width: 96rpx;
+	}
+
+	.slider {
+		flex: 1;
+	}
+
+	.slider-val {
+		font-size: 24rpx;
+		color: $primary;
+		font-weight: 600;
+		width: 56rpx;
+		text-align: right;
+	}
+
+	.preset-row {
+		display: flex;
+		flex-direction: row;
+		gap: 16rpx;
+		margin-top: 8rpx;
+	}
+
+	.preset-chip {
+		flex: 1;
+		background-color: $primary-bg;
+		border-radius: $radius-full;
+		padding: 14rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.preset-text {
+		font-size: 24rpx;
+		color: $primary;
+		font-weight: 600;
+	}
+
+	.suit-box {
+		margin-top: 20rpx;
+	}
+
+	.gender-row {
+		display: flex;
+		flex-direction: row;
+		gap: 16rpx;
+		margin-bottom: 20rpx;
+	}
+
+	.gender-chip {
+		flex: 1;
+		background-color: #fff;
+		border: 2rpx solid $border;
+		border-radius: $radius-full;
+		padding: 16rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.gender-active {
+		background-color: $primary-bg;
+		border-color: $primary;
+	}
+
+	.gender-text {
+		font-size: 26rpx;
+		color: $text-sub;
+	}
+
+	.gender-text-active {
+		color: $primary;
+		font-weight: 600;
+	}
+
+	.suit-scroll {
+		width: 690rpx;
+	}
+
+	.suit-list {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 20rpx;
+		padding-bottom: 10rpx;
+	}
+
+	.suit-card {
+		width: 156rpx;
+		background-color: #fff;
+		border-radius: $radius-md;
+		overflow: hidden;
+		border: 3rpx solid transparent;
+		box-shadow: $shadow-card;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.suit-card-active {
+		border-color: $primary;
+	}
+
+	.suit-thumb {
+		width: 152rpx;
+		height: 152rpx;
+		background-color: $bg;
+	}
+
+	.suit-name {
+		font-size: 22rpx;
+		color: $text-sub;
+		text-align: center;
+		padding: 12rpx 8rpx;
+	}
+
+	.suit-name-active {
+		color: $primary;
+		font-weight: 600;
+	}
+
+	.setting-row {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 20rpx;
+	}
+
+	.setting-label {
+		font-size: 27rpx;
+		color: $text-sub;
+	}
+
+	.dpi-chips {
+		display: flex;
+		flex-direction: row;
+		gap: 14rpx;
+	}
+
+	.dpi-chip {
+		background-color: #fff;
+		border: 2rpx solid $border;
+		border-radius: 12rpx;
+		padding: 12rpx 28rpx;
+	}
+
+	.dpi-active {
+		background-color: $primary-bg;
+		border-color: $primary;
+	}
+
+	.dpi-text {
+		font-size: 26rpx;
+		color: $text-sub;
+	}
+
+	.dpi-text-active {
+		color: $primary;
+		font-weight: 600;
+	}
+
+	.bottom-bar {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding: 20rpx 30rpx 40rpx;
+		background-color: #fff;
+		box-shadow: 0 -4rpx 24rpx rgba(0, 0, 0, 0.04);
+	}
+
+	.submit-btn {
+		background-image: $gradient-primary;
+		border-radius: $radius-full;
+		padding: 30rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: $shadow-btn;
+	}
+
+	.submit-disabled {
+		opacity: 0.6;
+	}
+
+	.submit-text {
+		font-size: 34rpx;
+		font-weight: 700;
+		color: #fff;
+	}
+</style>

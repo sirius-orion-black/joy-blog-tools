@@ -1,6 +1,6 @@
 package com.joy.utils;
 
-import com.joy.dto.auth.CaptchaDto;
+import com.joy.dto.common.auth.CaptchaDto;
 import com.joy.enums.common.RedisConstant;
 import com.joy.enums.http.RequestCodeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -257,7 +257,7 @@ public class CaptchaCodeUtil {
      **/
     public static void saveImageCode(String key, String code) {
         RedisUtil redis = BeanUtil.getBean(RedisUtil.class);
-        redis.setex(RedisConstant.SliderVerificationCode.getValue() + "_" + key, code, Long.parseLong(RedisConstant.FiveMinutes.getValue().toString()));
+        redis.sets(RedisConstant.SliderVerificationCode.getValue() + "_" + key, code, Long.parseLong(RedisConstant.FiveMinutes.getValue().toString()));
     }
 
     /**

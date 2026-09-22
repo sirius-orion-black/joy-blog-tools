@@ -1,406 +1,401 @@
 <template>
-  <view class="page">
-    <!-- 极简导航栏 -->
-    <view class="navbar" :style="{ paddingTop: statusBarH + 'px' }">
-      <view class="navbar-inner">
-        <text class="navbar-title">智能证件照</text>
-        <view class="nav-btn" @click="goHistory">
-          <text class="nav-btn-text">📋 记录</text>
-        </view>
-      </view>
-    </view>
+	<view class="page">
+		<!-- 引用公共导航栏组件 -->
+		<CustomNavBar title="智能证件照">
+			<template #right>
+				<view class="nav-btn" @click="goHistory">
+					<text class="nav-btn-text">📋 记录</text>
+				</view>
+			</template>
+		</CustomNavBar>
 
-    <scroll-view class="content" :style="{ paddingTop: (statusBarH + 44) + 'px' }" direction="vertical" :show-scrollbar="false">
-      <!-- 主操作卡片 -->
-      <view class="main-card">
-        <view class="card-header">
-          <text class="card-title">制作证件照</text>
-          <text class="card-subtitle">选择规格后拍摄或导入照片</text>
-        </view>
+		<scroll-view class="content" direction="vertical" :show-scrollbar="false">
+			<!-- 核心操作卡片 -->
+			<view class="main-card">
+				<view class="card-header">
+					<text class="card-title">制作证件照</text>
+					<text class="card-subtitle">选择规格后拍摄或导入照片</text>
+				</view>
 
-        <!-- 尺寸选择 -->
-        <view class="field-group">
-          <text class="field-label">照片规格</text>
-          <scroll-view class="size-scroll" direction="horizontal" :show-scrollbar="false">
-            <view class="size-list">
-              <view
-                class="size-tag"
-                :class="{ 'size-tag-active': curSizeCode == (s['code'] as string) }"
-                v-for="(s, idx) in sizes"
-                :key="idx"
-                @click="selSize(s)"
-              >
-                <text class="size-tag-text" :class="{ 'size-tag-text-active': curSizeCode == (s['code'] as string) }">{{ s['name'] }}</text>
-              </view>
-            </view>
-          </scroll-view>
-        </view>
+				<!-- ✅ 尺寸选择区：改为自适应网格 -->
+				<view class="field-group">
+					<text class="field-label">照片规格</text>
+					<view class="size-grid">
+						<view class="size-tag" :class="{ 'size-tag-active': curSizeCode == (s['code'] as string) }"
+							v-for="(s, idx) in sizes" :key="idx" @click="selSize(s)">
+							<text class="size-tag-text"
+								:class="{ 'size-tag-text-active': curSizeCode == (s['code'] as string) }">{{ s['name'] }}</text>
+						</view>
+					</view>
+				</view>
 
-        <!-- 快捷底色 -->
-        <view class="field-group">
-          <text class="field-label">快捷底色 <text class="field-hint">(可选)</text></text>
-          <view class="color-row">
-            <view
-              class="color-dot-wrap"
-              v-for="(c, idx) in colors"
-              :key="idx"
-              @click="selQuickColor(c)"
-            >
-              <view
-                class="color-dot"
-                :class="{ 'color-dot-active': quickBgHex == (c['hex'] as string) }"
-                :style="{ backgroundColor: c['hex'] as string }"
-              ></view>
-            </view>
-            <view class="color-dot-wrap" @click="clearQuickColor">
-              <view class="color-dot color-dot-reset">
-                <text class="reset-icon">✕</text>
-              </view>
-            </view>
-          </view>
-        </view>
+				<!-- 快捷底色区 -->
+				<view class="field-group">
+					<view class="field-label-row">
+						<text class="field-label">快捷底色</text>
+						<text class="field-hint" v-if="quickBgHex.length > 0" @click="clearQuickColor">清除选择</text>
+					</view>
+					<view class="color-row">
+						<view class="color-dot-wrap" v-for="(c, idx) in colors" :key="idx" @click="selQuickColor(c)">
+							<view class="color-dot" :class="{ 'color-dot-active': quickBgHex == (c['hex'] as string) }"
+								:style="{ backgroundColor: c['hex'] as string }"></view>
+						</view>
+					</view>
+				</view>
 
-        <!-- 操作按钮 -->
-        <view class="action-area">
-          <view class="btn-primary" @click="pick('camera')">
-            <text class="btn-primary-icon">📷</text>
-            <text class="btn-primary-text">拍摄照片</text>
-          </view>
-          <view class="btn-secondary" @click="pick('album')">
-            <text class="btn-secondary-text">从相册选择</text>
-          </view>
-        </view>
-      </view>
+				<!-- 触发按钮组 -->
+				<view class="action-area">
+					<view class="btn-primary" @click="pick('camera')">
+						<text class="btn-primary-icon">📷</text>
+						<text class="btn-primary-text">立即拍摄</text>
+					</view>
+					<view class="btn-secondary" @click="pick('album')">
+						<text class="btn-secondary-text">从相册导入</text>
+					</view>
+				</view>
+			</view>
 
-      <!-- 拍摄贴士 -->
-      <view class="tips-section">
-        <text class="tips-title">拍摄小贴士</text>
-        <view class="tips-grid">
-          <view class="tip-item">
-            <text class="tip-icon">✅</text>
-            <text class="tip-text">正面平视镜头</text>
-          </view>
-          <view class="tip-item">
-            <text class="tip-icon">✅</text>
-            <text class="tip-text">光线均匀充足</text>
-          </view>
-          <view class="tip-item">
-            <text class="tip-icon">❌</text>
-            <text class="tip-text">避免过度仰拍</text>
-          </view>
-          <view class="tip-item">
-            <text class="tip-icon">❌</text>
-            <text class="tip-text">避免复杂背景</text>
-          </view>
-        </view>
-      </view>
+			<!-- 拍摄贴士卡片 -->
+			<view class="tips-card">
+				<text class="tips-title">💡 拍摄小贴士</text>
+				<view class="tips-grid">
+					<view class="tip-item">
+						<text class="tip-icon">✅</text>
+						<text class="tip-text">正面平视镜头</text>
+					</view>
+					<view class="tip-item">
+						<text class="tip-icon">✅</text>
+						<text class="tip-text">光线均匀充足</text>
+					</view>
+					<view class="tip-item">
+						<text class="tip-icon">❌</text>
+						<text class="tip-text">避免过度仰拍</text>
+					</view>
+					<view class="tip-item">
+						<text class="tip-icon">❌</text>
+						<text class="tip-text">避免复杂背景</text>
+					</view>
+				</view>
+			</view>
 
-      <view style="height: 60rpx;"></view>
-    </scroll-view>
-  </view>
+			<view style="height: 60rpx;"></view>
+		</scroll-view>
+	</view>
 </template>
 
 <script setup lang="uts">
-import { ref } from 'vue'
-import { get } from '@/utils/request.uts'
+	import { ref } from 'vue'
+	import CustomNavBar from '@/components/CustomNavBar.uvue'
 
-type SizeItem = { name: string; code: string }
+	import { getSizes } from '@/api/idPhotoApi'
+	import { isSuccess } from '@/utils/request.uts';
 
-const statusBarH = ref(0)
-const sizes = ref([] as UTSJSONObject[])
-const curSizeCode = ref('one_inch')
-const quickBgHex = ref('')
-const quickBgName = ref('')
+	type SizeItem = { name : string; code : string }
 
-const colors = ref([
-  { name: '白底', hex: '#FFFFFF' },
-  { name: '蓝底', hex: '#438EDB' },
-  { name: '红底', hex: '#FF0000' },
-  { name: '浅蓝', hex: '#73B8EA' },
-  { name: '渐变蓝', hex: '#4A90D9' },
-  { name: '灰底', hex: '#CCCCCC' }
-] as UTSJSONObject[])
+	const sizes = ref([] as UTSJSONObject[])
+	const curSizeCode = ref('one_inch')
+	const quickBgHex = ref('')
+	const quickBgName = ref('')
 
-function loadSizes() {
-  get<SizeItem[]>('/config/sizes').then((res) => {
-    if (res.code == 200 && res.data != null) {
-      const arr = res.data as SizeItem[]
-      const list: UTSJSONObject[] = []
-      for (let i = 0; i < arr.length; i++) {
-        list.push({ name: arr[i].name, code: arr[i].code } as UTSJSONObject)
-      }
-      sizes.value = list
-    }
-  }).catch((_e: any | null) => {})
-}
+	const colors = ref([
+		{ name: '白底', hex: '#FFFFFF' },
+		{ name: '蓝底', hex: '#438EDB' },
+		{ name: '红底', hex: '#FF0000' },
+		{ name: '浅蓝', hex: '#73B8EA' },
+		{ name: '渐变蓝', hex: '#4A90D9' },
+		{ name: '灰底', hex: '#CCCCCC' }
+	] as UTSJSONObject[])
 
-function selSize(s: UTSJSONObject) {
-  curSizeCode.value = s['code'] as string
-}
+	const loadSizes = async () => {
+		const res = await getSizes();
+		if (isSuccess(res) && res.data != null && res.data.length > 0) {
+			const arr = res.data as SizeItem[]
+			const list : UTSJSONObject[] = []
+			for (let i = 0; i < arr.length; i++) {
+				list.push({ name: arr[i].name, code: arr[i].code } as UTSJSONObject)
+			}
+			sizes.value = list
+		}
+	}
 
-function selQuickColor(c: UTSJSONObject) {
-  quickBgHex.value = c['hex'] as string
-  quickBgName.value = c['name'] as string
-}
+	function selSize(s : UTSJSONObject) {
+		curSizeCode.value = s['code'] as string
+	}
 
-function clearQuickColor() {
-  quickBgHex.value = ''
-  quickBgName.value = ''
-}
+	function selQuickColor(c : UTSJSONObject) {
+		quickBgHex.value = c['hex'] as string
+		quickBgName.value = c['name'] as string
+	}
 
-function pick(src: string) {
-  uni.chooseImage({
-    count: 1,
-    sourceType: [src],
-    sizeType: ['original'],
-    success: (res) => {
-      let url = '/pages/edit/edit?fp=' + encodeURIComponent(res.tempFilePaths[0])
-      url += '&sc=' + curSizeCode.value
-      if (quickBgHex.value.length > 0) {
-        url += '&bc=' + quickBgHex.value + '&bn=' + quickBgName.value
-      }
-      uni.navigateTo({ url })
-    },
-    fail: (_e) => {}
-  } as ChooseImageOptions)
-}
+	function clearQuickColor() {
+		quickBgHex.value = ''
+		quickBgName.value = ''
+	}
 
-function goHistory() {
-  uni.navigateTo({ url: '/pages/history/history' })
-}
+	function pick(src : string) {
+		uni.chooseImage({
+			count: 1,
+			sourceType: [src],
+			sizeType: ['original'],
+			success: (res) => {
+				let url = '/pagesUtility/photo/edit?fp=' + encodeURIComponent(res.tempFilePaths[0])
+				url += '&sc=' + curSizeCode.value
+				if (quickBgHex.value.length > 0) {
+					url += '&bc=' + quickBgHex.value + '&bn=' + quickBgName.value
+				}
+				uni.navigateTo({ url })
+			},
+			fail: (_e) => { }
+		} as ChooseImageOptions)
+	}
 
-onLoad((_options: OnLoadOptions) => {
-  statusBarH.value = uni.getSystemInfoSync().statusBarHeight ?? 0
-  loadSizes()
-})
+	function goHistory() {
+		uni.navigateTo({ url: '/pagesUtility/photo/history' })
+	}
+
+	onLoad((_options : OnLoadOptions) => {
+		loadSizes()
+	})
 </script>
 
 <style lang="scss">
-.page {
-  min-height: 100vh;
-  background-color: #F5F6FA;
-}
+	.page {
+		min-height: 100vh;
+		background-color: #F7F8FA;
+	}
 
-/* ====== 导航栏 ====== */
-.navbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 999;
-  background-color: #FFFFFF;
-  border-bottom: 1rpx solid #F0F0F0;
-}
-.navbar-inner {
-  height: 44px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 32rpx;
-}
-.navbar-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: #1A1A1A;
-  letter-spacing: 0.5px;
-}
-.nav-btn {
-  padding: 8rpx 20rpx;
-  border-radius: 20rpx;
-  background-color: #F5F6FA;
-}
-.nav-btn-text {
-  font-size: 24rpx;
-  color: #666;
-  font-weight: 500;
-}
+	/* ====== 导航栏右侧按钮样式 ====== */
+	.nav-btn {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		padding: 10rpx 20rpx;
+		border-radius: 24rpx;
+		background-color: rgba(0, 0, 0, 0.04);
+	}
 
-/* ====== 内容区 ====== */
-.content {
-  min-height: 100vh;
-}
+	.nav-btn-text {
+		font-size: 24rpx;
+		color: #ffffff;
+		font-weight: 500;
+	}
 
-/* ====== 主卡片 ====== */
-.main-card {
-  margin: 24rpx 24rpx 0;
-  background-color: #FFFFFF;
-  border-radius: 24rpx;
-  padding: 36rpx 32rpx 32rpx;
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
-}
-.card-header {
-  margin-bottom: 32rpx;
-}
-.card-title {
-  font-size: 36rpx;
-  font-weight: 800;
-  color: #1A1A1A;
-  display: block;
-  margin-bottom: 8rpx;
-}
-.card-subtitle {
-  font-size: 24rpx;
-  color: #999;
-  display: block;
-}
+	/* ====== 内容区 ====== */
+	.content {
+		min-height: 100vh;
+	}
 
-/* ====== 字段组 ====== */
-.field-group {
-  margin-bottom: 28rpx;
-}
-.field-label {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #333;
-  display: block;
-  margin-bottom: 16rpx;
-}
-.field-hint {
-  font-size: 22rpx;
-  color: #BBB;
-  font-weight: 400;
-}
+	/* ====== 主操作卡片 ====== */
+	.main-card {
+		margin: 20rpx 24rpx 0;
+		background-color: #FFFFFF;
+		border-radius: 28rpx;
+		padding: 36rpx 32rpx 32rpx;
+		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.03);
+	}
 
-/* 尺寸标签 */
-.size-scroll { width: 100%; }
-.size-list {
-  display: flex;
-  flex-direction: row;
-  gap: 14rpx;
-}
-.size-tag {
-  padding: 14rpx 28rpx;
-  border-radius: 16rpx;
-  background-color: #F5F6FA;
-  border: 2rpx solid transparent;
-}
-.size-tag-active {
-  background-color: rgba($primary, 0.08);
-  border-color: $primary;
-}
-.size-tag-text {
-  font-size: 26rpx;
-  color: #666;
-  font-weight: 500;
-}
-.size-tag-text-active {
-  color: $primary;
-  font-weight: 700;
-}
+	.card-header {
+		margin-bottom: 36rpx;
+	}
 
-/* 底色圆点 */
-.color-row {
-  display: flex;
-  flex-direction: row;
-  gap: 20rpx;
-  align-items: center;
-}
-.color-dot-wrap {
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.color-dot {
-  width: 52rpx;
-  height: 52rpx;
-  border-radius: 50%;
-  border: 3rpx solid #E8E8E8;
-  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.06);
-}
-.color-dot-active {
-  border-color: $primary;
-  border-width: 4rpx;
-  box-shadow: 0 0 0 4rpx rgba($primary, 0.15);
-}
-.color-dot-reset {
-  background-color: #F5F6FA;
-  border-color: #E0E0E0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.reset-icon {
-  font-size: 22rpx;
-  color: #BBB;
-}
+	.card-title {
+		font-size: 38rpx;
+		font-weight: 800;
+		color: #1A1A1A;
+		display: block;
+		margin-bottom: 10rpx;
+		letter-spacing: 0.5px;
+	}
 
-/* ====== 操作按钮 ====== */
-.action-area {
-  display: flex;
-  flex-direction: column;
-  gap: 18rpx;
-  margin-top: 8rpx;
-}
-.btn-primary {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 10rpx;
-  height: 96rpx;
-  border-radius: 48rpx;
-  background-color: $primary;
-  box-shadow: 0 6rpx 20rpx rgba($primary, 0.25);
-}
-.btn-primary-icon {
-  font-size: 32rpx;
-}
-.btn-primary-text {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-.btn-secondary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 88rpx;
-  border-radius: 44rpx;
-  background-color: #F5F6FA;
-}
-.btn-secondary-text {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #555;
-}
+	.card-subtitle {
+		font-size: 24rpx;
+		color: #999;
+		display: block;
+	}
 
-/* ====== 贴士区 ====== */
-.tips-section {
-  margin: 24rpx 24rpx 0;
-  background-color: #FFFFFF;
-  border-radius: 24rpx;
-  padding: 28rpx 32rpx;
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
-}
-.tips-title {
-  font-size: 26rpx;
-  font-weight: 700;
-  color: #333;
-  display: block;
-  margin-bottom: 20rpx;
-}
-.tips-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 16rpx;
-}
-.tip-item {
-  width: calc(50% - 8rpx);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10rpx;
-  background-color: #FAFBFC;
-  border-radius: 14rpx;
-  padding: 16rpx 18rpx;
-}
-.tip-icon {
-  font-size: 26rpx;
-}
-.tip-text {
-  font-size: 24rpx;
-  color: #666;
-}
+	/* ====== 字段组通用 ====== */
+	.field-group {
+		margin-bottom: 32rpx;
+	}
+
+	.field-label-row {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 18rpx;
+	}
+
+	.field-label {
+		font-size: 28rpx;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.field-hint {
+		font-size: 22rpx;
+		color: $primary;
+		font-weight: 500;
+	}
+
+	/* ====== ✅ 尺寸网格布局（核心修改） ====== */
+	.size-grid {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 16rpx;
+	}
+
+	.size-tag {
+		/* 每行3个：(100% - 2个gap) / 3 */
+		width: calc((100% - 32rpx) / 3);
+		height: 72rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 18rpx;
+		background-color: #F5F6FA;
+		border: 2rpx solid transparent;
+	}
+
+	.size-tag-active {
+		background-color: rgba($primary, 0.08);
+		border-color: $primary;
+	}
+
+	.size-tag-text {
+		font-size: 26rpx;
+		color: #666;
+		font-weight: 500;
+		text-align: center;
+		overflow: hidden;
+		lines: 1;
+		text-overflow: ellipsis;
+	}
+
+	.size-tag-text-active {
+		color: $primary;
+		font-weight: 700;
+	}
+
+	/* ====== 底色圆点 ====== */
+	.color-row {
+		display: flex;
+		flex-direction: row;
+		gap: 24rpx;
+		align-items: center;
+	}
+
+	.color-dot-wrap {
+		width: 68rpx;
+		height: 68rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.color-dot {
+		width: 52rpx;
+		height: 52rpx;
+		border-radius: 50%;
+		border: 3rpx solid #E8E8E8;
+		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+	}
+
+	.color-dot-active {
+		border-color: $primary;
+		border-width: 4rpx;
+		box-shadow: 0 0 0 4rpx rgba($primary, 0.12);
+		transform: scale(1.08);
+	}
+
+	/* ====== 操作按钮 ====== */
+	.action-area {
+		display: flex;
+		flex-direction: column;
+		gap: 20rpx;
+		margin-top: 12rpx;
+	}
+
+	.btn-primary {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: 12rpx;
+		height: 100rpx;
+		border-radius: 50rpx;
+		background-color: $primary;
+		box-shadow: 0 8rpx 24rpx rgba($primary, 0.25);
+	}
+
+	.btn-primary-icon {
+		font-size: 34rpx;
+	}
+
+	.btn-primary-text {
+		font-size: 32rpx;
+		font-weight: 700;
+		color: #FFFFFF;
+		letter-spacing: 1px;
+	}
+
+	.btn-secondary {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 92rpx;
+		border-radius: 46rpx;
+		background-color: #F5F6FA;
+	}
+
+	.btn-secondary-text {
+		font-size: 28rpx;
+		font-weight: 600;
+		color: #555;
+	}
+
+	/* ====== 贴士卡片 ====== */
+	.tips-card {
+		margin: 20rpx 24rpx 0;
+		background-color: #FFFFFF;
+		border-radius: 28rpx;
+		padding: 28rpx 32rpx;
+		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.03);
+	}
+
+	.tips-title {
+		font-size: 28rpx;
+		font-weight: 700;
+		color: #333;
+		display: block;
+		margin-bottom: 20rpx;
+	}
+
+	.tips-grid {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 16rpx;
+	}
+
+	.tip-item {
+		width: calc(50% - 8rpx);
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		gap: 10rpx;
+		background-color: #FAFBFC;
+		border-radius: 16rpx;
+		padding: 18rpx 20rpx;
+	}
+
+	.tip-icon {
+		font-size: 26rpx;
+	}
+
+	.tip-text {
+		font-size: 24rpx;
+		color: #666;
+	}
 </style>

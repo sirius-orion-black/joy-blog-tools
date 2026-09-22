@@ -53,7 +53,7 @@
 				<view class="grid-container">
 					<view class="grid-item" v-for="(item, index) in funcList" :key="index" @click="handleItemClick(item)">
 						<view class="icon-box">
-							<SvgIcon :svg="item.icon" :size="30" color="#333333" />
+							<svg-icon :svg="item.icon" :size="30" color="#333333" />
 							<!-- 角标 -->
 							<text v-if="item.badge" class="badge">{{ item.badge }}</text>
 						</view>

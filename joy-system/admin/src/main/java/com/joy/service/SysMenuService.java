@@ -1,9 +1,8 @@
 package com.joy.service;
 
 import com.joy.common.Result;
-import com.joy.entity.sysConfig.SysConfig;
-import com.joy.entity.sysConfig.SysMenu;
-import com.joy.entity.sysConfig.SysMenuIcon;
+import com.joy.entity.admin.sysConfig.SysMenu;
+import com.joy.entity.admin.sysConfig.SysMenuIcon;
 
 import java.util.List;
 

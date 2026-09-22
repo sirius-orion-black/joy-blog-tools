@@ -1,6 +1,6 @@
 package com.joy.utils;
 
-import com.joy.entity.sysConfig.SysConfig;
+import com.joy.entity.admin.sysConfig.SysConfig;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;

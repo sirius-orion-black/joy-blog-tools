@@ -1,0 +1,53 @@
+<template>
+  <uni-nav-bar
+    :title="title"
+    right-class="nav-right"
+    class="custom-nav-bar"
+    :style="{ backgroundColor: '#ED317F' }"
+	navigationBarTextStyle="white"
+  >
+    <template #right>
+      <view :style="{ transform: 'translateX(-' + rightMargin + 'px)' }">
+        <slot name="right"></slot>
+      </view>
+    </template>
+  </uni-nav-bar>
+</template>
+
+<script setup lang="uts">
+import { ref, onMounted } from 'vue'
+
+defineProps({
+  title: { type: String, default: '' }
+})
+
+const rightMargin = ref(16)
+
+onMounted(() => {
+  // #ifdef MP-WEIXIN
+  const menuButtonInfo = uni.getMenuButtonBoundingClientRect()
+  const windowInfo = uni.getWindowInfo()
+  rightMargin.value = windowInfo.windowWidth - menuButtonInfo.right + menuButtonInfo.width
+  // #endif
+})
+</script>
+
+<style lang="scss">
+/* :style 已处理背景色，这里仅兜底处理内部子元素的边框和背景 */
+// .custom-nav-bar {
+//   ::v-deep .uni-nav-bar__border {
+//     display: none !important;
+//   }
+
+//   /* 防止内部子元素有独立背景色导致 :style 被遮挡 */
+//   ::v-deep .uni-nav-bar__content,
+//   ::v-deep .uni-nav-bar__title {
+//     background-color: transparent !important;
+//   }
+// }
+
+// ::v-deep .nav-right {
+//   display: flex;
+//   align-items: center;
+// }
+</style>

@@ -1,6 +1,6 @@
 package com.joy.service;
 
-import com.joy.dto.stat.StatTrackDTO;
+import com.joy.dto.admin.stat.StatTrackDTO;
 
 import java.util.Map;
 

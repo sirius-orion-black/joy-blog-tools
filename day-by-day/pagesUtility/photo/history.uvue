@@ -1,12 +1,124 @@
-<!-- pages/history/history.uvue -->
 <template>
-  <view class="container">
-    123
+  <view class="page">
+    <view class="guide-card">
+      <text class="guide-title">📸 拍摄指南</text>
+      <view class="guide-list">
+        <view class="guide-item" v-for="(t, i) in tips" :key="i">
+          <view class="guide-dot"></view>
+          <text class="guide-text">{{ t }}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="example-section">
+      <text class="ex-label">拍摄示例</text>
+      <view class="example-row">
+        <view class="ex-card ex-good">
+          <text class="ex-emoji">✅</text><text class="ex-text">正面平视</text>
+        </view>
+        <view class="ex-card ex-good">
+          <text class="ex-emoji">✅</text><text class="ex-text">光线充足</text>
+        </view>
+        <view class="ex-card ex-bad">
+          <text class="ex-emoji">❌</text><text class="ex-text">过度仰拍</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="btn-group">
+      <view class="btn-primary" @click="pick('camera')">
+        <text class="btn-primary-text">📷 打开相机拍摄</text>
+      </view>
+      <view class="btn-outline" @click="pick('album')">
+        <text class="btn-outline-text">🖼️ 从相册选择</text>
+      </view>
+    </view>
   </view>
 </template>
 
 <script lang="uts">
+export default {
+  data() {
+    return {
+      source: 'album' as string,
+      sizeCode: '' as string,
+      bgColor: '' as string,
+      bgColorName: '' as string,
+      tips: ['正面免冠,表情自然', '光线均匀,避免阴影', '建议纯色背景前拍摄', '头部占画面2/3为佳'] as string[]
+    }
+  },
+  onLoad(options: OnLoadOptions) {
+    const src = options['source']
+    if (src != null) this.source = src
+    const sc = options['sizeCode']
+    if (sc != null) this.sizeCode = sc
+    const bc = options['bgColor']
+    if (bc != null) this.bgColor = bc
+    const bn = options['bgColorName']
+    if (bn != null) this.bgColorName = bn
+
+    if (this.source == 'camera') {
+      this.pick('camera')
+    } else {
+      setTimeout(() => { this.pick('album') }, 300)
+    }
+  },
+  methods: {
+    pick(src: string) {
+      uni.chooseImage({
+        count: 1,
+        sourceType: [src],
+        sizeType: ['original'],
+        success: (res) => {
+          let url = '/pages/edit/edit?fp=' + encodeURIComponent(res.tempFilePaths[0])
+          if (this.sizeCode.length > 0) url += '&sc=' + this.sizeCode
+          if (this.bgColor.length > 0) url += '&bc=' + this.bgColor + '&bn=' + this.bgColorName
+          uni.navigateTo({ url: url })
+        },
+        fail: (_e) => {}
+      } as ChooseImageOptions)
+    }
+  }
+}
 </script>
 
 <style>
+.page { min-height: 100vh; background-color: #F7F8FC; padding: 30rpx; }
+.guide-card {
+  background-color: #FFFFFF; border-radius: 28rpx; padding: 36rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04); margin-bottom: 30rpx;
+}
+.guide-title { font-size: 32rpx; font-weight: 700; color: #1A1A2E; display: block; margin-bottom: 24rpx; }
+.guide-list { display: flex; flex-direction: column; gap: 16rpx; }
+.guide-item { display: flex; flex-direction: row; align-items: center; }
+.guide-dot { width: 12rpx; height: 12rpx; border-radius: 50%; background-color: #ED317F; margin-right: 14rpx; }
+.guide-text { font-size: 28rpx; color: #6B7280; }
+
+.ex-label { font-size: 30rpx; font-weight: 700; color: #1A1A2E; display: block; margin-bottom: 20rpx; }
+.example-section { margin-bottom: 40rpx; }
+.example-row { display: flex; flex-direction: row; gap: 20rpx; }
+.ex-card {
+  flex: 1; border-radius: 20rpx; padding: 32rpx 12rpx;
+  display: flex; flex-direction: column; align-items: center; gap: 12rpx;
+  border-width: 2rpx; border-style: solid;
+}
+.ex-good { background-color: #F0FFF4; border-color: #C6F6D5; }
+.ex-bad { background-color: #FFF5F5; border-color: #FED7D7; }
+.ex-emoji { font-size: 40rpx; }
+.ex-text { font-size: 24rpx; color: #6B7280; }
+
+.btn-group { display: flex; flex-direction: column; gap: 24rpx; padding-top: 10rpx; }
+.btn-primary {
+  background-image: linear-gradient(135deg, #ED317F, #FF6B9D);
+  border-radius: 999rpx; padding: 32rpx;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8rpx 32rpx rgba(237, 49, 127, 0.30);
+}
+.btn-primary-text { font-size: 32rpx; font-weight: 700; color: #FFFFFF; }
+.btn-outline {
+  background-color: #FFFFFF; border-width: 3rpx; border-style: solid; border-color: #ED317F;
+  border-radius: 999rpx; padding: 28rpx;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-outline-text { font-size: 30rpx; font-weight: 700; color: #ED317F; }
 </style>

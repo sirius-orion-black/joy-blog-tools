@@ -1,7 +1,7 @@
 package com.joy.controller;
 
 import com.joy.config.apiPrefix.ApiPrefixInfraRestController;
-import com.joy.dto.stat.StatTrackDTO;
+import com.joy.dto.admin.stat.StatTrackDTO;
 import com.joy.service.StatService;
 import com.joy.utils.DeviceInfoUtil;
 import jakarta.servlet.http.HttpServletRequest;

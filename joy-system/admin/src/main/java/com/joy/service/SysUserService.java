@@ -2,11 +2,11 @@ package com.joy.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.joy.common.Result;
-import com.joy.dto.sysUser.SysChangePasswordDto;
-import com.joy.dto.sysUser.SysUserDto;
-import com.joy.dto.sysUser.UserMenuDto;
-import com.joy.entity.sysConfig.SysMenu;
-import com.joy.entity.sysUser.SysUser;
+import com.joy.dto.admin.sysUser.SysChangePasswordDto;
+import com.joy.dto.admin.sysUser.SysUserDto;
+import com.joy.dto.admin.sysUser.UserMenuDto;
+import com.joy.entity.admin.sysConfig.SysMenu;
+import com.joy.entity.admin.sysUser.SysUser;
 
 import java.util.List;
 import java.util.Map;

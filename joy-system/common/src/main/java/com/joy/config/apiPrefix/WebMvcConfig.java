@@ -31,6 +31,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 为后台模块Controller添加 /admin 前缀
         configure.addPathPrefix("/admin",
                 c -> c.isAnnotationPresent(ApiPrefixAdminRestController.class));
+        // 为吾家朝夕模块Controller添加 /day 前缀
+        configure.addPathPrefix("/day",
+                c -> c.isAnnotationPresent(ApiPrefixDayByDayRestController.class));
     }
 
 

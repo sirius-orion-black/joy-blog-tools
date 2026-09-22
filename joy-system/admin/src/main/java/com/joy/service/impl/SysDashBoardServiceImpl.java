@@ -1,6 +1,6 @@
 package com.joy.service.impl;
 
-import com.joy.mapper.stat.StatDailyTrafficMapper;
+import com.joy.mapper.admin.stat.StatDailyTrafficMapper;
 import com.joy.service.SysDashBoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

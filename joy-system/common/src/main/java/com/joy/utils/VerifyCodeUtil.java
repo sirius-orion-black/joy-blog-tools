@@ -4,8 +4,9 @@ import com.aliyun.dm20151123.Client;
 import com.aliyun.dm20151123.models.SingleSendMailRequest;
 import com.aliyun.teaopenapi.models.Config;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.joy.entity.sysConfig.SysCloudMail;
-import com.joy.entity.sysConfig.SysConfigMail;
+import com.joy.entity.admin.sysConfig.SysCloudCredential;
+import com.joy.entity.admin.sysConfig.SysCloudMail;
+import com.joy.entity.admin.sysConfig.SysConfigMail;
 import com.joy.enums.http.RequestCodeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -126,7 +127,7 @@ public class VerifyCodeUtil {
      * 发送成功后调用：设置发送间隔标记
      */
     public static void markSent(String email) {
-        redis().setex(PREFIX_EMAIL_INTERVAL + email, "1", EMAIL_INTERVAL);
+        redis().sets(PREFIX_EMAIL_INTERVAL + email, "1", EMAIL_INTERVAL);
     }
 
     /**
@@ -134,7 +135,7 @@ public class VerifyCodeUtil {
      */
     public static void saveCode(String key, String prefixCode, String code, Integer validTime) {
         RedisUtil redis = redis();
-        redis.setex(prefixCode + key, code, validTime);
+        redis.sets(prefixCode + key, code, validTime);
         redis.del(PREFIX_ERROR + key); // 重置错误次数
     }
 
@@ -154,7 +155,7 @@ public class VerifyCodeUtil {
         executor.execute(() -> {
             try {
                 RedisUtil redis = redis();
-                redis.setex(prefixCode + key, code, validTime);
+                redis.sets(prefixCode + key, code, validTime);
                 redis.del(PREFIX_ERROR + key);  // 重置错误次数
                 log.debug("验证码异步保存成功，邮箱：{}", key);
             } catch (Exception e) {
@@ -360,17 +361,17 @@ public class VerifyCodeUtil {
     }
 
     /**
-     *
      * @param verificationCode 验证码
      * @param toAccount        目标邮箱地址
      * @param mail             邮箱配置
+     * @param credential
      * @return 是否发送成功
      */
-    public static boolean sendCloudEmail(String verificationCode, String toAccount, SysCloudMail mail) throws Exception {
+    public static boolean sendCloudEmail(String verificationCode, String toAccount, SysCloudMail mail, SysCloudCredential credential) throws Exception {
         try {
             Config clientConfig = new Config()
-                    .setAccessKeyId(mail.getAccessKeyId())
-                    .setAccessKeySecret(mail.getAccessKeySecret());
+                    .setAccessKeyId(credential.getAccessKeyId())
+                    .setAccessKeySecret(credential.getAccessKeySecret());
             clientConfig.endpoint = "dm.aliyuncs.com";
             Client client = new Client(clientConfig);
             // 构造模板变量 JSON（key 必须与控制台模板占位符一致）

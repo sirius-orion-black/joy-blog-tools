@@ -2,8 +2,8 @@ package com.joy.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.joy.entity.sysConfig.SysConfig;
-import com.joy.mapper.sysConfig.SysConfigMapper;
+import com.joy.entity.admin.sysConfig.SysConfig;
+import com.joy.mapper.admin.sysConfig.SysConfigMapper;
 import com.joy.service.WebConfigService;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.stereotype.Service;

@@ -2,11 +2,11 @@ package com.joy.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.entity.blog.content.ContentBlogpost;
-import com.joy.entity.sysUser.SysUser;
-import com.joy.entity.common.user.User;
+import com.joy.entity.admin.sysUser.SysUser;
+import com.joy.entity.common.User;
 import com.joy.mapper.blog.content.ContentBlogpostMapper;
-import com.joy.mapper.sysUser.SysUserMapper;
-import com.joy.mapper.common.user.UserMapper;
+import com.joy.mapper.admin.sysUser.SysUserMapper;
+import com.joy.mapper.common.UserMapper;
 import com.joy.service.ArticleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

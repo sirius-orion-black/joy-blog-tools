@@ -1,1 +1,15 @@
-import { post, type ApiResponse, type RequestOptions } from '@/utils/request.uts';
+import { post,get, type ApiResponse, type RequestOptions } from '@/utils/request.uts';
+
+import { SizeItem } from '@/types/photoType';
+
+export function getSizes() : Promise<ApiResponse<SizeItem[]>> {
+	return get<SizeItem[]>('day/id/photo/sizes', {} as UTSJSONObject, {
+		autoToast: false
+	} as RequestOptions);
+}
+
+export function getSuits() : Promise<ApiResponse<SizeItem[]>> {
+	return get<SizeItem[]>('day/id/photo/suits', {} as UTSJSONObject, {
+		autoToast: false
+	} as RequestOptions);
+}

@@ -38,7 +38,7 @@
 						confirm-type="search" :adjust-position="false" @confirm="performSearch" @blur="handleBlur"
 						@click.stop />
 					<view class="search-icon" @click.stop="handleSearchClick">
-						<SvgIcon :svg="searchIcon" :size="24" />
+						<svg-icon :svg="searchIcon" :size="24" />
 					</view>
 					<text class="search-placeholder" :class="{ 'hidden': isSearch || keyword.length > 0 }"
 						@click.stop="toogleSearch">
@@ -85,7 +85,7 @@
 		<view class="kitchen-cart">
 			<view class="cart-main">
 				<view class="cart-icon">
-					<SvgIcon :svg="shopCardIcon" :size="30" color="#ED317F" />
+					<svg-icon :svg="shopCardIcon" :size="30" color="#ED317F" />
 				</view>
 				<view class="random-food">随机选菜</view>
 				<view class="invite-btn">邀请下单</view>

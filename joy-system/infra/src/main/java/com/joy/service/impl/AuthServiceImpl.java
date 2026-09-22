@@ -10,19 +10,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.joy.common.Result;
-import com.joy.dto.auth.EmailVerifyDto;
-import com.joy.dto.user.*;
-import com.joy.entity.common.miniProgram.MiniProgramInfo;
-import com.joy.entity.sysConfig.SysCloudMail;
-import com.joy.entity.sysConfig.SysConfig;
-import com.joy.entity.sysConfig.SysConfigMail;
-import com.joy.entity.common.user.User;
+import com.joy.dto.common.auth.EmailVerifyDto;
+import com.joy.dto.common.user.*;
+import com.joy.entity.admin.sysConfig.SysCloudCredential;
+import com.joy.entity.common.MiniProgramInfo;
+import com.joy.entity.admin.sysConfig.SysCloudMail;
+import com.joy.entity.admin.sysConfig.SysConfig;
+import com.joy.entity.admin.sysConfig.SysConfigMail;
+import com.joy.entity.common.User;
 import com.joy.enums.http.RequestCodeMessage;
-import com.joy.mapper.common.miniProgram.MiniProgramInfoMapper;
-import com.joy.mapper.sysConfig.SysCloudMailMapper;
-import com.joy.mapper.sysConfig.SysConfigMailMapper;
-import com.joy.mapper.sysConfig.SysConfigMapper;
-import com.joy.mapper.common.user.UserMapper;
+import com.joy.mapper.admin.sysConfig.SysCloudCredentialMapper;
+import com.joy.mapper.common.MiniProgramInfoMapper;
+import com.joy.mapper.admin.sysConfig.SysCloudMailMapper;
+import com.joy.mapper.admin.sysConfig.SysConfigMailMapper;
+import com.joy.mapper.admin.sysConfig.SysConfigMapper;
+import com.joy.mapper.common.UserMapper;
 import com.joy.service.AuthService;
 import com.joy.utils.IpRegionUtil;
 import com.joy.utils.UserVerifyUtil;
@@ -37,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -58,15 +61,20 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
     @Autowired
     private MiniProgramInfoMapper programMapper;
 
+    @Autowired
+    private SysCloudCredentialMapper credentialMapper;
+
 
     //邮箱配置
     private volatile SysConfig cachedConfig;
     //阿里云邮箱
     private volatile SysCloudMail cachedCloudMail;
-    private volatile Long cachedCloudMailId = null;
     //139邮箱
     private volatile SysConfigMail cachedConfigMail;
-    private volatile Long cachedConfigMailId = null;
+
+    private final Map<String, SysCloudCredential> cachedCredential = new ConcurrentHashMap<>();
+    private final Map<String, Long> cacheExpireTimeMap = new ConcurrentHashMap<>();
+
 
     private volatile long cacheExpireTime = 0;
     private static final long CACHE_MS = TimeUnit.MINUTES.toMillis(30);
@@ -87,6 +95,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             SysConfig config = sysConfigMapper.selectOne(
                     new LambdaQueryWrapper<SysConfig>()
                             .eq(SysConfig::getConfigKey, "is_cloud_email")
+                            .eq(SysConfig::getConfigState, 1)
                             .last("LIMIT 1"));
             if (config == null) {
                 RequestCodeMessage.ENABLE_CLOUD_EMAIL_CONFIG.throwIt();
@@ -96,6 +105,48 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             cachedConfig = config;
             cacheExpireTime = System.currentTimeMillis() + CACHE_MS;
             return cachedConfig;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 获取对应凭证
+     */
+
+    public SysCloudCredential getCredential(String bizType, String provider) {
+        String key = bizType + "_" + provider;
+
+        // 第一次检查：无锁，快速路径
+        Long expireTime = cacheExpireTimeMap.get(key);
+        if (expireTime != null && System.currentTimeMillis() < expireTime) {
+            return cachedCredential.get(key);
+        }
+
+        lock.lock();
+        try {
+            // 第二次检查：有锁，防止并发重复查库
+            expireTime = cacheExpireTimeMap.get(key);
+            if (expireTime != null && System.currentTimeMillis() < expireTime) {
+                return cachedCredential.get(key);
+            }
+
+            SysCloudCredential config = credentialMapper.selectOne(
+                    new LambdaQueryWrapper<SysCloudCredential>()
+                            .eq(SysCloudCredential::getBizType, bizType)
+                            .eq(SysCloudCredential::getProvider, provider)
+                            .eq(SysCloudCredential::getState, 1)
+                            .last("LIMIT 1"));
+
+            if (config == null) {
+                RequestCodeMessage.ENABLE_CLOUD_EMAIL_CONFIG.throwIt();
+                return null; // throwIt 如果抛异常，这行不会执行；如果不抛，返回 null 不缓存
+            }
+
+            // 3. 写入缓存和独立的过期时间
+            cachedCredential.put(key, config);
+            cacheExpireTimeMap.put(key, System.currentTimeMillis() + CACHE_MS);
+            return config;
         } finally {
             lock.unlock();
         }
@@ -123,7 +174,6 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
                 return null;
             }
             cachedCloudMail = mail;
-            cachedCloudMailId = mail.getId();
             cacheExpireTime = System.currentTimeMillis() + CACHE_MS;
             return cachedCloudMail;
         } finally {
@@ -153,7 +203,6 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
                 return null;
             }
             cachedConfigMail = mail;
-            cachedConfigMailId = mail.getId();
             cacheExpireTime = System.currentTimeMillis() + CACHE_MS;
             return cachedConfigMail;
         } finally {
@@ -176,8 +225,10 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         if (cloudEmail.getConfigValue().equals("yes")) {
             //云邮箱我这里用了阿里云邮箱推送
             SysCloudMail mail = this.getCloudMail();
+
+            SysCloudCredential credential = this.getCredential("ALI_MAIL","ALIYUN");
             //发送邮件
-            bl = VerifyCodeUtil.sendCloudEmail(verificationCode, loginInfo.getEmail(), mail);
+            bl = VerifyCodeUtil.sendCloudEmail(verificationCode, loginInfo.getEmail(), mail,credential);
             validTime = mail.getValidTime();
         } else {
             //获取配置邮箱，这里我用的是139邮箱
@@ -337,6 +388,7 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
         );
         if (existUsers == null) {
             RequestCodeMessage.USER_NOT_EXIST.throwIt();
+            return null;
         }
         if (BCrypt.checkpw(user.getNewPassword(), existUsers.getPassword())) {
             RequestCodeMessage.NEW_PASSWORD_CANNOT_OLD_PASSWORD.throwIt();
@@ -377,8 +429,10 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             RequestCodeMessage.CODE_CANNOT_EMPTY.throwIt();
 
         MiniProgramInfo programInfo = programMapper.selectOne(new LambdaQueryWrapper<MiniProgramInfo>().eq(MiniProgramInfo::getType, 1).eq(MiniProgramInfo::getIsDeleted, 0));
-        if (programInfo == null)
+        if (programInfo == null){
             RequestCodeMessage.INVALID_OPERATION.throwIt();
+            return null;
+        }
         String url = String.format(
                 "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
                 programInfo.getAppId(), programInfo.getAppSecret(), code);
@@ -438,8 +492,10 @@ public class AuthServiceImpl extends ServiceImpl<UserMapper, User> implements Au
             user.setOpenid(openid);
             this.save(user);
         }
-        else if (list.size() > 1)
+        else if (list.size() > 1){
             PHONE_EMAIL_INCORRECT.throwIt();
+            return null;
+        }
         else {
             user = list.get(0);
             if(!user.getEmail().equals(req.getEmail()) || !user.getPhone().equals(req.getPhone()))
