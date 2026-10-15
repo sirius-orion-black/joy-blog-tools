@@ -1,0 +1,215 @@
+<template>
+	<view class="size-picker">
+		<view class="field-label">
+			<svg-icon :svg="sizeIcon" :size="26" color="#ED317F" />
+			<text class="label-text">照片规格</text>
+		</view>
+		<view class="size-grid">
+			<view class="size-tag" :class="{ 'size-tag-active': modelValue.code == (item['code'] as string) }"
+				v-for="(item, idx) in sizes" :key="idx" @click="selSize(item)">
+				<text class="size-tag-text"
+					:class="{ 'size-tag-text-active': modelValue.code == (item['code'] as string) }">{{ item['name'] }}</text>
+			</view>
+		</view>
+		<view class="custom-row" v-if="modelValue.code == 'custom'">
+			<view class="input-group">
+				<text class="input-label">宽(px)</text>
+				<input class="input-box" type="number" v-model="customW" placeholder="295" />
+			</view>
+			<text class="input-x">×</text>
+			<view class="input-group">
+				<text class="input-label">高(px)</text>
+				<input class="input-box" type="number" v-model="customH" placeholder="413" />
+			</view>
+		</view>
+	</view>
+</template>
+
+<script setup lang="uts">
+	import { getSizes } from '@/api/idPhotoApi'
+
+	import { isSuccess } from '@/utils/request.uts';
+	import { sizeIcon } from '@/utils/svg/photoSvg';
+
+	import SvgIcon from '@/components/SvgIcon.uvue'
+
+	import { SizeItem, SizeState } from '@/types/photoType';
+
+	const sizes = ref([] as UTSJSONObject[])
+
+	const props = withDefaults(defineProps<{
+		modelValue ?: SizeState,
+		custom ?: boolean
+	}>(), {
+		modelValue: () => ({ code: 'one_inch', name: '一寸', customW: '295', customH: '413' } as SizeState),
+		custom: false
+	})
+
+	const emit = defineEmits<{
+		(e : 'update:modelValue', value : SizeState) : void
+		(e : 'change', item : SizeState) : void
+	}>()
+	
+	// 选择预设尺寸
+	function selSize(item : UTSJSONObject) {
+		const newState = {
+			code: item['code'] as string,
+			name: item['name'] as string,
+			customW: item['widthPx'],
+			customH: item['heightPx']
+		} as SizeState
+		emit('update:modelValue', newState)
+		emit('change', newState)
+	}
+
+	// 修改自定义宽度
+	const onWInput = (e : UniInputEvent) => {
+		emit('update:modelValue', {
+			code: props.modelValue.code,
+			name: props.modelValue.name,
+			customW: e.detail.value,
+			customH: props.modelValue.customH
+		} as SizeState)
+	}
+
+	// 修改自定义高度
+	const onHInput = (e : UniInputEvent) => {
+		emit('update:modelValue', {
+			code: props.modelValue.code,
+			name: props.modelValue.name,
+			customW: props.modelValue.customW,
+			customH: e.detail.value
+		} as SizeState)
+	}
+
+	const loadSizes = async () => {
+		const res = await getSizes();
+		if (isSuccess(res) && res.data != null && res.data.length > 0) {
+			const arr = res.data as SizeItem[]
+			const list : UTSJSONObject[] = []
+			for (let i = 0; i < arr.length; i++) {
+				list.push({ name: arr[i].name, code: arr[i].code } as UTSJSONObject)
+			}
+			sizes.value = list
+			if(props.custom)
+				sizes.value.push({ code: 'custom', name: '自定义', customW: '295', customH: '413' })
+		}
+	}
+
+
+	onLoad((_options : OnLoadOptions) => {
+		loadSizes()
+	})
+</script>
+
+
+<style lang="scss">
+	/* ====== 字段组通用 ====== */
+	.size-picker {
+		margin-bottom: 32rpx;
+
+		.field-label-row {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 18rpx;
+
+			.field-hint {
+				font-size: 22rpx;
+				color: #ED317F;
+				font-weight: 500;
+			}
+		}
+
+		.field-label {
+			font-size: 28rpx;
+			font-weight: 600;
+			color: #333;
+			margin-bottom: 10rpx;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			.label-text {
+				margin-left: 10rpx;
+			}
+		}
+
+		/* ====== 尺寸网格布局 ====== */
+		.size-grid {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 16rpx;
+
+			.size-tag {
+				/* 每行3个：(100% - 2个gap) / 3 */
+				width: calc((100% - 32rpx) / 3);
+				height: 72rpx;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 18rpx;
+				background-color: #F5F6FA;
+				border: 2rpx solid transparent;
+
+				&.size-tag-active {
+					background-color: rgba(#ED317F, 0.08);
+					border-color: #ED317F;
+				}
+
+				.size-tag-text {
+					font-size: 26rpx;
+					color: #666;
+					font-weight: 500;
+					text-align: center;
+					overflow: hidden;
+					lines: 1;
+					text-overflow: ellipsis;
+
+					&.size-tag-text-active {
+						color: #ED317F;
+						font-weight: 700;
+					}
+				}
+			}
+		}
+
+		.custom-row {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 16rpx;
+			margin-top: 20rpx;
+
+			.input-group {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				gap: 8rpx;
+
+				.input-label {
+					font-size: 22rpx;
+					color: #9CA3AF;
+				}
+
+				.input-box {
+					background-color: #fff;
+					border: 2rpx solid #F0F0F5;
+					border-radius: 16rpx;
+					padding: 16rpx;
+					font-size: 28rpx;
+					color: #1A1A2E;
+					text-align: center;
+				}
+			}
+
+			.input-x {
+				font-size: 32rpx;
+				color: #9CA3AF;
+				margin-top: 26rpx;
+			}
+		}
+	}
+</style>

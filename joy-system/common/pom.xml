@@ -42,6 +42,12 @@
 <!--            <version>${spring.version}</version>-->
         </dependency>
 
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.0-jre</version>
+        </dependency>
+
         <!--validation 校验-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -118,6 +124,13 @@
             <version>1.18.22</version>
         </dependency>
 
+        <!--OpenCV 内置的轻量级人脸检测与识别，视觉能力，‌OCR 文字识别-->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv-platform</artifactId>
+            <version>1.5.14</version>
+        </dependency>
+
         <!--阿里格式转换包-->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -130,20 +143,6 @@
             <groupId>com.aliyun</groupId>
             <artifactId>dm20151123</artifactId>
             <version>1.12.3</version>
-        </dependency>
-
-        <!-- 阿里云视觉智能 SDK (证件照) -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>viapi20230117</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-
-        <!-- 阿里云获取服装列表专用 SDK -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>imageseg20191230</artifactId>
-            <version>3.0.0</version>
         </dependency>
 
         <!--火山引擎提供的Java语言SDK-->

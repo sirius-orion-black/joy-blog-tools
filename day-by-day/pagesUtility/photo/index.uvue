@@ -1,15 +1,15 @@
 <template>
-	<view class="page">
+	<view class="photo-page">
 		<!-- 引用公共导航栏组件 -->
 		<CustomNavBar title="智能证件照">
 			<template #right>
-				<view class="nav-btn" @click="goHistory">
-					<text class="nav-btn-text">📋 记录</text>
+				<view class="photo-nav-btn" @click="goHistory">
+					<svg-icon :svg="recordIcon" :size="22" color="#ffffff" />
 				</view>
 			</template>
 		</CustomNavBar>
 
-		<scroll-view class="content" direction="vertical" :show-scrollbar="false">
+		<scroll-view class="photo-content" direction="vertical" :show-scrollbar="false">
 			<!-- 核心操作卡片 -->
 			<view class="main-card">
 				<view class="card-header">
@@ -17,36 +17,17 @@
 					<text class="card-subtitle">选择规格后拍摄或导入照片</text>
 				</view>
 
-				<!-- ✅ 尺寸选择区：改为自适应网格 -->
-				<view class="field-group">
-					<text class="field-label">照片规格</text>
-					<view class="size-grid">
-						<view class="size-tag" :class="{ 'size-tag-active': curSizeCode == (s['code'] as string) }"
-							v-for="(s, idx) in sizes" :key="idx" @click="selSize(s)">
-							<text class="size-tag-text"
-								:class="{ 'size-tag-text-active': curSizeCode == (s['code'] as string) }">{{ s['name'] }}</text>
-						</view>
-					</view>
-				</view>
-
+				<!-- 照片规格 -->
+				<size-picker v-model="sizeState" @change="onSizeChange" />
 				<!-- 快捷底色区 -->
-				<view class="field-group">
-					<view class="field-label-row">
-						<text class="field-label">快捷底色</text>
-						<text class="field-hint" v-if="quickBgHex.length > 0" @click="clearQuickColor">清除选择</text>
-					</view>
-					<view class="color-row">
-						<view class="color-dot-wrap" v-for="(c, idx) in colors" :key="idx" @click="selQuickColor(c)">
-							<view class="color-dot" :class="{ 'color-dot-active': quickBgHex == (c['hex'] as string) }"
-								:style="{ backgroundColor: c['hex'] as string }"></view>
-						</view>
-					</view>
-				</view>
+				<color-picker v-model="colorState" @change="onColorChange" />
 
 				<!-- 触发按钮组 -->
 				<view class="action-area">
 					<view class="btn-primary" @click="pick('camera')">
-						<text class="btn-primary-icon">📷</text>
+						<text class="btn-primary-icon">
+							<svg-icon :svg="cameraIcon" :size="22" color="#ffffff" />
+						</text>
 						<text class="btn-primary-text">立即拍摄</text>
 					</view>
 					<view class="btn-secondary" @click="pick('album')">
@@ -57,7 +38,10 @@
 
 			<!-- 拍摄贴士卡片 -->
 			<view class="tips-card">
-				<text class="tips-title">💡 拍摄小贴士</text>
+				<view class="tips-title">
+					<svg-icon :svg="remindIcon" :size="26" color="#ED317F" />
+					<text class="label-text">拍摄小贴士</text>
+				</view>
 				<view class="tips-grid">
 					<view class="tip-item">
 						<text class="tip-icon">✅</text>
@@ -85,51 +69,25 @@
 
 <script setup lang="uts">
 	import { ref } from 'vue'
+
 	import CustomNavBar from '@/components/CustomNavBar.uvue'
+	import SvgIcon from '@/components/SvgIcon.uvue'
+	import SizePicker from './components/sizePicker.uvue'
+	import ColorPicker from './components/colorPicker.uvue'
 
 	import { getSizes } from '@/api/idPhotoApi'
+	import { SizeItem, SizeState, ColorState } from '@/types/photoType';
 	import { isSuccess } from '@/utils/request.uts';
+	import { recordIcon, cameraIcon, remindIcon } from '@/utils/svg/photoSvg';
 
-	type SizeItem = { name : string; code : string }
+	const sizeState = ref({ code: 'one_inch', name: '一寸', customW: '295', customH: '413' } as SizeState)
+	const colorState = ref({ hex: '#FFFFFF', name: '白底', customHex: '' } as ColorState)
 
-	const sizes = ref([] as UTSJSONObject[])
-	const curSizeCode = ref('one_inch')
-	const quickBgHex = ref('')
-	const quickBgName = ref('')
-
-	const colors = ref([
-		{ name: '白底', hex: '#FFFFFF' },
-		{ name: '蓝底', hex: '#438EDB' },
-		{ name: '红底', hex: '#FF0000' },
-		{ name: '浅蓝', hex: '#73B8EA' },
-		{ name: '渐变蓝', hex: '#4A90D9' },
-		{ name: '灰底', hex: '#CCCCCC' }
-	] as UTSJSONObject[])
-
-	const loadSizes = async () => {
-		const res = await getSizes();
-		if (isSuccess(res) && res.data != null && res.data.length > 0) {
-			const arr = res.data as SizeItem[]
-			const list : UTSJSONObject[] = []
-			for (let i = 0; i < arr.length; i++) {
-				list.push({ name: arr[i].name, code: arr[i].code } as UTSJSONObject)
-			}
-			sizes.value = list
-		}
+	const onSizeChange = (_s : SizeState) => {
+		// sizeState 已通过 v-model 自动同步
 	}
-
-	function selSize(s : UTSJSONObject) {
-		curSizeCode.value = s['code'] as string
-	}
-
-	function selQuickColor(c : UTSJSONObject) {
-		quickBgHex.value = c['hex'] as string
-		quickBgName.value = c['name'] as string
-	}
-
-	function clearQuickColor() {
-		quickBgHex.value = ''
-		quickBgName.value = ''
+	const onColorChange = (_c : ColorState) => {
+		// colorState 已通过 v-model 自动同步
 	}
 
 	function pick(src : string) {
@@ -139,9 +97,9 @@
 			sizeType: ['original'],
 			success: (res) => {
 				let url = '/pagesUtility/photo/edit?fp=' + encodeURIComponent(res.tempFilePaths[0])
-				url += '&sc=' + curSizeCode.value
-				if (quickBgHex.value.length > 0) {
-					url += '&bc=' + quickBgHex.value + '&bn=' + quickBgName.value
+				url += '&sc=' + sizeState.value.code
+				if (colorState.value.hex.length > 0) {
+					url += '&bc=' + colorState.value.hex + '&bn=' + colorState.value.name
 				}
 				uni.navigateTo({ url })
 			},
@@ -154,22 +112,21 @@
 	}
 
 	onLoad((_options : OnLoadOptions) => {
-		loadSizes()
 	})
 </script>
 
 <style lang="scss">
-	.page {
+	.photo-page {
 		min-height: 100vh;
 		background-color: #F7F8FA;
 	}
 
 	/* ====== 导航栏右侧按钮样式 ====== */
-	.nav-btn {
+	.photo-nav-btn {
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		padding: 10rpx 20rpx;
+		padding-left: 15px;
 		border-radius: 24rpx;
 		background-color: rgba(0, 0, 0, 0.04);
 	}
@@ -181,221 +138,132 @@
 	}
 
 	/* ====== 内容区 ====== */
-	.content {
+	.photo-content {
 		min-height: 100vh;
-	}
 
-	/* ====== 主操作卡片 ====== */
-	.main-card {
-		margin: 20rpx 24rpx 0;
-		background-color: #FFFFFF;
-		border-radius: 28rpx;
-		padding: 36rpx 32rpx 32rpx;
-		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.03);
-	}
+		/* ====== 主操作卡片 ====== */
+		.main-card {
+			margin: 20rpx 24rpx 0;
+			background-color: #FFFFFF;
+			border-radius: 28rpx;
+			padding: 36rpx 32rpx 32rpx;
+			box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.03);
 
-	.card-header {
-		margin-bottom: 36rpx;
-	}
+			.card-header {
+				margin-bottom: 36rpx;
 
-	.card-title {
-		font-size: 38rpx;
-		font-weight: 800;
-		color: #1A1A1A;
-		display: block;
-		margin-bottom: 10rpx;
-		letter-spacing: 0.5px;
-	}
+				.card-title {
+					font-size: 38rpx;
+					font-weight: 800;
+					color: #1A1A1A;
+					display: block;
+					margin-bottom: 10rpx;
+					letter-spacing: 0.5px;
+				}
 
-	.card-subtitle {
-		font-size: 24rpx;
-		color: #999;
-		display: block;
-	}
+				.card-subtitle {
+					font-size: 24rpx;
+					color: #999;
+					display: block;
+				}
+			}
 
-	/* ====== 字段组通用 ====== */
-	.field-group {
-		margin-bottom: 32rpx;
-	}
+			/* ====== 操作按钮 ====== */
+			.action-area {
+				display: flex;
+				flex-direction: column;
+				gap: 20rpx;
+				margin-top: 12rpx;
+			}
 
-	.field-label-row {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 18rpx;
-	}
+			.btn-primary {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				gap: 12rpx;
+				height: 100rpx;
+				border-radius: 50rpx;
+				background-color: #ED317F;
+				box-shadow: 0 8rpx 24rpx rgba(#ED317F, 0.25);
 
-	.field-label {
-		font-size: 28rpx;
-		font-weight: 600;
-		color: #333;
-	}
+				.btn-primary-icon {
+					font-size: 34rpx;
+				}
 
-	.field-hint {
-		font-size: 22rpx;
-		color: $primary;
-		font-weight: 500;
-	}
+				.btn-primary-text {
+					font-size: 32rpx;
+					font-weight: 700;
+					color: #FFFFFF;
+					letter-spacing: 1px;
+				}
+			}
 
-	/* ====== ✅ 尺寸网格布局（核心修改） ====== */
-	.size-grid {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-		gap: 16rpx;
-	}
+			.btn-secondary {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				height: 92rpx;
+				border-radius: 46rpx;
+				background-color: #F5F6FA;
 
-	.size-tag {
-		/* 每行3个：(100% - 2个gap) / 3 */
-		width: calc((100% - 32rpx) / 3);
-		height: 72rpx;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 18rpx;
-		background-color: #F5F6FA;
-		border: 2rpx solid transparent;
-	}
+				.btn-secondary-text {
+					font-size: 28rpx;
+					font-weight: 600;
+					color: #555;
+				}
+			}
+		}
 
-	.size-tag-active {
-		background-color: rgba($primary, 0.08);
-		border-color: $primary;
-	}
+		/* ====== 贴士卡片 ====== */
+		.tips-card {
+			margin: 20rpx 24rpx 0;
+			background-color: #FFFFFF;
+			border-radius: 28rpx;
+			padding: 28rpx 32rpx;
+			box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.03);
 
-	.size-tag-text {
-		font-size: 26rpx;
-		color: #666;
-		font-weight: 500;
-		text-align: center;
-		overflow: hidden;
-		lines: 1;
-		text-overflow: ellipsis;
-	}
+			.tips-title {
+				font-size: 28rpx;
+				font-weight: 700;
+				color: #333;
+				display: block;
+				margin-bottom: 20rpx;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
 
-	.size-tag-text-active {
-		color: $primary;
-		font-weight: 700;
-	}
+				.label-text {
+					margin-left: 10rpx;
+				}
+			}
 
-	/* ====== 底色圆点 ====== */
-	.color-row {
-		display: flex;
-		flex-direction: row;
-		gap: 24rpx;
-		align-items: center;
-	}
+			.tips-grid {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				gap: 16rpx;
 
-	.color-dot-wrap {
-		width: 68rpx;
-		height: 68rpx;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
+				.tip-item {
+					width: calc(50% - 8rpx);
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					gap: 10rpx;
+					background-color: #FAFBFC;
+					border-radius: 16rpx;
+					padding: 18rpx 20rpx;
 
-	.color-dot {
-		width: 52rpx;
-		height: 52rpx;
-		border-radius: 50%;
-		border: 3rpx solid #E8E8E8;
-		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
-	}
+					.tip-icon {
+						font-size: 26rpx;
+					}
 
-	.color-dot-active {
-		border-color: $primary;
-		border-width: 4rpx;
-		box-shadow: 0 0 0 4rpx rgba($primary, 0.12);
-		transform: scale(1.08);
-	}
-
-	/* ====== 操作按钮 ====== */
-	.action-area {
-		display: flex;
-		flex-direction: column;
-		gap: 20rpx;
-		margin-top: 12rpx;
-	}
-
-	.btn-primary {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: center;
-		gap: 12rpx;
-		height: 100rpx;
-		border-radius: 50rpx;
-		background-color: $primary;
-		box-shadow: 0 8rpx 24rpx rgba($primary, 0.25);
-	}
-
-	.btn-primary-icon {
-		font-size: 34rpx;
-	}
-
-	.btn-primary-text {
-		font-size: 32rpx;
-		font-weight: 700;
-		color: #FFFFFF;
-		letter-spacing: 1px;
-	}
-
-	.btn-secondary {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 92rpx;
-		border-radius: 46rpx;
-		background-color: #F5F6FA;
-	}
-
-	.btn-secondary-text {
-		font-size: 28rpx;
-		font-weight: 600;
-		color: #555;
-	}
-
-	/* ====== 贴士卡片 ====== */
-	.tips-card {
-		margin: 20rpx 24rpx 0;
-		background-color: #FFFFFF;
-		border-radius: 28rpx;
-		padding: 28rpx 32rpx;
-		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.03);
-	}
-
-	.tips-title {
-		font-size: 28rpx;
-		font-weight: 700;
-		color: #333;
-		display: block;
-		margin-bottom: 20rpx;
-	}
-
-	.tips-grid {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-		gap: 16rpx;
-	}
-
-	.tip-item {
-		width: calc(50% - 8rpx);
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		gap: 10rpx;
-		background-color: #FAFBFC;
-		border-radius: 16rpx;
-		padding: 18rpx 20rpx;
-	}
-
-	.tip-icon {
-		font-size: 26rpx;
-	}
-
-	.tip-text {
-		font-size: 24rpx;
-		color: #666;
+					.tip-text {
+						font-size: 24rpx;
+						color: #666;
+					}
+				}
+			}
+		}
 	}
 </style>

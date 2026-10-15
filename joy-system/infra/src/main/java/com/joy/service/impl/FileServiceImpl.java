@@ -1,8 +1,12 @@
 package com.joy.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 import com.joy.common.Result;
 import com.joy.entity.infra.FilesRecord;
 import com.joy.entity.admin.sysConfig.SysConfig;
@@ -16,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +40,51 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
 
     @Autowired
     private SysConfigMapper sysConfigMapper;
+
+    // 单例复用，线程安全，无状态
+    private static final HashFunction HASH_FUNCTION = Hashing.murmur3_128();
+
+    // 8KB 缓冲区，兼顾磁盘 IO 效率与内存占用
+    private static final int BUFFER_SIZE = 8192;
+
+    /**
+     * 计算文件的 128 位 Murmur3 哈希值
+     */
+    public byte[] calculateFileHash(Path filePath) throws IOException {
+        try (InputStream is = new BufferedInputStream(Files.newInputStream(filePath), BUFFER_SIZE)) {
+            return calculateStreamHash(is);
+        }
+    }
+
+    /**
+     * 计算输入流的 128 位 Murmur3 哈希值
+     * 适用于 MultipartFile.getInputStream() 等场景
+     */
+    @SuppressWarnings("UnstableApiUsage")
+    public byte[] calculateStreamHash(InputStream inputStream) throws IOException {
+        var hasher = HASH_FUNCTION.newHasher();
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int bytesRead;
+
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            hasher.putBytes(buffer, 0, bytesRead);
+        }
+
+        HashCode hashCode = hasher.hash();
+        // asBytes() 返回固定 16 字节的 byte[]，可直接存入 BINARY(16)
+        return hashCode.asBytes();
+    }
+
+    /**
+     * 仅用于日志/调试，严禁存入数据库
+     */
+    public static String toHexString(byte[] hashBytes) {
+        StringBuilder sb = new StringBuilder(hashBytes.length * 2);
+        for (byte b : hashBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
 
     /**
      * 获取数据库配置
@@ -63,7 +114,7 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
      * @param map config file 配置
      * @return 给前端返回结果
      */
-    private Map<String, String> handleFileUpload(MultipartFile file, String fileType, String platform, Map<String, Map<String, SysConfig>> map) {
+    private Map<String, String> handleFileUpload(MultipartFile file, String fileType, String platform, Map<String, Map<String, SysConfig>> map) throws IOException {
         Map<String, String> result = new HashMap<>();
         Map<String, SysConfig> typeMap = map.get("file_type");
         Map<String, SysConfig> storageMap = map.get("file_storage");
@@ -71,6 +122,14 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
         String error = FileUtil.validateFile(file, fileType, typeMap);
         if (error != null) {
             result.put("error", error);
+            return result;
+        }
+        //流式计算哈希 (不先将整个文件读入内存)
+        byte[] fileHash = this.calculateStreamHash(file.getInputStream());
+        FilesRecord existing = this.getOne(new LambdaQueryWrapper<FilesRecord>().eq(FilesRecord::getFileHash, fileHash));
+        if (existing != null) {
+            result.put("url", existing.getUrl());
+            result.put("id", existing.getId().toString());
             return result;
         }
         // 获取文件信息
@@ -94,7 +153,7 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
 
             //数据保存
             FilesRecord record = new FilesRecord();
-            record.setOriginalName(file.getOriginalFilename());
+            record.setOriginalName(originalName);
             record.setStoredName(storedName);
             record.setFileType(fileType);
             record.setPath(targetPath.toString());
@@ -103,9 +162,11 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
             record.setFileSize(fileSize);
             record.setUserPlatform(Integer.parseInt(platform));
             record.setUserId(StpUtil.getLoginIdAsLong());
+            record.setFileHash(fileHash);
             this.save(record);
 
             result.put("url", record.getUrl());
+            result.put("id", record.getId().toString());
         } catch (IOException e) {
             result.put("error", "file_saving_failed");
         } catch (Exception e) {
@@ -127,7 +188,7 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
      * @return 给前端返回结果
      */
     @Override
-    public Result<Map<String, String>> uploadFile(MultipartFile file, String fileType, String platform) {
+    public Result<Map<String, String>> uploadFile(MultipartFile file, String fileType, String platform) throws IOException {
         if (file.isEmpty()) {
             InfraCodeMessage.FILE_EMPTY.throwIt();
             return null;//永远也用不上，流氓点，去除黄标而已
@@ -156,7 +217,13 @@ public class FileServiceImpl extends ServiceImpl<FilesRecordMapper, FilesRecord>
         }
         Map<String, Map<String, SysConfig>> map = getFileConfig();
         List<Map<String, String>> results = Arrays.stream(files)
-                .map(file -> handleFileUpload(file, fileType, platform, map))
+                .map(file -> {
+                    try {
+                        return handleFileUpload(file, fileType, platform, map);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();

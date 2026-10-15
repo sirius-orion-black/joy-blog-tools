@@ -68,7 +68,7 @@
 	</view>
 </template>
 
-<script setup>
+<script setup lang="uts">
 	import { ref } from 'vue';
 	
 	import SvgIcon from '@/components/SvgIcon.uvue'

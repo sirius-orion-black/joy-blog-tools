@@ -1,8 +1,8 @@
 package com.joy.dto.common.user;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 
 /**
  * 用户登录

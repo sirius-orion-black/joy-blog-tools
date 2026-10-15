@@ -16,9 +16,9 @@ public interface IdPhotoService {
 
     Result<List<DayPhotoSuit>> photoSuits(Integer gender);
 
-    void syncSuits();
+    Result<Map<String, Object>> photoPreview(MultipartFile file, String fileType, String platform) throws IOException;
 
-    Result<Map<String, Object>> preview(MultipartFile file) throws IOException;
+    Result<Map<String, Object>> photoChangeSuit(IdPhotoGenerateDto photo);
 
-    DayPhotoRecord generate(IdPhotoGenerateDto req);
+    Result<DayPhotoRecord> photoProcess(IdPhotoGenerateDto photo);
 }

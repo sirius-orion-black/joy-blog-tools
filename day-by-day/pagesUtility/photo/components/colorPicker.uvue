@@ -1,0 +1,187 @@
+<template>
+	<view class="color-picker">
+		<view class="field-label-row">
+			<view class="field-label">
+				<svg-icon :svg="colorIcon" :size="26" color="#ED317F" />
+				<text class="label-text">快捷底色</text>
+			</view>
+			<text class="field-hint" v-if="modelValue.hex.length > 0" @click="clearQuickColor">清除选择</text>
+		</view>
+		<view class="color-row">
+			<view class="color-dot-wrap" v-for="(item, idx) in colors" :key="idx" @click="onSelect(item)">
+				<view class="color-dot" :class="{ 'color-dot-active': modelValue.hex == (item['hex'] as string) }"
+					:style="{ backgroundColor: item['hex'] as string }"></view>
+			</view>
+		</view>
+		<view class="custom-color-bar" v-if="custom">
+			<text class="bar-label">自定义</text>
+			<view class="bar-input-wrap">
+				<text class="bar-hash">#</text>
+				<input class="bar-input" v-model="modelValue.customHex" placeholder="FF5733" maxlength="6" @input="onHexInput" />
+			</view>
+			<view class="bar-apply" @click="applyCustomColor"><text class="bar-apply-text">应用</text></view>
+		</view>
+	</view>
+</template>
+
+<script setup lang="uts">
+	import { getSizes } from '@/api/idPhotoApi'
+
+	import { isSuccess } from '@/utils/request.uts';
+	import { colorIcon } from '@/utils/svg/photoSvg';
+
+	import SvgIcon from '@/components/SvgIcon.uvue'
+
+	import { ColorState } from '@/types/photoType';
+	
+	const props = withDefaults(defineProps<{
+		modelValue ?: ColorState,
+		custom ?: boolean
+	}>(), {
+		modelValue: () => ({ hex: '#FFFFFF', name: '白底', customHex: '' } as ColorState),
+		custom: false
+	})
+
+	const emit = defineEmits<{
+		(e : 'update:modelValue', value : ColorState) : void
+		(e : 'change', color : ColorState) : void
+	}>()
+
+	const colors = ref([
+		{ name: '白底', hex: '#FFFFFF' },
+		{ name: '蓝底', hex: '#438EDB' },
+		{ name: '红底', hex: '#FF0000' },
+		{ name: '浅蓝', hex: '#73B8EA' },
+		{ name: '渐变蓝', hex: '#4A90D9' },
+		{ name: '灰底', hex: '#CCCCCC' }
+	] as UTSJSONObject[])
+
+	function onSelect(item : UTSJSONObject) {
+		const newState = {
+			hex: item['hex'] as string,
+			name: item['name'] as string,
+			customHex: props.modelValue.customHex
+		} as ColorState
+		emit('update:modelValue', newState)
+		emit('change', newState)
+	}
+
+	function clearQuickColor() {
+		const newState = {
+			hex: '',
+			name: '',
+			customHex: props.modelValue.customHex
+		} as ColorState
+		emit('update:modelValue', newState)
+		emit('change', newState)
+	}
+</script>
+
+<style lang="scss">
+	/* ====== 字段组通用 ====== */
+	.color-picker {
+		margin-bottom: 32rpx;
+
+		.field-label-row {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 18rpx;
+
+			.field-hint {
+				font-size: 22rpx;
+				color: #ED317F;
+				font-weight: 500;
+			}
+		}
+
+		.field-label {
+			font-size: 28rpx;
+			font-weight: 600;
+			color: #333;
+			margin-bottom: 10rpx;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+
+			.label-text {
+				margin-left: 10rpx;
+			}
+		}
+
+		/* ====== 底色圆点 ====== */
+		.color-row {
+			display: flex;
+			flex-direction: row;
+			gap: 24rpx;
+			align-items: center;
+
+			.color-dot-wrap {
+				width: 68rpx;
+				height: 68rpx;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			.color-dot {
+				width: 52rpx;
+				height: 52rpx;
+				border-radius: 50%;
+				border: 3rpx solid #E8E8E8;
+				box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+
+				&.color-dot-active {
+					border-color: #ED317F;
+					border-width: 4rpx;
+					box-shadow: 0 0 0 4rpx rgba(#ED317F, 0.12);
+					transform: scale(1.08);
+				}
+			}
+		}
+		.custom-color-bar{
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 12rpx;
+			margin-top: 24rpx;
+			background-color: #fff;
+			border-radius: 16rpx;
+			padding: 14rpx 20rpx;
+			.bar-label {
+				font-size: 26rpx;
+				color: $text-sub;
+			}
+			.bar-input-wrap{
+				flex: 1;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				background-color: $bg;
+				border-radius: 12rpx;
+				padding: 8rpx 16rpx;
+				.bar-hash{
+					font-size: 28rpx;
+					color: $text-hint;
+					margin-right: 4rpx;
+				}
+				.bar-input{
+					font-size: 28rpx;
+					color: $text-main;
+					flex: 1;
+				}
+			}
+			.bar-apply{
+				background-image: linear-gradient(135deg, #ED317F 0%, #FF6B9D 100%);
+				border-radius: 12rpx;
+				padding: 10rpx 24rpx;
+				.bar-apply-text{
+					font-size: 24rpx;
+					color: #fff;
+					font-weight: 600;
+				}
+			}
+		}
+	}
+</style>

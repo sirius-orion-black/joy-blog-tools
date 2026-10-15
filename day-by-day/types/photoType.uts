@@ -1,2 +1,46 @@
 /** 证件照尺码 */
-export type SizeItem = { name: string; code: string }
+export type SizeItem = {
+	id : number
+	name : string
+	code : string
+	heightPx : number
+	widthPx : number
+}
+
+/** 服装列表 */
+export type SuitItem = {
+	id : number
+	name : string
+	code : string
+}
+
+/** size picker */
+export type SizeState = {
+	code : string
+	name : string
+	customW : string
+	customH : string
+}
+
+/** color picker color */
+export type ColorState = {
+	hex : string
+	name : string
+	customHex : string
+}
+
+/** beauty picker beauty */
+export type BeautyState = {
+	beautyOn : boolean
+	skinSmooth : number
+	skinWhiten : number
+	faceThin : number
+	eyeEnlarge : number
+}
+
+/** clothing picker suits */
+export type SuitState = {
+	suitOn : boolean
+	selSuitId : number
+	url : string
+}

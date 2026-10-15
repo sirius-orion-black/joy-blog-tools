@@ -3,12 +3,14 @@ package com.joy.entity.dayByDay;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@TableName
 public class DayPhotoSize {
 
     //主键id
@@ -38,10 +40,6 @@ public class DayPhotoSize {
     //像素高度
     @TableField
     private Integer heightPx;
-
-    //DPI
-    @TableField
-    private Integer defaultDpi;
 
     //用途说明
     @TableField

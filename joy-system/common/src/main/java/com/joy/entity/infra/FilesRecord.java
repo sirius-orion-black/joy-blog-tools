@@ -56,6 +56,11 @@ public class FilesRecord {
     @TableField
     private String fileType;
 
+
+    //类型: cover 封面
+    @TableField
+    private byte[] fileHash;
+
     //创建时间
     @TableField
     private Date createTime;

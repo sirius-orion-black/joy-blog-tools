@@ -1,9 +1,12 @@
 package com.joy.entity.dayByDay;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
+@TableName
 public class DayPhotoRecord {
 
     //主键id
@@ -14,17 +17,25 @@ public class DayPhotoRecord {
     @TableField
     private Long userId;
 
-    //原图相对存储路径
+    //原图记录id
     @TableField
-    private String originPath;
+    private Long originId;
 
-    //最终结果图相对存储路径
+    //原图Url
     @TableField
-    private String resultPath;
+    private String originUrl;
 
-    //AI抠图前景透明PNG缓存路径
+    //最终结果图Url
     @TableField
-    private String fgPath;
+    private String resultUrl;
+
+    //AI抠图前景透明图 记录id
+    @TableField
+    private Long fgId;
+
+    //AI抠图前景透明PNG Url
+    @TableField
+    private String fgUrl;
 
     //尺寸编码
     @TableField
@@ -122,11 +133,4 @@ public class DayPhotoRecord {
     //更新时间
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
-
-    /** 非表字段,给前端直接用 */
-    @TableField(exist = false)
-    private String originUrl;
-    @TableField(exist = false)
-    private String resultUrl;
-
 }

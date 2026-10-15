@@ -3,7 +3,7 @@ import { getToken, removeToken } from '@/utils/auth.uts';
 import { getDeviceId } from './deviceId'
 
 // ======================== 配置 ========================
-const BASE_URL = 'http://192.168.10.52:8081/api/';//joyapi.lexujia.com 127.0.0.1:8081
+const BASE_URL = 'http://192.168.10.80:8081/api/';//joyapi.lexujia.com 127.0.0.1:8081
 const TIMEOUT = 15000;
 const MAX_RETRY = 2;
 const SUCCESS_CODE = 200;
@@ -12,30 +12,33 @@ const TOKEN_EXPIRED_CODE = 401;
 
 // ======================== 统一响应类型 ========================
 export type ApiResponse<T> = {
-	code: number;
-	state: string;
-	message: string;
-	data: T | null;
+	code : number;
+	state : string;
+	message : string;
+	data : T | null;
 };
 
 export type RequestOptions = {
-	showLoading?: boolean;
-	loadingText?: string;
-	withToken?: boolean;
-	autoToast?: boolean;
-	autoRedirectLogin?: boolean;
+	showLoading ?: boolean;
+	loadingText ?: string;
+	withToken ?: boolean;
+	autoToast ?: boolean;
+	autoRedirectLogin ?: boolean;
 };
 
 // ======================== 内部状态 ========================
 let isRedirectingToLogin = false;
 
 // ======================== Header 构建（避免 Object.keys） ========================
-function buildHeader(withToken: boolean): UTSJSONObject {
-	const header: UTSJSONObject = {
-		'Content-Type': 'application/json',
+function buildHeader(withToken : boolean, isJson : boolean = true) : UTSJSONObject {
+	const header : UTSJSONObject = {
 		'X-Timestamp': Date.now(),
 		'X-Device-Id': getDeviceId()
 	} as UTSJSONObject;
+
+	if (isJson) {
+		header['Content-Type'] = 'application/json';
+	}
 
 	if (withToken) {
 		const token = getToken();
@@ -48,11 +51,11 @@ function buildHeader(withToken: boolean): UTSJSONObject {
 
 // ======================== 核心请求 ========================
 function request<T>(
-	method: string,
-	path: string,
-	data: UTSJSONObject | null,
-	options: RequestOptions
-): Promise<ApiResponse<T>> {
+	method : string,
+	path : string,
+	data : UTSJSONObject | null,
+	options : RequestOptions
+) : Promise<ApiResponse<T>> {
 	const showLoading = options.showLoading ?? false;
 	const loadingText = options.loadingText ?? '加载中...';
 	const withToken = options.withToken ?? true;
@@ -130,13 +133,13 @@ function request<T>(
 
 // ======================== GET 重试 ========================
 function requestWithRetry<T>(
-	path: string,
-	data: UTSJSONObject | null,
-	options: RequestOptions,
-	retryCount: number
-): Promise<ApiResponse<T>> {
+	path : string,
+	data : UTSJSONObject | null,
+	options : RequestOptions,
+	retryCount : number
+) : Promise<ApiResponse<T>> {
 	return new Promise<ApiResponse<T>>((resolve, reject) => {
-		request<T>('GET', path, data, options).then(resolve).catch((err: Error) => {
+		request<T>('GET', path, data, options).then(resolve).catch((err : Error) => {
 			if (retryCount < MAX_RETRY) {
 				console.warn('[Request] GET 重试第 ' + (retryCount + 1).toString() + ' 次: ' + path);
 				requestWithRetry<T>(path, data, options, retryCount + 1).then(resolve).catch(reject);
@@ -149,45 +152,44 @@ function requestWithRetry<T>(
 
 // ======================== 对外快捷方法 ========================
 export function get<T>(
-	path: string,
-	data?: UTSJSONObject | null,
-	options?: RequestOptions
-): Promise<ApiResponse<T>> {
+	path : string,
+	data ?: UTSJSONObject | null,
+	options ?: RequestOptions
+) : Promise<ApiResponse<T>> {
 	return requestWithRetry<T>(path, data ?? null, options ?? ({} as RequestOptions), 0);
 }
 
 export function post<T>(
-	path: string,
-	data: UTSJSONObject,
-	options?: RequestOptions
-): Promise<ApiResponse<T>> {
+	path : string,
+	data : UTSJSONObject,
+	options ?: RequestOptions
+) : Promise<ApiResponse<T>> {
 	return request<T>('POST', path, data, options ?? ({} as RequestOptions));
 }
 
 export function put<T>(
-	path: string,
-	data: UTSJSONObject,
-	options?: RequestOptions
-): Promise<ApiResponse<T>> {
+	path : string,
+	data : UTSJSONObject,
+	options ?: RequestOptions
+) : Promise<ApiResponse<T>> {
 	return request<T>('PUT', path, data, options ?? ({} as RequestOptions));
 }
 
 export function del<T>(
-	path: string,
-	data?: UTSJSONObject | null,
-	options?: RequestOptions
-): Promise<ApiResponse<T>> {
+	path : string,
+	data ?: UTSJSONObject | null,
+	options ?: RequestOptions
+) : Promise<ApiResponse<T>> {
 	return request<T>('DELETE', path, data ?? null, options ?? ({} as RequestOptions));
 }
 
 // ======================== Upload（修复泛型 + string 赋值问题） ========================
 export function upload<T>(
-	path: string,
-	filePath: string,
-	name: string,
-	formData?: UTSJSONObject | null,
-	options?: RequestOptions
-): Promise<ApiResponse<T>> {
+	path : string,
+	filePath : string,
+	formData ?: UTSJSONObject | null,
+	options ?: RequestOptions
+) : Promise<ApiResponse<T>> {
 	const showLoading = options?.showLoading ?? true;
 	const loadingText = options?.loadingText ?? '上传中...';
 	const withToken = options?.withToken ?? true;
@@ -195,20 +197,19 @@ export function upload<T>(
 	return new Promise<ApiResponse<T>>((resolve, reject) => {
 		if (showLoading) uni.showLoading({ title: loadingText, mask: true });
 
-		const header = buildHeader(withToken);
+		const header = buildHeader(withToken, false);
 
 		// ⚠️ uni.uploadFile 不支持泛型参数，去掉 <ApiResponse<T>>
 		uni.uploadFile({
 			url: BASE_URL + path,
 			filePath: filePath,
-			name: name,
 			formData: formData ?? undefined,
 			header: header,
 			success: (res) => {
 				if (showLoading) uni.hideLoading();
 
 				// ⚠️ res.data 是 string，需手动 JSON.parse 再断言
-				let body: ApiResponse<T> | null = null;
+				let body : ApiResponse<T> | null = null;
 				try {
 					body = JSON.parse(res.data) as ApiResponse<T>;
 				} catch (_e) {
@@ -236,9 +237,9 @@ export function upload<T>(
 
 // ======================== Download（修复 string 赋值问题） ========================
 export function download(
-	path: string,
-	options?: RequestOptions
-): Promise<string> {
+	path : string,
+	options ?: RequestOptions
+) : Promise<string> {
 	const showLoading = options?.showLoading ?? true;
 	const loadingText = options?.loadingText ?? '下载中...';
 	const withToken = options?.withToken ?? true;
@@ -272,11 +273,11 @@ export function download(
 
 // ======================== 工具函数 ========================
 /** 统一成功判断：code==200 && state=="OK" */
-export function isSuccess<T>(res: ApiResponse<T>): boolean {
+export function isSuccess<T>(res : ApiResponse<T>) : boolean {
 	return res.code == SUCCESS_CODE && res.state == SUCCESS_STATE;
 }
 
 /** 拼接完整资源 URL */
-export function fullUrl(path: string): string {
+export function fullUrl(path : string) : string {
 	return BASE_URL + path;
 }

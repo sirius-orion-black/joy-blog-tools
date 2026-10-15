@@ -1,6 +1,10 @@
 package com.joy.utils;
 
 import com.joy.entity.admin.sysConfig.SysConfig;
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.opencv_core.Mat;
+import org.bytedeco.opencv.opencv_core.MatVector;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -46,5 +50,32 @@ public class FileUtil {
     public static String generateUniqueName(String originalName) {
         String extension = originalName.substring(originalName.lastIndexOf("."));
         return UUID.randomUUID() + extension;
+    }
+
+    /**
+     *
+     * @param mat 待转换的图像矩阵
+     * @param fileName 上传时使用的文件名（
+     * @return 可直接用于调用上传接口的 MultipartFile
+     */
+    public static MultipartFile convertMatToMultipartFile(Mat mat, String fileName) {
+        // 将 Mat 编码为内存 PNG 字节流
+        try (MatVector buf = new MatVector()) {
+            opencv_imgcodecs.imencode(".png", mat, buf.asByteBuffer());
+
+            // JavaCV 1.5.14 安全提取堆外内存字节
+            try (BytePointer bp = buf.get(0).data()) {
+                byte[] imageBytes = new byte[(int) bp.capacity()];
+                bp.get(imageBytes);
+
+                // 使用自定义实现，无需 spring-test 依赖
+                return new ByteArrayMultipartFile(
+                        "file",          // 必须与上传接口 @RequestParam 名称一致
+                        fileName,
+                        "image/png",
+                        imageBytes
+                );
+            }
+        }
     }
 }

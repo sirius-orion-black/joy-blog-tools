@@ -6,7 +6,7 @@ import com.joy.dto.common.user.*;
 import com.joy.entity.admin.sysConfig.SysCloudCredential;
 import jakarta.servlet.http.HttpServletRequest;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Map;
 
 public interface AuthService {

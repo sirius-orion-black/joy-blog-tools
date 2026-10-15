@@ -1,0 +1,252 @@
+<template>
+	<!-- 智能换装 -->
+	<view class="clothing-picker">
+		<view class="clothing-header">
+			<view class="clothing-title">
+				<svg-icon :svg="suitIcon" :size="26" color="#ED317F" />
+				<text class="label-text">智能换装</text>
+			</view>
+			<view class="toggle" :class="{ 'toggle-on': modelValue.suitOn }" @click="toggleSuit">
+				<view class="toggle-knob"></view>
+			</view>
+		</view>
+		<text class="clothing-tip" v-if="!modelValue.suitOn">可选功能，一键换上西装/衬衫/学士服</text>
+
+		<view class="suit-box" v-if="modelValue.suitOn">
+			<view class="gender-row">
+				<view class="gender-chip" :class="{ 'gender-active': genderSel == 1 }"
+					@click="genderSel = 1">
+					<text class="gender-text" :class="{ 'gender-text-active': genderSel == 1 }">👨 男装</text>
+				</view>
+				<view class="gender-chip" :class="{ 'gender-active': genderSel == 2 }"
+					@click="genderSel = 2">
+					<text class="gender-text" :class="{ 'gender-text-active': genderSel == 2 }">👩 女装</text>
+				</view>
+			</view>
+
+			<scroll-view class="suit-scroll" direction="horizontal" :show-scrollbar="false">
+				<view class="suit-list">
+					<view class="suit-card" v-for="(suit, idx) in filteredSuits" :key="idx"
+						:class="{ 'suit-card-active': modelValue.selSuitId == (suit['id'] as number) }" @click="selSuit(suit)">
+						<image class="suit-thumb" :src="suit['thumbPath']" mode="aspectFit"></image>
+						<text class="suit-name"
+							:class="{ 'suit-name-active': modelValue.selSuitId == (suit['id'] as number) }">{{ suit['name'] }}</text>
+					</view>
+				</view>
+			</scroll-view>
+		</view>
+	</view>
+</template>
+
+<script setup lang="uts">
+	import SvgIcon from '@/components/SvgIcon.uvue'
+
+	import { suitIcon } from '@/utils/svg/photoSvg';
+	import { isSuccess } from '@/utils/request.uts';
+	import { SuitState,SuitItem } from '@/types/photoType';
+
+	import { getSuits } from '@/api/idPhotoApi'
+
+	const props = withDefaults(defineProps<{
+		modelValue ?: SuitState
+	}>(), {
+		modelValue: () => ({ suitOn: false, selSuitId: -1,url:'' } as SuitState)
+	})
+
+	const emit = defineEmits<{
+		(e : 'update:modelValue', value : SuitState) : void
+		(e : 'change', item : SuitState) : void
+	}>()
+
+	const allSuits = ref([] as SuitItem[])
+	
+	//性别
+	const genderSel = ref(1)
+
+	const filteredSuits = computed(() : SuitItem[] => {
+		const gender = genderSel.value
+		return allSuits.value.filter((suit : SuitItem) : boolean => {
+			const rawGender = suit['gender']
+			let sg = 0
+			if (rawGender != null) {
+				sg = rawGender as number
+			}
+			return sg == 0 || sg == gender
+		})
+	})
+
+	const loadSuits = async () => {
+		const res = await getSuits();
+		if (isSuccess(res) && res.data != null && res.data.length > 0) {
+			allSuits.value = res.data as SuitItem[]
+		}
+	}
+
+	function toggleSuit() {
+		const newState : SuitState = {
+			suitOn: !props.modelValue.suitOn,
+			selSuitId: props.modelValue.selSuitId,
+			url:props.modelValue.url,
+		}
+		emit('update:modelValue', newState)
+		emit('change', newState)
+		if (props.modelValue.suitOn && allSuits.value.length == 0) loadSuits()
+	}
+
+	function selSuit(item : SuitItem) {
+		const id = item['id'] as number
+		const newState : SuitState = {
+			suitOn: props.modelValue.suitOn,
+			selSuitId: (props.modelValue.selSuitId == id) ? -1 : id,
+			url:item['thumbPath']
+		}
+		emit('update:modelValue', newState)
+		emit('change', newState)
+	}
+
+	onLoad((options : OnLoadOptions) => {
+		loadSuits()
+	})
+</script>
+
+<style lang="scss">
+	.clothing-picker {
+		margin-top: 15rpx;
+
+		.clothing-header {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+
+			.clothing-title {
+				font-size: 30rpx;
+				font-weight: 700;
+				color: #1A1A2E;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+
+				.label-text {
+					margin-left: 10rpx;
+				}
+			}
+
+			.toggle {
+				width: 92rpx;
+				height: 52rpx;
+				border-radius: 999rpx;
+				background-color: #E5E7EB;
+				position: relative;
+
+				&.toggle-on {
+					background-color: #ED317F;
+
+					.toggle-knob {
+						left: 44rpx;
+					}
+				}
+
+				.toggle-knob {
+					width: 44rpx;
+					height: 44rpx;
+					border-radius: 50%;
+					background-color: #fff;
+					position: absolute;
+					top: 4rpx;
+					left: 4rpx;
+					box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+				}
+			}
+		}
+
+		.clothing-tip {
+			font-size: 22rpx;
+			color: #9CA3AF;
+			display: block;
+			margin-top: 8rpx;
+		}
+
+		.suit-box {
+			margin-top: 20rpx;
+
+			.gender-row {
+				display: flex;
+				flex-direction: row;
+				gap: 16rpx;
+				margin-bottom: 20rpx;
+
+				.gender-chip {
+					flex: 1;
+					background-color: #fff;
+					border: 2rpx solid #EEEEEE;
+					border-radius: 999rpx;
+					padding: 16rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+
+					&.gender-active {
+						background-color: #FFF0F5;
+						border-color: #ED317F;
+					}
+
+					.gender-text {
+						font-size: 26rpx;
+						color: #6B7280;
+
+						&.gender-text-active {
+							color: #ED317F;
+							font-weight: 600;
+						}
+					}
+				}
+			}
+
+			.suit-scroll {
+				width: 690rpx;
+
+				.suit-list {
+					display: flex;
+					flex-direction: row;
+					flex-wrap: wrap;
+					gap: 20rpx;
+					padding-bottom: 10rpx;
+
+					.suit-card {
+						width: 156rpx;
+						background-color: #fff;
+						border-radius: 24rpx;
+						overflow: hidden;
+						border: 3rpx solid transparent;
+						box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
+						display: flex;
+						flex-direction: column;
+
+						&.suit-card-active {
+							border-color: #ED317F;
+						}
+
+						.suit-thumb {
+							width: 152rpx;
+							height: 152rpx;
+							background-color: #F7F8FC;
+						}
+
+						.suit-name {
+							font-size: 22rpx;
+							color: #6B7280;
+							text-align: center;
+							padding: 12rpx 8rpx;
+
+							&.suit-name-active {
+								color: #ED317F;
+								font-weight: 600;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+</style>

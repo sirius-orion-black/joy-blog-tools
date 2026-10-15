@@ -77,7 +77,7 @@
 	</view>
 </template>
 
-<script setup lang="ts">
+<script setup lang="uts">
 	import { ref, computed } from 'vue';
 
 	interface CalendarDay {

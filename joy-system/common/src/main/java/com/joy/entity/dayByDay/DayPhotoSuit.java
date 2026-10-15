@@ -3,12 +3,14 @@ package com.joy.entity.dayByDay;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@TableName
 public class DayPhotoSuit {
 
     //主键id
@@ -37,15 +39,19 @@ public class DayPhotoSuit {
 
     //锚点X百分比
     @TableField
-    private BigDecimal anchorX;
+    private Integer anchorX;
 
     //锚点Y百分比
     @TableField
-    private BigDecimal anchorY;
+    private Integer anchorY;
 
-    //默认缩放比例
+    //Y轴额外偏移补偿(像素)，正数向下，负数向上
     @TableField
-    private BigDecimal scaleRatio;
+    private Integer offsetY;
+
+    //素材中两肩之间的参考宽度(像素)，用于计算缩放比
+    @TableField
+    private Integer referenceShoulderWidth;
 
     //排序
     @TableField
@@ -58,9 +64,5 @@ public class DayPhotoSuit {
     //创建时间
     @TableField
     private LocalDateTime createTime;
-
-    /** 非表字段:缩略图完整URL */
-    @TableField(exist = false)
-    private String thumbUrl;
 
 }

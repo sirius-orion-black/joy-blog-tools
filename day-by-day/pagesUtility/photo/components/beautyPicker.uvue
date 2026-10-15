@@ -1,0 +1,258 @@
+<template>
+	<view class="beauty-picker">
+		<view class="beauty-header">
+			<view class="beauty-title">
+				<svg-icon :svg="beautyIcon" :size="26" color="#ED317F" />
+				<text class="label-text">智能美颜</text>
+			</view>
+			<view class="toggle" :class="{ 'toggle-on': modelValue.beautyOn }"
+				@click="modelValue.beautyOn = !modelValue.beautyOn">
+				<view class="toggle-knob"></view>
+			</view>
+		</view>
+		<text class="beauty-tip" v-if="!modelValue.beautyOn">可选功能，开启后AI自动美肤美颜</text>
+
+		<view class="beauty-box" v-if="modelValue.beautyOn">
+			<view class="slider-row">
+				<text class="slider-label">✨ 亮度</text>
+				<slider class="slider" :value="modelValue.skinSmooth" :min="-10" :max="25" activeColor="#ED317F"
+					backgroundColor="#F0F0F5" :block-size="20" @change="onSmooth" />
+				<text class="slider-val">{{ modelValue.skinSmooth }}</text>
+			</view>
+			<view class="slider-row">
+				<text class="slider-label">🌟 美白</text>
+				<slider class="slider" :value="modelValue.skinWhiten" :min="0" :max="15" activeColor="#ED317F"
+					backgroundColor="#F0F0F5" :block-size="20" @change="onWhiten" />
+				<text class="slider-val">{{ modelValue.skinWhiten }}</text>
+			</view>
+			<view class="slider-row">
+				<text class="slider-label">🔥 对比</text>
+				<slider class="slider" :value="modelValue.faceThin" :min="-10" :max="50" activeColor="#ED317F"
+					backgroundColor="#F0F0F5" :block-size="20" @change="onThin" />
+				<text class="slider-val">{{ modelValue.faceThin }}</text>
+			</view>
+			<view class="slider-row">
+				<text class="slider-label">💧 饱和</text>
+				<slider class="slider" :value="modelValue.eyeEnlarge" :min="-10" :max="50" activeColor="#ED317F"
+					backgroundColor="#F0F0F5" :block-size="20" @change="onEye" />
+				<text class="slider-val">{{ modelValue.eyeEnlarge }}</text>
+			</view>
+
+			<view class="preset-row">
+				<view class="preset-chip" @click="applyPreset('light')"><text class="preset-text">轻美颜</text>
+				</view>
+				<view class="preset-chip" @click="applyPreset('normal')"><text class="preset-text">自然</text>
+				</view>
+				<view class="preset-chip" @click="applyPreset('strong')"><text class="preset-text">精致</text>
+				</view>
+				<view class="preset-chip" @click="applyPreset('off')"><text class="preset-text">重置</text></view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script setup lang="uts">
+	import SvgIcon from '@/components/SvgIcon.uvue'
+
+	import { beautyIcon } from '@/utils/svg/photoSvg';
+	import { BeautyState } from '@/types/photoType';
+
+	const props = withDefaults(defineProps<{
+		modelValue ?: BeautyState
+	}>(), {
+		modelValue: () => ({ beautyOn: false, skinSmooth: 0, skinWhiten: 5, faceThin: 0, eyeEnlarge: 0 } as BeautyState)
+	})
+
+	const emit = defineEmits<{
+		(e : 'update:modelValue', value : BeautyState) : void
+		(e : 'change', item : BeautyState) : void
+	}>()
+
+	function applyPreset(type : string) {
+		let newState : BeautyState;
+		if (type == 'light')
+			newState = {
+				beautyOn: props.modelValue.beautyOn, skinSmooth: 5, skinWhiten: 5, faceThin: 5, eyeEnlarge: 5
+			}
+		else if (type == 'normal')
+			newState = {
+				beautyOn: props.modelValue.beautyOn, skinSmooth: 10, skinWhiten: 5, faceThin: 5, eyeEnlarge: 5
+			}
+		else if (type == 'strong')
+			newState = {
+				beautyOn: props.modelValue.beautyOn, skinSmooth:15, skinWhiten: 10, faceThin: 20, eyeEnlarge: 20
+			}
+		else
+			newState = {
+				beautyOn: props.modelValue.beautyOn, skinSmooth: 0, skinWhiten: 0, faceThin: 0, eyeEnlarge: 0
+			}
+		emit('update:modelValue', newState)
+		emit('change', newState)
+	}
+	function onSmooth(e : UniSliderChangeEvent) {
+		const newState : BeautyState = {
+			beautyOn: props.modelValue.beautyOn,
+			skinSmooth: e.detail.value,
+			skinWhiten: props.modelValue.skinWhiten,
+			faceThin: props.modelValue.faceThin,
+			eyeEnlarge: props.modelValue.eyeEnlarge
+		}
+		emit('update:modelValue', newState)
+		emit('change', newState)
+	}
+	function onWhiten(e : UniSliderChangeEvent) {
+		const newState : BeautyState = {
+			beautyOn: props.modelValue.beautyOn,
+			skinSmooth: props.modelValue.skinSmooth,
+			skinWhiten: e.detail.value,
+			faceThin: props.modelValue.faceThin,
+			eyeEnlarge: props.modelValue.eyeEnlarge
+		}
+		emit('update:modelValue', newState)
+		emit('change', newState)
+
+	}
+	function onThin(e : UniSliderChangeEvent) {
+		const newState : BeautyState = {
+			beautyOn: props.modelValue.beautyOn,
+			skinSmooth: props.modelValue.skinSmooth,
+			skinWhiten: props.modelValue.skinWhiten,
+			faceThin: e.detail.value,
+			eyeEnlarge: props.modelValue.eyeEnlarge
+		}
+		emit('update:modelValue', newState)
+		emit('change', newState)
+
+	}
+	function onEye(e : UniSliderChangeEvent) {
+		const newState : BeautyState = {
+			beautyOn: props.modelValue.beautyOn,
+			skinSmooth: props.modelValue.skinSmooth,
+			skinWhiten: props.modelValue.skinWhiten,
+			faceThin: props.modelValue.faceThin,
+			eyeEnlarge: e.detail.value
+		}
+		emit('update:modelValue', newState)
+		emit('change', newState)
+
+	}
+</script>
+
+<style lang="scss">
+	.beauty-picker {
+		.beauty-header {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+
+			.beauty-title {
+				font-size: 30rpx;
+				font-weight: 700;
+				color: #1A1A2E;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+
+				.label-text {
+					margin-left: 10rpx;
+				}
+			}
+
+			.toggle {
+				width: 92rpx;
+				height: 52rpx;
+				border-radius: 999rpx;
+				background-color: #E5E7EB;
+				position: relative;
+
+				&.toggle-on {
+					background-color: #ED317F;
+
+					.toggle-knob {
+						left: 44rpx;
+					}
+				}
+
+				.toggle-knob {
+					width: 44rpx;
+					height: 44rpx;
+					border-radius: 50%;
+					background-color: #fff;
+					position: absolute;
+					top: 4rpx;
+					left: 4rpx;
+					box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+				}
+			}
+			
+		}
+		.beauty-tip {
+			font-size: 22rpx;
+			color: #9CA3AF;
+			display: block;
+			margin-top: 8rpx;
+		}
+
+		.beauty-box {
+			margin-top: 20rpx;
+			display: flex;
+			flex-direction: column;
+			gap: 20rpx;
+
+			.slider-row {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: 12rpx;
+
+				.slider-label {
+					font-size: 25rpx;
+					color: #6B7280;
+					width: 96rpx;
+				}
+
+				.slider-label {
+					font-size: 25rpx;
+					color: #6B7280;
+					width: 96rpx;
+				}
+
+				.slider {
+					flex: 1;
+				}
+
+				.slider-val {
+					font-size: 24rpx;
+					color: #ED317F;
+					font-weight: 600;
+					width: 56rpx;
+					text-align: right;
+				}
+			}
+
+			.preset-row {
+				display: flex;
+				flex-direction: row;
+				gap: 16rpx;
+				margin-top: 8rpx;
+
+				.preset-chip {
+					flex: 1;
+					background-color: #FFF0F5;
+					border-radius: 999rpx;
+					padding: 14rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+
+					.preset-text {
+						font-size: 24rpx;
+						color: #ED317F;
+						font-weight: 600;
+					}
+				}
+			}
+		}
+	}
+</style>

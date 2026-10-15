@@ -2,11 +2,11 @@ package com.joy.utils;
 
 import com.joy.dto.common.utils.IpLocationDto;
 import com.joy.dto.common.utils.IpSummaryDto;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import org.lionsoul.ip2region.xdb.Searcher;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;

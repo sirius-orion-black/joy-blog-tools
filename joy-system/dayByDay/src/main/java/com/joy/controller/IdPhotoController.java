@@ -41,14 +41,28 @@ public class IdPhotoController {
         return photoService.photoSuits(gender);
     }
 
+    /**
+     *
+     * @param file 证件照原始文件
+     * @param fileType 类型
+     * @param platform 平台
+     * @return 返回预览图
+     */
     @PostMapping("/preview")
-    public Result<Map<String, Object>> preview(@RequestParam("file") MultipartFile file) throws Exception {
-        return photoService.preview(file);
+    public Result<Map<String, Object>> photoPreview(@RequestParam("file") MultipartFile file,
+                                                    @RequestParam("type") String fileType,
+                                                    @RequestParam("platform") String platform) throws Exception {
+        return photoService.photoPreview(file,fileType,platform);
     }
 
-    @PostMapping("/generate")
-    public DayPhotoRecord generate(@RequestBody IdPhotoGenerateDto req) throws Exception {
-        return photoService.generate(req);
+    @PostMapping("/changeSuit")
+    public Result<Map<String, Object>> photoChangeSuit(@RequestBody IdPhotoGenerateDto photo){
+        return photoService.photoChangeSuit(photo);
+    }
+
+    @PostMapping("/process")
+    public Result<DayPhotoRecord> photoProcess(@RequestBody IdPhotoGenerateDto photo) throws Exception {
+        return photoService.photoProcess(photo);
     }
 
 

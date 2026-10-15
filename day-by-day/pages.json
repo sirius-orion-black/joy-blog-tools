@@ -42,7 +42,6 @@
 		}
 	],
 
-
 	"subPackages": [{
 		"root": "pagesUtility",
 		"pages": [{
